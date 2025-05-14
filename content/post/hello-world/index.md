@@ -1,4 +1,3 @@
-```markdown
 ---
 title: PostgreSQL Checkpoint 深度解析：机制、优化与实战指南
 description: 全面剖析 PostgreSQL 核心机制 Checkpoint 的实现原理与调优策略
@@ -183,8 +182,5 @@ WHERE backend_xmin IS NOT NULL;
    - 移除 `checkpoint_completion_target` 参数（硬编码为 0.9）
    - 引入 WAL 压缩功能
 3. **云原生实践**：结合 Kubernetes 实现动态参数调整
-
 通过合理配置和持续监控，Checkpoint 机制可使 PostgreSQL 在保障数据安全的前提下，实现 90% 以上的 IO 利用率优化，特别适用于高频写入的金融交易系统（TPS > 10万）和时序数据处理场景。
-
 > 了解更多 PostgreSQL 深度优化技巧，欢迎访问 [PGCCC 官方文档](https://www.postgresql.org/docs/current/runtime-config-wal.html)
-```
