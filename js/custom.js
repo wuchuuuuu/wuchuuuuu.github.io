@@ -1,6 +1,6 @@
 if (!window.runningTime) {
     window.runningTime = () => {
-        const infoBox = document.querySelector('.footer .website-info-box')
+        const infoBox = document.querySelector('.footer')
         const tempDiv = document.createElement('div');
         tempDiv.setAttribute('class', 'info-item default')
         infoBox.appendChild(tempDiv)
@@ -17,7 +17,7 @@ if (!window.runningTime) {
         }
 
         setInterval(() => {
-            tempDiv.innerHTML = '本站已安全运行 ' + formatTimestamp(new Date(since).getTime())
+            tempDiv.innerHTML = '已安全运行 ' + formatTimestamp(new Date(since).getTime())
         }, 1000)
     }
 }
