@@ -9,7 +9,7 @@
     
     <title>
         
-            checkpoint是什么东西？一个点吗？一个位置？还是一个操作？ |
+            PostgreSQL的连接查询 |
         
         DBA有话说
     </title>
@@ -364,7 +364,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        checkpoint是什么东西？一个点吗？一个位置？还是一个操作？
+                        PostgreSQL的连接查询
                     </div>
                 
 
@@ -392,13 +392,13 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2025-07-23 19:05:11</span>
+                <span class="datetime">2025-07-07 11:58:29</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Wed Jul 23 2025 11:52:20 GMT+0800">2025-07-23 11:52:20</span>
+                    <span class="datetime" data-updated="Wed Jul 23 2025 14:44:22 GMT+0800">2025-07-23 14:44:22</span>
                 </span>
             
         
@@ -418,7 +418,13 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/checkpoint/">checkpoint</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/Nested-Loop-Join/">Nested Loop Join</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/Hash-Join/">Hash Join</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/Merge-Join/">Merge Join</a></li>
                         
                     
                 </ul>
@@ -443,66 +449,87 @@
                     
 
                     
-                         <h3 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h3><ul>
-<li>WAL 日志就这么一直写下去，子子孙孙无穷匮也，磁盘不炸了吗</li>
-<li>我怎么知道数据库什么时候崩的？恢复的时候，WAL 日志应该从哪开始重放呢？</li>
-<li>checkpoint是什么东西？一个点吗？一个位置？还是一个操作？</li>
-</ul>
-<h3 id="2、checkpoint"><a href="#2、checkpoint" class="headerlink" title="2、checkpoint"></a>2、checkpoint</h3><p>checkpoint是一个<strong>操作</strong>，执行这个操作的开始时刻，会记录当前开始时刻的 WAL 位置作为<strong>重做点</strong>，这个位置会被保存在文件中。 然后将该<strong>重做点之前</strong>所有 shared buffer 中的脏页均被刷入到存储。checkpoint又名检查点，<strong>一般checkpoint会将某个时间点之前的脏数据全部刷新到磁盘，以实现数据的一致性与完整性。</strong><br>目前各个流行的关系型数据库都具备checkpoint功能，其主要目的是为了缩短崩溃恢复时间，以Oracle为例，在进行数据恢复时，会以最近的checkpoint为参考点执行事务前滚。PostgreSQL在崩溃恢复时会以最近的checkpoint为基础，不断应用这之后的WAL日志。<br>简单来说：</p>
+                         <h4 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h4><p>在<strong>多表联合查询</strong>的时候，如果我们查看它的执行计划，就会发现里面有多表之间的连接方式。而<code>Nested Loop Join</code>、<code>Hash Join</code>和<code>Merge Join</code>是三种常见的连接算法。它们在不同的场景下有不同的性能表现和适用性，具体适用哪种类型的连接取决于：</p>
 <ul>
-<li>**确保数据一致性：**定期将内存中的脏页写入磁盘，确保数据库的一致性。</li>
-<li>**加速崩溃恢复：**减少需要重放的 WAL 日志量，从而加速系统崩溃后的恢复过程。</li>
-<li>**控制 WAL 日志大小：**通过记录检查点，限制 WAL 日志的增长，优化存储使用。</li>
+<li>当前的优化器模式 （ALL_ROWS 和 RULE）</li>
+<li>取决于表大小</li>
+<li>取决于连接列是否有索引</li>
+<li>取决于连接列是否排序</li>
 </ul>
-<h3 id="3、怎么触发checkpoint？"><a href="#3、怎么触发checkpoint？" class="headerlink" title="3、怎么触发checkpoint？"></a>3、怎么触发checkpoint？</h3><p>分析源码，发现在<code>src/include/access/xlog.h</code>定义了几类触发的场景：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_IS_SHUTDOWN	0x0001	<span class="comment">/* 数据库关闭 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_END_OF_RECOVERY	0x0002	<span class="comment">/* 数据库恢复结束时触发 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_IMMEDIATE	0x0004	<span class="comment">/* 立即执行检查点操作，不进行延迟 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_FORCE		0x0008	<span class="comment">/* 强制执行检查点 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_FLUSH_ALL	0x0010	<span class="comment">/* 刷新所有页面，包括未记录表的页面 */</span></span></span><br><span class="line"><span class="comment">/* 以下标志对 RequestCheckpoint 函数非常重要 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_WAIT			0x0020	<span class="comment">/* 等待检查点操作完成 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_REQUESTED	0x0040	<span class="comment">/* 已发出检查点请求 */</span></span></span><br><span class="line"><span class="comment">/* 以下标志指示检查点请求的原因 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_CAUSE_XLOG	0x0080	<span class="comment">/* XLOG日志量达到一定程度触发 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_CAUSE_TIME	0x0100	<span class="comment">/* 周期性触发 */</span></span></span><br></pre></td></tr></table></figure>
-
-<p>根据上述定义，也就是说，以下几种情况会触发PG数据库操作系统做检查点操作：</p>
-<ol>
-<li>超级用户（其他用户不可）执行CHECKPOINT命令</li>
-<li>数据库shutdown</li>
-<li>数据库recovery完成</li>
-<li>XLOG日志量达到了触发checkpoint阈值</li>
-<li>周期性地进行checkpoint</li>
-<li>需要刷新所有脏页</li>
-</ol>
-<p>为了能够周期性的创建检查点，减少崩溃恢复时间，同时合并I&#x2F;O，PostgreSQL提供了<em>辅助进程checkpointer</em>。它会对不断检测周期时间以及上面的XLOG日志量阈值是否达到，而周期时间以及XLOG日志量阈值可以通过参数来设置大小，接下来介绍下与checkpoints相关的参数。</p>
-<p><code>checkpoint_segments</code>：WAL log的最大数量，系统默认值是3。超过该数量的WAL日志，会自动触发checkpoint。<br><code>checkpoint_timeout</code>：系统自动执行checkpoint之间的最大时间间隔。系统默认值是5分钟。<br><code>checkpoint_completion_target</code>：该参数表示checkpoint的完成时间占两次checkpoint时间间隔的比例，系统默认值是0.5,也就是说每个checkpoint需要在checkpoints间隔时间的50%内完成。<br><code>checkpoint_warning</code>：系统默认值是30秒，如果checkpoints的实际发生间隔小于该参数，将会在server log中写入写入一条相关信息。可以通过设置为0禁用。</p>
-<h3 id="4、checkpoint-操作的过程"><a href="#4、checkpoint-操作的过程" class="headerlink" title="4、checkpoint 操作的过程"></a>4、checkpoint 操作的过程</h3>
-<p><strong>checkpoint操作执行的过程</strong>：</p>
-<p>假设要执行三条insert语句</p>
-<ul>
-<li>checkpoint 操作首先记录下 checkpoint 的开始位置，记录为 <strong>redo point</strong>（重做位点）</li>
-<li>checkpoint 将 shared buffer 中的数据刷到磁盘里面去</li>
-<li>这时候数据库又来了一条 SQL insert 3</li>
-<li>checkpoint 刷脏结束，redo point 之前的数据均已被刷到磁盘存储（数据1和2）</li>
-<li>每个检查点后，第一次数据页的变化会导致整个页面会被记录在XLOG日志中</li>
-</ul>
+<h4 id="2、Nested-Loop-Join"><a href="#2、Nested-Loop-Join" class="headerlink" title="2、Nested Loop Join"></a>2、Nested Loop Join</h4><p>对于被连接的数据子集较小的情况，Nested Loop是个较好的选择。Nested Loop就是扫描一个表（外表），每读到一条记录，就根据Join字段上的索引去另一张表（内表）里面查找，若Join字段上没有索引查询优化器一般就不会选择 Nested Loop。</p>
+<p>在Nested Loop中，<strong>内表</strong>（一般是带索引的大表）被<strong>外表</strong>（也叫驱动表，一般为小表——不紧相对其它表为小表，而且记录数的绝对值也较小，不要求有索引）驱动，外表返回的每一行都要在内表中检索找到与它匹配的行，因此整个查询返回的结果集不能太大（大于1 万不适合）。</p>
 <blockquote>
-<p>这时候假如开始数据库恢复，那么数据库会从<code>pg_control</code> 文件中找到最新的 checkpoint 位置，再从 checkpoint 找到 redo point 的位置，开始重放日志。不难看出，1 和 2 这两个数据在 checkpoint 中已经持久化到磁盘存储，WAL 日志中也只有 INSERT 3 操作需要重放。<br><code>ControlFileData</code> 结构定义了<code>pg_control</code>文件中存储的数据格式。这个结构位于 <code>src/include/catalog/pg_control.h </code>文件中。</p>
+<p>Nested Loop适用于结果集很小（一般要求小于一万条），并且内表在Join字段上建有索引（这点非常非常非常重要）。</p>
 </blockquote>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">ControlFileData</span></span><br><span class="line">&#123;</span><br><span class="line">    uint32      system_identifier; <span class="comment">/* 唯一的系统标识符，用于区分不同的数据库实例 */</span></span><br><span class="line">    uint32      pg_control_version; <span class="comment">/* pg_control 文件的版本号 */</span></span><br><span class="line">    uint32      catalog_version_no; <span class="comment">/* 数据库的目录版本号 */</span></span><br><span class="line">    DBState     state;              <span class="comment">/* 数据库的当前状态 */</span></span><br><span class="line">    <span class="type">pg_time_t</span>   time;               <span class="comment">/* 最后一次更新的时间戳 */</span></span><br><span class="line">    XLogRecPtr  checkPoint;         <span class="comment">/* 最后一个检查点的 WAL（Write-Ahead Logging）记录指针 */</span></span><br><span class="line">    XLogRecPtr  prevCheckPoint;     <span class="comment">/* 上一个检查点的 WAL 记录指针 */</span></span><br><span class="line">    CheckPoint  checkPointCopy;     <span class="comment">/* 最后一个检查点记录的副本 */</span></span><br><span class="line">    XLogRecPtr  unloggedLSN;        <span class="comment">/* 当前未记录的 LSN（日志序列号） */</span></span><br><span class="line">    <span class="comment">// 其他字段省略</span></span><br><span class="line">&#125; ControlFileData;</span><br></pre></td></tr></table></figure>
+<h4 id="3、Hash-Join"><a href="#3、Hash-Join" class="headerlink" title="3、Hash Join"></a>3、Hash Join</h4><p>Hash Join是做大数据集连接时的常用方式，优化器使用两个表中较小（相对较小）的表利用Join Key在内存中建立散列表，然后扫描较大的表并探测散列表，找出与Hash表匹配的行。<br> 这种方式适用于较小的表完全可以放于内存中的情况，这样总成本就是访问两个表的成本之和。但是在表很大的情况下并不能完全放入内存，这时优化器会将它分割成若干不同的分区，不能放入内存的部分就把该分区写入磁盘的临时段，此时要求有较大的临时段从而尽量提高I&#x2F;O 的性能。它能够很好的工作于没有索引的大表和并行查询的环境中，并提供最好的性能。大多数人都说它是Join的重型升降机。</p>
+<blockquote>
+<p><strong>Hash Join只能应用于等值连接</strong>(如WHERE A.COL3 &#x3D; B.COL4)，这是由Hash的特点决定的。</p>
+</blockquote>
+<h4 id="4、Merge-Join"><a href="#4、Merge-Join" class="headerlink" title="4、Merge Join"></a>4、Merge Join</h4><p>通常情况下Hash Join的效果都比排序合并连接要好，然而如果两表已经被排过序，在执行排序合并连接时不需要再排序了，这时Merge Join的性能会优于Hash Join。Merge join的操作通常分三步：</p>
+<ol>
+<li>对连接的每个表做table access full;</li>
+<li>对table access full的结果进行排序。</li>
+<li>进行merge join对排序结果进行合并。</li>
+</ol>
+<p> 在全表扫描比索引范围扫描再进行表访问更可取的情况下，Merge Join会比Nested Loop性能更佳。当表特别小或特别巨大的时候，实行全表访问可能会比索引范围扫描更有效。</p>
+<blockquote>
+<p>Merge Join的性能开销几乎都在前两步，Merge Join可适于于非等值Join（&gt;，&lt;，&gt;&#x3D;，&lt;&#x3D;，但是不包含!&#x3D;，也即&lt;&gt;）</p>
+</blockquote>
+<h4 id="5、总结"><a href="#5、总结" class="headerlink" title="5、总结"></a>5、总结</h4><table>
+<thead>
+<tr>
+<th align="center">连接类别</th>
+<th align="center">Nested Loop Join</th>
+<th align="center">Hash Join</th>
+<th align="center">Merge Join</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>使用条件</strong></td>
+<td align="center">任何条件</td>
+<td align="center">等值连接（&#x3D;）</td>
+<td align="center">等值或非等值连接（&gt;，&lt;，&#x3D;，&gt;&#x3D;，&lt;&#x3D;），‘&lt;&gt;’除外</td>
+</tr>
+<tr>
+<td align="center"><strong>相关资源</strong></td>
+<td align="center">CPU、磁盘I&#x2F;O</td>
+<td align="center">内存、临时空间</td>
+<td align="center">内存、临时空间</td>
+</tr>
+<tr>
+<td align="center"><strong>特点</strong></td>
+<td align="center">当有高选择性索引或进行限制性搜索时效率比较高，能够快速返回第一次的搜索结果。</td>
+<td align="center">当缺乏索引或者索引条件模糊时，Hash Join比Nested Loop有效。通常比Merge Join快。在数据仓库环境下，如果表的纪录数多，效率高。</td>
+<td align="center">当缺乏索引或者索引条件模糊时，Merge Join比Nested Loop有效。非等值连接时，Merge Join比Hash Join更有效。</td>
+</tr>
+<tr>
+<td align="center"><strong>缺点</strong></td>
+<td align="center">当索引丢失或者查询条件限制不够时，效率很低；当表的纪录数多时，效率低。</td>
+<td align="center">为建立哈希表，需要大量内存。第一次的结果返回较慢。</td>
+<td align="center">所有的表都需要排序。它为最优化的吞吐量而设计，并且在结果没有全部找到前不返回数据。</td>
+</tr>
+</tbody></table>
+<h4 id="6、实验"><a href="#6、实验" class="headerlink" title="6、实验"></a>6、实验</h4><p>小表 <code>table_small</code> 有少于1万条记录，大表 <code>table_big</code> 有165万条记录，并且大表上已经建立了索引</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 确保小表存在</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> table_small (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    <span class="keyword">value</span> <span class="type">INTEGER</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 确保大表存在</span></span><br><span class="line"><span class="keyword">CREATE TABLE</span> IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> table_big (</span><br><span class="line">    id SERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    <span class="keyword">value</span> <span class="type">INTEGER</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 确保大表上有索引</span></span><br><span class="line"><span class="keyword">CREATE</span> INDEX IF <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> idx_table_big_value <span class="keyword">ON</span> table_big (<span class="keyword">value</span>);</span><br></pre></td></tr></table></figure>
 
-<p>读取和写入 <code>pg_control</code> 文件的主要函数<code>ReadControlFile</code>、<code>UpdateControlFile</code>位于<code>src/backend/access/transam/xlog.c</code> 文件中。</p>
-<p>查看源码，发现<strong>检查点机制的主要实现</strong>位于 <code>src/backend/postmaster/checkpointer.c</code> 文件中。以下是一些关键函数和它们的作用：<br><code>CheckpointerMain</code>：检查点进程的主函数。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">CheckpointerMain</span><span class="params">(<span class="type">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 初始化和设置信号处理</span></span><br><span class="line">    <span class="built_in">pqsignal</span>(SIGHUP, SignalHandlerForConfigReload);</span><br><span class="line">    <span class="built_in">pqsignal</span>(SIGINT, SignalHandlerForShutdownRequest);</span><br><span class="line">    <span class="built_in">pqsignal</span>(SIGTERM, SignalHandlerForShutdownRequest);</span><br><span class="line">    <span class="built_in">pqsignal</span>(SIGQUIT, SignalHandlerForCrashRequest);</span><br><span class="line">    <span class="built_in">pqsignal</span>(SIGUSR1, SignalHandlerForCheckpointRequest);</span><br><span class="line">    <span class="built_in">pqsignal</span>(SIGUSR2, SignalHandlerForCheckpointRequest);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 主循环</span></span><br><span class="line">    <span class="keyword">for</span> (;;)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 等待检查点请求或超时</span></span><br><span class="line">        <span class="built_in">WaitLatchOrSocket</span>(MyLatch, WL_LATCH_SET | WL_TIMEOUT | WL_POSTMASTER_DEATH, <span class="number">-1</span>, WAIT_EVENT_CHECKPOINTER_MAIN);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 处理检查点请求</span></span><br><span class="line">        <span class="keyword">if</span> (got_SIGHUP)</span><br><span class="line">        &#123;</span><br><span class="line">            got_SIGHUP = <span class="literal">false</span>;</span><br><span class="line">            <span class="built_in">ProcessConfigFile</span>(PGC_SIGHUP);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (shutdown_requested)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">CreateCheckPoint</span>(CHECKPOINT_IS_SHUTDOWN | CHECKPOINT_IMMEDIATE);</span><br><span class="line">            <span class="built_in">proc_exit</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (checkpoint_requested)</span><br><span class="line">        &#123;</span><br><span class="line">            checkpoint_requested = <span class="literal">false</span>;</span><br><span class="line">            <span class="built_in">CreateCheckPoint</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>插入数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 插入小表数据</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> table_small (<span class="keyword">value</span>)</span><br><span class="line"><span class="keyword">SELECT</span> (RANDOM() <span class="operator">*</span> <span class="number">1000</span>)::<span class="type">INTEGER</span></span><br><span class="line"><span class="keyword">FROM</span> generate_series(<span class="number">1</span>, <span class="number">10000</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 插入大表数据</span></span><br><span class="line"><span class="keyword">INSERT INTO</span> table_big (<span class="keyword">value</span>)</span><br><span class="line"><span class="keyword">SELECT</span> (RANDOM() <span class="operator">*</span> <span class="number">1000</span>)::<span class="type">INTEGER</span></span><br><span class="line"><span class="keyword">FROM</span> generate_series(<span class="number">1</span>, <span class="number">1650000</span>);</span><br></pre></td></tr></table></figure>
 
-<p><code>CreateCheckPoint</code>：执行检查点操作的核心函数，负责将脏页写入磁盘并记录检查点信息。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">CreateCheckPoint</span><span class="params">(<span class="type">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CheckPoint  checkpoint;</span><br><span class="line">    XLogRecPtr  recptr;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化检查点结构</span></span><br><span class="line">    <span class="built_in">MemSet</span>(&amp;checkpoint, <span class="number">0</span>, <span class="built_in">sizeof</span>(CheckPoint));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取当前 WAL 位置</span></span><br><span class="line">    recptr = <span class="built_in">GetInsertRecPtr</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将脏页写入磁盘</span></span><br><span class="line">    <span class="built_in">CheckPointBuffers</span>(flags);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 记录检查点信息到 WAL 日志</span></span><br><span class="line">    recptr = <span class="built_in">XLogInsert</span>(RM_XLOG_ID, XLOG_CHECKPOINT_SHUTDOWN, &amp;checkpoint);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更新控制文件</span></span><br><span class="line">    <span class="built_in">UpdateControlFile</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Nested-Loop-Join-实验"><a href="#Nested-Loop-Join-实验" class="headerlink" title="Nested Loop Join 实验"></a>Nested Loop Join 实验</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> enable_hashjoin <span class="operator">=</span> OFF;</span><br><span class="line"><span class="keyword">SET</span> enable_mergejoin <span class="operator">=</span> OFF;</span><br><span class="line"></span><br><span class="line">EXPLAIN ANALYZE</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> table_small</span><br><span class="line"><span class="keyword">JOIN</span> table_big <span class="keyword">ON</span> table_small.value <span class="operator">=</span> table_big.value;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 恢复默认设置</span></span><br><span class="line"><span class="keyword">SET</span> enable_hashjoin <span class="operator">=</span> <span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">SET</span> enable_mergejoin <span class="operator">=</span> <span class="keyword">ON</span>;</span><br></pre></td></tr></table></figure>
 
-<p><code>CheckPointBuffers</code>：将脏页写入磁盘。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">CheckPointBuffers</span><span class="params">(<span class="type">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> num_to_write;</span><br><span class="line">    <span class="type">int</span> num_written;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算需要写入的脏页数量</span></span><br><span class="line">    num_to_write = <span class="built_in">GetNumDirtyBuffers</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 写入脏页</span></span><br><span class="line">    num_written = <span class="built_in">WriteDirtyBuffers</span>(num_to_write);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同步磁盘</span></span><br><span class="line">    <span class="keyword">if</span> (num_written &gt; <span class="number">0</span>)</span><br><span class="line">        <span class="built_in">SyncDataDirectory</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">                                              QUERY PLAN  </span><br><span class="line"><span class="comment">-------------------------------------------------------------------------------------------------------------</span></span><br><span class="line"> Nested Loop  (cost<span class="operator">=</span><span class="number">0.43</span>.<span class="number">.494876</span><span class="number">.00</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16464930</span> width<span class="operator">=</span><span class="number">16</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.077</span>.<span class="number">.17485</span><span class="number">.498</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16492654</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">   <span class="operator">-</span><span class="operator">&gt;</span>  Seq Scan <span class="keyword">on</span> table_small  (cost<span class="operator">=</span><span class="number">0.00</span>.<span class="number">.145</span><span class="number">.00</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.017</span>.<span class="number">.2</span><span class="number">.865</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">   <span class="operator">-</span><span class="operator">&gt;</span>  Index Scan <span class="keyword">using</span> idx_table_big_value <span class="keyword">on</span> table_big  (cost<span class="operator">=</span><span class="number">0.43</span>.<span class="number">.32</span><span class="number">.99</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">1648</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.030</span>.<span class="number">.1</span><span class="number">.428</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">1649</span> loops<span class="operator">=</span><span class="number">10000</span>)</span><br><span class="line">         Index Cond: (<span class="keyword">value</span> <span class="operator">=</span> table_small.value)</span><br><span class="line"> Planning <span class="type">Time</span>: <span class="number">0.152</span> ms</span><br><span class="line"> Execution <span class="type">Time</span>: <span class="number">18613.887</span> ms</span><br><span class="line">(<span class="number">6</span> <span class="keyword">rows</span>)</span><br></pre></td></tr></table></figure>
 
-<p><code>CheckPointWriteDelay</code>：控制写入速率，避免 I&#x2F;O 峰值。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">CheckPointWriteDelay</span><span class="params">(<span class="type">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">int</span> checkpoint_write_delay = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算写入延迟</span></span><br><span class="line">    <span class="keyword">if</span> (checkpoint_write_delay &gt; <span class="number">0</span>)</span><br><span class="line">        <span class="built_in">pg_usleep</span>(checkpoint_write_delay);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Hash-Join-实验"><a href="#Hash-Join-实验" class="headerlink" title="Hash Join 实验"></a>Hash Join 实验</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> enable_nestloop <span class="operator">=</span> OFF;</span><br><span class="line"><span class="keyword">SET</span> enable_mergejoin <span class="operator">=</span> OFF;</span><br><span class="line"></span><br><span class="line">EXPLAIN ANALYZE</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> table_small</span><br><span class="line"><span class="keyword">JOIN</span> table_big <span class="keyword">ON</span> table_small.value <span class="operator">=</span> table_big.value;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 恢复默认设置</span></span><br><span class="line"><span class="keyword">SET</span> enable_nestloop <span class="operator">=</span> <span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">SET</span> enable_mergejoin <span class="operator">=</span> <span class="keyword">ON</span>;</span><br></pre></td></tr></table></figure>
 
-<h3 id="5、总结"><a href="#5、总结" class="headerlink" title="5、总结"></a>5、总结</h3><ul>
-<li>checkpoint中记录了 redo point，标记 redo point 之前的数据均已刷脏，完成持久化存储</li>
-<li>标记 redo point 之前的 WAL 日志可以被清理回收</li>
-<li>每个检查点后，第一次数据页的变化会导致整个页面会被记录在XLOG日志中。</li>
-<li>检查点的开销比较高，可以用checkpoint_warning自检，相应调大checkpoint_segments</li>
-<li>检查点的位置保存在文件 pg_control，pg_control文件被损坏可能会导致数据库不可用</li>
-</ul>
+<p>结果</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">                                           QUERY PLAN</span><br><span class="line"><span class="comment">-------------------------------------------------------------------------------------------------------------</span></span><br><span class="line"> Hash <span class="keyword">Join</span>  (cost<span class="operator">=</span><span class="number">270.00</span>.<span class="number">.236157</span><span class="number">.80</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16464930</span> width<span class="operator">=</span><span class="number">16</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">3.370</span>.<span class="number">.4114</span><span class="number">.577</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16492654</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">   Hash Cond: (table_big.value <span class="operator">=</span> table_small.value)</span><br><span class="line">   <span class="operator">-</span><span class="operator">&gt;</span>  Seq Scan <span class="keyword">on</span> table_big  (cost<span class="operator">=</span><span class="number">0.00</span>.<span class="number">.23801</span><span class="number">.00</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">1650000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.029</span>.<span class="number">.207</span><span class="number">.175</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">1650000</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">   <span class="operator">-</span><span class="operator">&gt;</span>  Hash  (cost<span class="operator">=</span><span class="number">145.00</span>.<span class="number">.145</span><span class="number">.00</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">3.326</span>.<span class="number">.3</span><span class="number">.328</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">         Buckets: <span class="number">16384</span>  Batches: <span class="number">1</span>  Memory Usage: <span class="number">519</span>kB</span><br><span class="line">         <span class="operator">-</span><span class="operator">&gt;</span>  Seq Scan <span class="keyword">on</span> table_small  (cost<span class="operator">=</span><span class="number">0.00</span>.<span class="number">.145</span><span class="number">.00</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.006</span>.<span class="number">.1</span><span class="number">.185</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line"> Planning <span class="type">Time</span>: <span class="number">0.163</span> ms</span><br><span class="line"> Execution <span class="type">Time</span>: <span class="number">4825.898</span> ms</span><br><span class="line">(<span class="number">8</span> <span class="keyword">rows</span>)</span><br></pre></td></tr></table></figure>
+
+<h5 id="Merge-Join-实验"><a href="#Merge-Join-实验" class="headerlink" title="Merge Join 实验"></a>Merge Join 实验</h5><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> enable_nestloop <span class="operator">=</span> OFF;</span><br><span class="line"><span class="keyword">SET</span> enable_hashjoin <span class="operator">=</span> OFF;</span><br><span class="line"></span><br><span class="line">EXPLAIN ANALYZE</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line"><span class="keyword">FROM</span> table_small</span><br><span class="line"><span class="keyword">JOIN</span> table_big <span class="keyword">ON</span> table_small.value <span class="operator">=</span> table_big.value</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> table_small.value, table_big.value;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 恢复默认设置</span></span><br><span class="line"><span class="keyword">SET</span> enable_nestloop <span class="operator">=</span> <span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">SET</span> enable_hashjoin <span class="operator">=</span> <span class="keyword">ON</span>;</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">                                                 QUERY PLAN   </span><br><span class="line"><span class="comment">-------------------------------------------------------------------------------------------------------------</span></span><br><span class="line"> <span class="keyword">Merge</span> <span class="keyword">Join</span>  (cost<span class="operator">=</span><span class="number">813.93</span>.<span class="number">.313910</span><span class="number">.64</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16464930</span> width<span class="operator">=</span><span class="number">16</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">4.110</span>.<span class="number">.6941</span><span class="number">.522</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16492654</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">   <span class="keyword">Merge</span> Cond: (table_big.value <span class="operator">=</span> table_small.value)</span><br><span class="line">   <span class="operator">-</span><span class="operator">&gt;</span>  Index Scan <span class="keyword">using</span> idx_table_big_value <span class="keyword">on</span> table_big  (cost<span class="operator">=</span><span class="number">0.43</span>.<span class="number">.62006</span><span class="number">.42</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">1650000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.021</span>.<span class="number">.1562</span><span class="number">.718</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">1650000</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">   <span class="operator">-</span><span class="operator">&gt;</span>  Sort  (cost<span class="operator">=</span><span class="number">809.39</span>.<span class="number">.834</span><span class="number">.39</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">4.084</span>.<span class="number">.1125</span><span class="number">.939</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">16491769</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line">         Sort Key: table_small.value</span><br><span class="line">         Sort <span class="keyword">Method</span>: quicksort  Memory: <span class="number">697</span>kB</span><br><span class="line">         <span class="operator">-</span><span class="operator">&gt;</span>  Seq Scan <span class="keyword">on</span> table_small  (cost<span class="operator">=</span><span class="number">0.00</span>.<span class="number">.145</span><span class="number">.00</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> width<span class="operator">=</span><span class="number">8</span>) (actual <span class="type">time</span><span class="operator">=</span><span class="number">0.009</span>.<span class="number">.1</span><span class="number">.149</span> <span class="keyword">rows</span><span class="operator">=</span><span class="number">10000</span> loops<span class="operator">=</span><span class="number">1</span>)</span><br><span class="line"> Planning <span class="type">Time</span>: <span class="number">0.261</span> ms</span><br><span class="line"> Execution <span class="type">Time</span>: <span class="number">7657.134</span> ms</span><br><span class="line">(<span class="number">9</span> <span class="keyword">rows</span>)</span><br></pre></td></tr></table></figure>
+
 
                     
                 </div>
@@ -513,11 +540,11 @@
     <div class="copyright-info-content border-box">
         <div class="copyright-info-top border-box">
             <div class="copyright-post-title border-box text-ellipsis">
-                checkpoint是什么东西？一个点吗？一个位置？还是一个操作？
+                PostgreSQL的连接查询
             </div>
 
             <div class="copyright-post-link border-box text-ellipsis">
-                2025/07/23/checkpoint/
+                2025/07/07/sql_join/
             </div>
         </div>
 
@@ -533,7 +560,7 @@
                 <div class="type">
                     发布于
                 </div>
-                <div class="content">2025-07-23 19:05</div>
+                <div class="content">2025-07-07 11:58</div>
             </div>
 
 
@@ -569,7 +596,15 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/checkpoint/">checkpoint</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/Nested-Loop-Join/">Nested Loop Join</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/Hash-Join/">Hash Join</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/Merge-Join/">Merge Join</a>
                                     </li>
                                 
                             </ul>
@@ -621,15 +656,31 @@
                 
                     <div class="post-nav border-box">
                         
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2025/07/23/checkpoint/"
+                                   title="checkpoint是什么东西？一个点吗？一个位置？还是一个操作？"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">checkpoint是什么东西？一个点吗？一个位置？还是一个操作？</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
                         
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/07/07/sql_join/"
-                                   title="PostgreSQL的连接查询"
+                                   href="/2024/11/27/mmeoryContext/"
+                                   title="深入理解 PostgreSQL 中的内存上下文（MmeoryContext）"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">PostgreSQL的连接查询</span>
+                                        <span class="post-nav-title-item text-ellipsis">深入理解 PostgreSQL 中的内存上下文（MmeoryContext）</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -729,7 +780,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-text">1、背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81checkpoint"><span class="nav-text">2、checkpoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E6%80%8E%E4%B9%88%E8%A7%A6%E5%8F%91checkpoint%EF%BC%9F"><span class="nav-text">3、怎么触发checkpoint？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81checkpoint-%E6%93%8D%E4%BD%9C%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-text">4、checkpoint 操作的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">5、总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-text">1、背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81Nested-Loop-Join"><span class="nav-text">2、Nested Loop Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81Hash-Join"><span class="nav-text">3、Hash Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81Merge-Join"><span class="nav-text">4、Merge Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">5、总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6%E3%80%81%E5%AE%9E%E9%AA%8C"><span class="nav-text">6、实验</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Nested-Loop-Join-%E5%AE%9E%E9%AA%8C"><span class="nav-text">Nested Loop Join 实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Hash-Join-%E5%AE%9E%E9%AA%8C"><span class="nav-text">Hash Join 实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Merge-Join-%E5%AE%9E%E9%AA%8C"><span class="nav-text">Merge Join 实验</span></a></li></ol></li></ol>
     </div>
 </div>
 
@@ -933,7 +984,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-text">1、背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81checkpoint"><span class="nav-text">2、checkpoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E6%80%8E%E4%B9%88%E8%A7%A6%E5%8F%91checkpoint%EF%BC%9F"><span class="nav-text">3、怎么触发checkpoint？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81checkpoint-%E6%93%8D%E4%BD%9C%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-text">4、checkpoint 操作的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">5、总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%E3%80%81%E8%83%8C%E6%99%AF"><span class="nav-text">1、背景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%E3%80%81Nested-Loop-Join"><span class="nav-text">2、Nested Loop Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%E3%80%81Hash-Join"><span class="nav-text">3、Hash Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%E3%80%81Merge-Join"><span class="nav-text">4、Merge Join</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">5、总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6%E3%80%81%E5%AE%9E%E9%AA%8C"><span class="nav-text">6、实验</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Nested-Loop-Join-%E5%AE%9E%E9%AA%8C"><span class="nav-text">Nested Loop Join 实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Hash-Join-%E5%AE%9E%E9%AA%8C"><span class="nav-text">Hash Join 实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Merge-Join-%E5%AE%9E%E9%AA%8C"><span class="nav-text">Merge Join 实验</span></a></li></ol></li></ol>
     </div>
 </div>
 

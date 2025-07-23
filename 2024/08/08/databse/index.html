@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            数据库基础知识 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/kunkun.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":true,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"感谢您的阅读，如果本文对您有帮助，请随意打赏。您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":false,"site_uv":true,"site_pv":true,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":false},"footer":{"since":2025,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"]},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/avatar.png","name":"img1"},{"url":"/images/kunkun.png","name":"img2"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        数据库基础知识
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/kunkun.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">筑基明理</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-08-08 11:26:08</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Tue Nov 19 2024 19:41:38 GMT+0800">2024-11-19 19:41:38</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/">数据库基础</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">基础知识</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body ">
+                    
+
+                    
+                         <p>数据库简答题</p>
+<h3 id="典型数据库模型"><a href="#典型数据库模型" class="headerlink" title="典型数据库模型"></a>典型数据库模型</h3><p>层次数据模型、网状数据模型、关系数据模型、面向对象数据模型等</p>
+<h3 id="mydql-postgres-oracle-mongodb"><a href="#mydql-postgres-oracle-mongodb" class="headerlink" title="mydql postgres oracle  mongodb"></a>mydql postgres oracle  mongodb</h3><h3 id="简述数据库、数据库系统、数据库管理系统"><a href="#简述数据库、数据库系统、数据库管理系统" class="headerlink" title="简述数据库、数据库系统、数据库管理系统"></a>简述数据库、数据库系统、数据库管理系统</h3><p>   数据库是长期存储在计算机内、有组织的、可共享的大量数据的集合。数据库中的数据按照一定的数据模型组织、描述和存储，具有较小的冗余度（redundancy）、较高的数据独立性（data independency）和易扩展性（scalability），可为各种用户共享。<br>    数据库系统是由数据库、数据库管理系统、应用程序和数据库管理员组成的存储、管理、处理和维护数据的系统。<br>    数据库管理系统是位于操作系统和用户之间的一层数据管理软件。</p>
+<h3 id="数据管理技术三个阶段、数据库系统阶段的特点"><a href="#数据管理技术三个阶段、数据库系统阶段的特点" class="headerlink" title="数据管理技术三个阶段、数据库系统阶段的特点"></a>数据管理技术三个阶段、数据库系统阶段的特点</h3><p>（1）人工管理阶段（2）文件系统阶段（3）数据库系统阶段<br>数据库系统阶段的特点：<br>① 数据结构化         ②数据的共享性高、冗余度低、易扩充<br>③ 数据独立性高       ④数据由数据库管理系统统一管理和控制</p>
+<p>文件系统	<br>数据库管理系统<br>某一应用	现实世界<br>共享性差，冗余度大	共享性高，冗余度小<br>记录内有结构，整体无结构	整体结构化，用数据模型描述<br>应用程序控制	由数据库管理系统提供数据安全性，完整性，并发控制和恢复能力<br>独立性差	具有高度的物理独立性和一定的逻辑独立性</p>
+<h3 id="DBMS支持那几种数据模型"><a href="#DBMS支持那几种数据模型" class="headerlink" title="DBMS支持那几种数据模型"></a>DBMS支持那几种数据模型</h3><p>常用的是层次模型、网状模型、关系模型（最重要）。新兴的是面向对象数据模型和对象关系数据模型。<br>（1）层次模型是指用树型结构表示实体及其之间的联系，树中每一个节点代表一个记录类型，树状结构表示实体型之间的联系。在一个层次模型中的限制条件是：有且仅有一个节点，无父节点，此节点为树的根；其他节点有且仅有一个父节点。<br>（2）网状模型：用有向图结构表示实体类型及实体间联系的数据结构模型称为网状模型。网状模型的数据结构主要有以下两个特征: ①允许一个以上的节点无双亲。 ②一个节点可以有多于一个的双亲。<br>（3）关系模型是数据模型中最重要的。关系实际上就是关系模式在某一时刻的状态或内容。关系模式是型，关系是它的值。关系模式是静态的、稳定的，而关系是动态的、随时间不断变化的，因为关系操作在不断地更新着数据库中的数据。但在实际当中，常常把关系模式和关系统称为关系。现实世界的实体以及实体间的各种联系均用关系来表示，从用户角度看，关系模型中数据的逻辑结构是一张二维表。</p>
+<h3 id="数据库应用系统开发阶段"><a href="#数据库应用系统开发阶段" class="headerlink" title="数据库应用系统开发阶段"></a>数据库应用系统开发阶段</h3><p>（1）需求分析（2）系统设计（3）系统实现（4）系统测试（5）系统运行与维护</p>
+<h3 id="典型数据库系统举例："><a href="#典型数据库系统举例：" class="headerlink" title="典型数据库系统举例："></a>典型数据库系统举例：</h3><p>Access、DBase(前两者为桌面型)、SQL Server、Oracle、IBM DB、My SQL、Sybase</p>
+<h3 id="简述两类数据模型"><a href="#简述两类数据模型" class="headerlink" title="简述两类数据模型"></a>简述两类数据模型</h3><p>（1）概念模型。	E-R模型是用E-R图来描述现实世界的概念模型。<br>一种表示方法：实体-联系方法（entity-relationship approach），常用E-R图表示。<br>实体之间的联系：一对一、一对多、多对一、多对多<br>（2）逻辑模型和物理模型<br>逻辑结构设计中，一个实体型转换为一个关系模式。</p>
+<h3 id="数据库的三级模式、两级映射："><a href="#数据库的三级模式、两级映射：" class="headerlink" title="数据库的三级模式、两级映射："></a>数据库的三级模式、两级映射：</h3><p>（1）三级模式<br>     外模式又称子模式或用户模式，对应于用户级。它是某个或某几个用户所看到的数据库的数据视图，是与某一应用有关的数据的逻辑表示。外模式是从模式导出的一个子集，包含模式中允许特定用户使用的那部分数据。用户可以通过外模式描述语言来描述、定义对应于用户的数据记录(外模式)，也可以利用数据操纵语言(Data Manipulation Language，DML)对这些数据记录进行。外模式反映了数据库的用户观。<br>模式又称逻辑模式，对应于概念级。它是由数据库设计者综合所有用户的数据，按照统一的观点构造的全局逻辑结构，是对数据库中全部数据的逻辑结构和特征的总体描述，是所有用户的公共数据视图(全局视图)。它是由数据库管理系统提供的数据描述语言(Data Defination Language，DDL)来描述、定义的，体现了数据库系统的整体观。<br>    内模式又称存储模式，对应于物理级，它是数据库中全体数据的内部表示或底层描述，是数据库最低一级的逻辑描述，它描述了数据在存储介质上的存储方式和物理结构，对应着实际存储在外存储介质上的数据库。内模式由内模式描述语言来描述、定义，它是数据库的存储观。<br>    在一个数据库系统中，只有唯一的数据库，因而作为定义、描述数据库存储结构的内模式和定义、描述数据库逻辑结构的模式也是唯一的，但建立在数据库系统之上的应用则是非常广泛、多样的，所以对应的外模式不唯一。<br>（2）两级映射<br>①外模式&#x2F;模式映像。当模式改变时，由数据库管理员对各个外模式&#x2F;模式映像作相应改变，可以使外模式保持不变。应用程序是依据外模式编写的，从而应用程序不用修改，保证了数据与程序的逻辑独立性，简称数据的逻辑独立性。②模式&#x2F;内模式映像 。当数据的存储结构改变时，由数据库管理员对模式&#x2F;内模式映像作相应改变，可以使模式保持不变，从而应用程序也不用改变。保证了数据与程序的物理独立性，简称数据的物理独立性。</p>
+<h3 id="数据模型通常都是由数据结构、数据操作和完整性约束三个要素组成。"><a href="#数据模型通常都是由数据结构、数据操作和完整性约束三个要素组成。" class="headerlink" title="数据模型通常都是由数据结构、数据操作和完整性约束三个要素组成。"></a>数据模型通常都是由数据结构、数据操作和完整性约束三个要素组成。</h3><p>　　1）数据结构<br>　　数据结构用于描述数据库系统的静态特性。数据结构是所研究的对象类型的集合。这些对象是数据库的组成成分，是与数据类型、内容、性质有关的对象，例如关系模型中的域、属性、关系等。一旦数据结构定义好之后，一般不发生变化。<br>　　2）数据操作<br>　　数据操作用于描述数据库系统的动态特性。数据操作是指对数据库中各种对象（型）的实例（值）允许执行的操作的集合，包括操作及有关的操作规则。数据库主要有查询和更新（包括插入、删除、修改）两大类操作。数据模型必须定义这些操作的确切含义、操作符号、操作规则（如优先级）以及实现操作的语言。<br>　　3）完整性约束<br>　　数据的约束条件是一组完整性规则的集合。完整性规则是给定的数据模型中数据及其联系所具有的制约和储存规则，用以限定符合数据模型的数据库状态以及状态的变化，以保证数据的正确、有效和相容。在关系模型中，一般关系必须满足实体完整性和参照完整性两个条件。</p>
+<h3 id="主码的作用"><a href="#主码的作用" class="headerlink" title="主码的作用"></a>主码的作用</h3><p>（1）唯一标识每个元组<br>（2）与关联表的外码建立联系，链接两个表<br>（3）使用主码值来组织关系的存储<br>（4）使用主码索引快速检索数据</p>
+<h3 id="数据操作："><a href="#数据操作：" class="headerlink" title="数据操作："></a>数据操作：</h3><p>关系模型中常用的关系操作包括查询和数据更新两大部分：<br>查询: 选择、投影、连接、除、并、差、交、笛卡尔积等，其中选择、投影、并、差、笛卡尔积是5种基本操作<br>数据更新:插入、删除、修改<br>集合运算符：并、交、差、乘<br>专门运算符：选择、投影、连接、除<br>基本运算符：选择、投影、并、差、笛卡尔积</p>
+<p>关系模型中常用的关系操作包括：选择（Select）、投影（Project）、连接（Join）、除（Divide）、并（Union）、交(Intersection）、差（Difference）等查询（Query）操作，和插入（Insert）、删除（Delete）、修改（Update）操作两大部分。查询是其中最主要的部分。<br>关系操作的特点是集合操作方式，即操作的对象和结果都是集合。这种操作方式也称为一次一集合（set-at-a-time）的方式。相应地，非关系数据模型的数据操作方式则为一次一记录（record-at-a-time）的方式。</p>
+<h3 id="关系的完整性"><a href="#关系的完整性" class="headerlink" title="关系的完整性"></a>关系的完整性</h3><pre><code>关系的完整性规则是对关系的某种约束条件。
+</code></pre>
+<p>（1）实体完整性，指在基本关系表中主码取值的约束，以保证每个元组可以被标识。约束规则：非空、唯一。<br>（2）参照完整性，指关系间需要遵循的数据约束，以保证关系间关联列的数据一致性。参照完整性是指外码取值必须与现有主码值相对应。<br>（3）用户定义完整性，指用户根据具体业务对数据处理规则要求所定义的数据约束。用户可定义列的数据类型、取值范围、缺省值、是否允许为空、取值唯一性、数据依赖性。</p>
+<h3 id="外码"><a href="#外码" class="headerlink" title="外码"></a>外码</h3><p>   设F是基本关系R的一个或一组属性，但不是关系R的码，如果F与基本关系S的主码 Ks相对应，则称F是基本关系R的外码（Foreign key），并称基本关系R为参照关系（Referencing relation），基本关系S为被参照关系（Referenced relation）或目标关系（Target relation）。关系R和S不一定是不同的关系。</p>
+<h3 id="简述-SQL-语言的特点"><a href="#简述-SQL-语言的特点" class="headerlink" title="简述 SQL 语言的特点"></a>简述 SQL 语言的特点</h3><p>SQL 语言集数据查询、数据操纵、数据定义和数据控制功能于一体，充分体现了关系数据库语言的特点和优点。其特点如下：①综合统一 ②高度非过程化 ③面向集合的操作方式 ④以同一种语法结构提供多种操作方式 ⑤语言简洁，易学易用</p>
+<h3 id="SQL语言类别"><a href="#SQL语言类别" class="headerlink" title="SQL语言类别"></a>SQL语言类别</h3><p>（1）数据定义语言DDL（data definition language）:创建、删除、修改数据库对象（包括数据库、表、索引）   Create&#x2F;drop&#x2F;alter  database&#x2F;table&#x2F;index<br>（2）数据操纵语言DML（data manipulation language）:增加、删除、修改数据库<br>Insert、update、 delete<br>（3）数据查询语言DQL（data query language）:对数据库进行查询   select<br>（4）数据控制语言DCL（data control language）:对数据库对象访问权进行控制<br>Grant(授权)、 deny(拒绝)、 revoke(撤销)</p>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><pre><code>在数据库中，索引是针对某个表中的一列或者几列建立的指向表中记录数据页的逻辑指针清单，可加快对数据表的快速信息检索，快速连接关联表，减少分组和排序时间。
+</code></pre>
+<p>聚集索引与非聚集索引的区别：在聚集索引中，码值的逻辑顺序决定了表中相应行的物理顺序；在非聚集索引中，码值的逻辑顺序可以与表中相应行的物理顺序不同。</p>
+<h3 id="视图的作用"><a href="#视图的作用" class="headerlink" title="视图的作用"></a>视图的作用</h3><p>（1）简化复杂的SQL查询操作。通过视图，开发人员可以将复杂的查询语句封装在视图内，使外部程序只需要简单方式访问该视图，便可获取所需数据。<br>（2）提高数据访问安全性。通过视图可以将基本数据表的部分敏感数据隐藏起来，外部用户无法得知完整数据，保护隐私，并降低数据库被攻击的风险。<br>（3）提供一定程度是数据逻辑独立性。当数据表的结构改变，只要视图的结构不变，应用程序可以不做修改。<br>（4）集中展示用户所感兴趣的特定部分。<br>（5）使用户能以多种角度看待同一数据。</p>
+<h3 id="SQL主码约束和唯一约束有什么区别呢？"><a href="#SQL主码约束和唯一约束有什么区别呢？" class="headerlink" title="SQL主码约束和唯一约束有什么区别呢？"></a>SQL主码约束和唯一约束有什么区别呢？</h3><p>主码约束：由一列或多列的组合，其值能唯一的标识表中的每一行。<br>唯一约束：不允许数据库表在指定列上具有相同的值，但允许有空值。<br>区别：一个表可以定义多个唯一约束，但只能定义一个主码约束；空值的列上可以定义唯一约束，不能定义主键约束。</p>
+<h3 id="什么是表？什么是视图？两者的区别和联系是什么？"><a href="#什么是表？什么是视图？两者的区别和联系是什么？" class="headerlink" title="什么是表？什么是视图？两者的区别和联系是什么？"></a>什么是表？什么是视图？两者的区别和联系是什么？</h3><p>表是实实在在得保存数据的实体,写入的数据都保存在表中；<br>视图是从一个或几个基本表导出的表，它与基本表不同，是一个虚表。数据库中只存放视图的定义，而不存放视图对应的数据，这些数据存放在原来的基本表中。所以基本表中的数据发生变化，从视图中查询出的数据也就随之改变了。视图一经定义就可以像基本表一样被查询、删除，也可以在一个视图之上再定义新的视图，但是对视图的更新操作有限制。<br>联系： 视图是在基本表之上建立的表，它的结构（即所定义的列）和内容（即所有数据行）都来自基本表，它依据基本表存在而存在。一个视图可以对应一个基本表，也可以对应多个基本表。视图是基本表的抽象和在逻辑意义上建立的新关系。</p>
+<h3 id="说明等值连接与自然连接的区别与联系？"><a href="#说明等值连接与自然连接的区别与联系？" class="headerlink" title="说明等值连接与自然连接的区别与联系？"></a>说明等值连接与自然连接的区别与联系？</h3><p>自然连接是除去重复属性的等值连接。 两者之间的区别和联系如下：<br>（1）自然连接一定是等值连接，但等值连接不一定是自然连接；<br>（2）等值连接要求相等的分量，不一定是公共属性；而自然连接要求相等的分量必须是公共属性；<br>（3）等值连接不把重复的属性除去；而自然连接要把重复的属性除去。</p>
+<h3 id="数据字典通常包含五个部分：数据项、数据结构、数据流、数据存储、处理过程"><a href="#数据字典通常包含五个部分：数据项、数据结构、数据流、数据存储、处理过程" class="headerlink" title="数据字典通常包含五个部分：数据项、数据结构、数据流、数据存储、处理过程"></a>数据字典通常包含五个部分：数据项、数据结构、数据流、数据存储、处理过程</h3><h3 id="范式：1NF-2NF-3NF-BCNF-First-Normal-Form-Boycee-Codd-Normal-Form"><a href="#范式：1NF-2NF-3NF-BCNF-First-Normal-Form-Boycee-Codd-Normal-Form" class="headerlink" title="范式：1NF  2NF   3NF   BCNF    First Normal Form    Boycee Codd Normal Form"></a>范式：1NF  2NF   3NF   BCNF    First Normal Form    Boycee Codd Normal Form</h3><p>1NF：每个属性都不可再分<br>2NF：在1NF的基础之上，消除了非主属性对于码的部分函数依赖<br>3NF：在2NF的基础之上，消除了非主属性对于码的传递函数依赖<br>BCNF：在3NF的基础上，消除主属性对于码的部分函数依赖与传递函数依赖</p>
+<p>1NF有哪些缺点？<br>1、数据冗余太大（每一个系的系主任名字重复出现）<br>2、更新异常（某个系更换系主任之后，必须将该系学生有关的每一个元组）<br>3、插入异常（如果一个系刚成立，尚无学生，就无法将老师存入到数据库中）<br>4、删除异常（如果学生都毕业了，在删除学生时，把这个系的系主任的所有信息都删除了）</p>
+<h3 id="E-R模型到关系模型的转换"><a href="#E-R模型到关系模型的转换" class="headerlink" title="E-R模型到关系模型的转换"></a>E-R模型到关系模型的转换</h3><p>（1）将每一个实体转换成关系表，实体的属性转换为表的列，实体的标识符转换为表的主码；<br>（2）将实体间的关系转换为表间的参照完整性约束，即通过设置外码来参照主码。</p>
+<h3 id="数据库管理员DBA的职责："><a href="#数据库管理员DBA的职责：" class="headerlink" title="数据库管理员DBA的职责："></a>数据库管理员DBA的职责：</h3><p>①决定数据库中的信息内容和结构：数据库中要存放哪些信息<br>②决定数据库的存储结构和存取策略：获得较高的存取效率和存储空间利用率<br>③定义数据的安全性要求和完整性约束条件：负责确定各个用户对数据库的存取权限、数<br>据的保密级别和完整性约束条件<br>④监控数据库的使用和运行：转储数据、维护日志文件、故障恢复<br>①	数据库的改进和重组重构：对运行情况进行记录、统计分析，以此来不断改进数据库设计</p>
+<h3 id="事务管理与事务"><a href="#事务管理与事务" class="headerlink" title="事务管理与事务"></a>事务管理与事务</h3><p>事务管理：在数据库应用系统中，完成一个业务处理通常需要多个操作步骤。在每个操作步骤中，都可能遭遇失败，若没有一个处理机制，就可能造成操作数据混乱，从而破坏数据一致性。<br>事务：指由构成单个业务处理单元的一组数据库访问操作，它们要么都正常执行，要么都不执行，是一个不可分割的工作单位。在关系数据库中，⼀个事务可以是⼀条SQL语句、⼀组SQL语句或者整个程序。事务通常以BEGIN TRANSACTION开始，以COMMIT或ROLLBACK结束。COMMIT表⽰提交，即提交事务 的所有操作。具体的说就是将事务中所有对数据库的更新写回到磁盘上的物理数据库中去，事务正常结束。 ROLLBACK表⽰回滚，即在事务运⾏的过程中发⽣了某种故障，事务不能继续执⾏，系统将事务中对数据库的所 有已完成的操作全部撤销，回滚到事务开始时的状态。</p>
+<p>事务ACID特性：<br>原子性（Atomicity）：事务的所有操作在数据库中要么全部执行，要么都不执行。<br>一致性（Consistency）：事务多次执行，结果应一致<br>隔离性（Isolation）：事务与事务之间隔离，并执行透明<br>持续性（Durability）：事务完成后，数据该改变必须是永久的</p>
+<h3 id="为什么要进行数据库转储，比较各种数据转储方法？"><a href="#为什么要进行数据库转储，比较各种数据转储方法？" class="headerlink" title="为什么要进行数据库转储，比较各种数据转储方法？"></a>为什么要进行数据库转储，比较各种数据转储方法？</h3><p>所谓转储即DBA定期地将整个数据库复制到磁带或另一个磁盘上保存起来的过程。这些备用的数据文本称为后备副本或后援副本。当数据库遭到破坏后可以将后备副本重新装入，但重装后备副本只能将数据库恢复到转储时的状态，要想恢复到故障发生时的状态，必须重新运行自转储以后的所有更新事务。转储可分为静态转储和动态转储。转储还可以分为海量转储和增量转储两种方式。海量转储是指每次转储全部数据库。增量转储则指每次只转储上一次转储后更新过的数据。从恢复角度看，使用海量转储得到的后备副本进行恢复一般说来会更方便些。但如果数据库很大，事务处理又十分频繁，则增量转储方式更实用更有效。</p>
+<h3 id="并发控制可能会产生哪几类数据不一致？用什么方法能避免各种不一致的情况？"><a href="#并发控制可能会产生哪几类数据不一致？用什么方法能避免各种不一致的情况？" class="headerlink" title="并发控制可能会产生哪几类数据不一致？用什么方法能避免各种不一致的情况？"></a>并发控制可能会产生哪几类数据不一致？用什么方法能避免各种不一致的情况？</h3><p>并发操作带来的数据不一致性包括三类：丢失修改、不可重复读和读“脏”数据。产生数据不一致性的主要原因是并发操作破坏了事务的隔离性。并发控制就是要用正确的方式调度并发操作，使一个用户事务的执行不受其它事务的干扰，从而避免造成数据的不一致性。并发控制的主要技术是封锁（Locking）。<br>丢失修改：当一个事务修改了数据，并且这种修改还没有提交到数据库中时，另外一个事务又对同样的数据进行了修改，并且把这种修改提交到了数据库中。这样，数据库中没有出现第一个事务修改数据的结果，好像这种数据修改丢失了一样。<br>不可重复读：在一个事务内，多次读同一数据。在这个事务还没有结束时，另一个事务也访问该同一数据，那么，在第一个事务中的两次读数据之间，由于第二个事务的修改，第一个事务两次读到的数据可能不一样。<br>读“脏”数据：当一个事务正在访问数据，并对数据进行了修改，而这种修改还没有提交到数据库中，这时另一个事务也访问这个数据并使用了这个数据。因为这个数据是还没有提交的数据，那么另一个事务读到的这个数据是脏数据，依据脏数据所做的操作可能是不正确的。</p>
+<h3 id="数据库完整性与安全性的区别"><a href="#数据库完整性与安全性的区别" class="headerlink" title="数据库完整性与安全性的区别"></a>数据库完整性与安全性的区别</h3><p>完整性和安全性是两个不同的概念。前者是为了防止数据库中存在不符合语义的数据，防止错误信息的输入和输出造成的无效操作和错误结果，而后者是防止数据库被恶意的破坏和非法的存取。当然，完整性和安全性是密切相关的。特别是从系统实现的方法来看，某一种机制常常既可以用于安全保护亦可用于完整性保证。</p>
+<h3 id="日志文件的定义与作用。"><a href="#日志文件的定义与作用。" class="headerlink" title="日志文件的定义与作用。"></a>日志文件的定义与作用。</h3><p>日志文件是用来记录事务对数据库的更新操作的文件。作用：在数据库恢复中起着重要的作用，可以用来进行事物故障恢复和系统故障恢复，并协助后备副本进行介质故障恢复。</p>
+<h3 id="数据库恢复策略有哪几种？"><a href="#数据库恢复策略有哪几种？" class="headerlink" title="数据库恢复策略有哪几种？"></a>数据库恢复策略有哪几种？</h3><p>（1）数据转储（数据冗余）   （2）日志文件</p>
+<h3 id="数据库：两段锁协议"><a href="#数据库：两段锁协议" class="headerlink" title="数据库：两段锁协议"></a>数据库：两段锁协议</h3><p>两段锁协议是指所有事务必须分两个阶段对数据项加锁和解锁。在对任何数据进行读、写操作之前，首先要申请并获得对该数据的封锁；在释放一个封锁之后，事务不再申请和获得任何其他封锁。<br>“两段”的含义是，事务分为两个阶段：第一阶段是获得封锁，也称为扩展阶段。在这阶段，事务可以申请获得任何数据项上的任何类型的锁，但是不能释放任何锁。第二阶段是释放封锁，也称为收缩阶段。在这阶段，事务释放已经获得的锁，但是不能再申请任何锁。<br>	可以证明，若并发执行的所有事务均遵守两段锁协议，则对这些事务的任何并发调度策 略都是可串行化的。 另外要注意两段锁协议和防止死锁的一次封锁法的异同之处。一次封锁法要求每个事务必须一次将所有要使用的数据全部加锁，否则就不能继续执行，因此一次封锁法遵守两段锁协议；但是两段锁协议并不要求事务必须一次将所有要使用的数据全部加锁，因此遵守两段锁协议的事务可能发生死锁。</p>
+<h3 id="数据库故障的种类？"><a href="#数据库故障的种类？" class="headerlink" title="数据库故障的种类？"></a>数据库故障的种类？</h3><p>1、事务内部的故障2、系统故障3、介质故障4、计算机病毒</p>
+<h3 id="数据库保护-访问-的内容有哪些？"><a href="#数据库保护-访问-的内容有哪些？" class="headerlink" title="数据库保护(访问)的内容有哪些？"></a>数据库保护(访问)的内容有哪些？</h3><p>① 利用权限机制和完整性约束防止非法数据进入数据库；<br>② 提供故障恢复能力；<br>②	 提供并发访问控制。</p>
+<h3 id="数据库有哪几种备份策略"><a href="#数据库有哪几种备份策略" class="headerlink" title="数据库有哪几种备份策略"></a>数据库有哪几种备份策略</h3><p>完全备份、事务日志备份、差异备份、文件备份。</p>
+<h3 id="DBMS-的控制操作有哪些"><a href="#DBMS-的控制操作有哪些" class="headerlink" title="DBMS 的控制操作有哪些"></a>DBMS 的控制操作有哪些</h3><p>①数据的安全性保护；②数据的完整性检查；③并发控制；④数据库恢复。</p>
+<h3 id="DBMS的数据控制功能有那些"><a href="#DBMS的数据控制功能有那些" class="headerlink" title="DBMS的数据控制功能有那些"></a>DBMS的数据控制功能有那些</h3><p>（1）数据定义功能。DBMS提供相应数据语言来定义（DDL）数据库结构，它们是刻画数据库框架，并被保存在数据字典中。<br>（2）数据存取功能。DBMS提供数据操纵语言（DML），实现对数据库数据的基本存取操作：检索，插入，修改和删除。<br>（3）数据库运行管理功能。DBMS提供数据控制功能，即是数据的安全性、完整性和并发控制等对数据库运行进行有效地控制和管理，以确保数据正确有效。<br>（4）数据库的建立和维护功能。包括数据库初始数据的装入，数据库的转储、恢复、重组织，系统性能监视、分析等功能。<br>（5）数据库的传输。DBMS提供处理数据的传输，实现用户程序与DBMS之间的通信，通常与操作系统协调完成。</p>
+<h3 id="Java语言设计数据库"><a href="#Java语言设计数据库" class="headerlink" title="Java语言设计数据库"></a>Java语言设计数据库</h3><p>创建数据库链结－&gt;创建语句对象－&gt;执行SQL命令-&gt;访问执行结果集-&gt;关闭链结<br>（1）利用JDBC API建立数据库连接，<br>（2）在建立的数据库连接上，执行SQL语句访问数据库<br>（3）在JSP中处理SQL执行结果<br>（4）在JSP中释放数据库连接</p>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                数据库基础知识
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2024/08/08/databse/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2024-08-08 11:26</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">基础知识</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;感谢您的阅读，如果本文对您有帮助，请随意打赏。您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2024/10/29/cgroup_linux_memory_control_group/"
+                                   title="Cgroup - Linux内存资源管理"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Cgroup - Linux内存资源管理</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2024/08/07/mvcc/"
+                                   title="Postgresql中元组的隐藏字段与MVCC"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Postgresql中元组的隐藏字段与MVCC</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script 
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script 
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('false' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A8%A1%E5%9E%8B"><span class="nav-text">典型数据库模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mydql-postgres-oracle-mongodb"><span class="nav-text">mydql postgres oracle  mongodb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-text">简述数据库、数据库系统、数据库管理系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E6%8A%80%E6%9C%AF%E4%B8%89%E4%B8%AA%E9%98%B6%E6%AE%B5%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E9%98%B6%E6%AE%B5%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-text">数据管理技术三个阶段、数据库系统阶段的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS%E6%94%AF%E6%8C%81%E9%82%A3%E5%87%A0%E7%A7%8D%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="nav-text">DBMS支持那几种数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E9%98%B6%E6%AE%B5"><span class="nav-text">数据库应用系统开发阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E4%B8%BE%E4%BE%8B%EF%BC%9A"><span class="nav-text">典型数据库系统举例：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E4%B8%A4%E7%B1%BB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="nav-text">简述两类数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%B8%89%E7%BA%A7%E6%A8%A1%E5%BC%8F%E3%80%81%E4%B8%A4%E7%BA%A7%E6%98%A0%E5%B0%84%EF%BC%9A"><span class="nav-text">数据库的三级模式、两级映射：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E9%80%9A%E5%B8%B8%E9%83%BD%E6%98%AF%E7%94%B1%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%81%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%92%8C%E5%AE%8C%E6%95%B4%E6%80%A7%E7%BA%A6%E6%9D%9F%E4%B8%89%E4%B8%AA%E8%A6%81%E7%B4%A0%E7%BB%84%E6%88%90%E3%80%82"><span class="nav-text">数据模型通常都是由数据结构、数据操作和完整性约束三个要素组成。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E7%A0%81%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-text">主码的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%EF%BC%9A"><span class="nav-text">数据操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="nav-text">关系的完整性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E7%A0%81"><span class="nav-text">外码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0-SQL-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-text">简述 SQL 语言的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E8%AF%AD%E8%A8%80%E7%B1%BB%E5%88%AB"><span class="nav-text">SQL语言类别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-text">索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-text">视图的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E4%B8%BB%E7%A0%81%E7%BA%A6%E6%9D%9F%E5%92%8C%E5%94%AF%E4%B8%80%E7%BA%A6%E6%9D%9F%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E5%91%A2%EF%BC%9F"><span class="nav-text">SQL主码约束和唯一约束有什么区别呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A1%A8%EF%BC%9F%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%86%E5%9B%BE%EF%BC%9F%E4%B8%A4%E8%80%85%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">什么是表？什么是视图？两者的区别和联系是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E%E7%AD%89%E5%80%BC%E8%BF%9E%E6%8E%A5%E4%B8%8E%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB%EF%BC%9F"><span class="nav-text">说明等值连接与自然连接的区别与联系？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%97%E5%85%B8%E9%80%9A%E5%B8%B8%E5%8C%85%E5%90%AB%E4%BA%94%E4%B8%AA%E9%83%A8%E5%88%86%EF%BC%9A%E6%95%B0%E6%8D%AE%E9%A1%B9%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%81%E6%95%B0%E6%8D%AE%E6%B5%81%E3%80%81%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E3%80%81%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="nav-text">数据字典通常包含五个部分：数据项、数据结构、数据流、数据存储、处理过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8C%83%E5%BC%8F%EF%BC%9A1NF-2NF-3NF-BCNF-First-Normal-Form-Boycee-Codd-Normal-Form"><span class="nav-text">范式：1NF  2NF   3NF   BCNF    First Normal Form    Boycee Codd Normal Form</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-R%E6%A8%A1%E5%9E%8B%E5%88%B0%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-text">E-R模型到关系模型的转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86%E5%91%98DBA%E7%9A%84%E8%81%8C%E8%B4%A3%EF%BC%9A"><span class="nav-text">数据库管理员DBA的职责：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BA%8B%E5%8A%A1"><span class="nav-text">事务管理与事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BD%AC%E5%82%A8%EF%BC%8C%E6%AF%94%E8%BE%83%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%82%A8%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="nav-text">为什么要进行数据库转储，比较各种数据转储方法？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E5%8F%AF%E8%83%BD%E4%BC%9A%E4%BA%A7%E7%94%9F%E5%93%AA%E5%87%A0%E7%B1%BB%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%9F%E7%94%A8%E4%BB%80%E4%B9%88%E6%96%B9%E6%B3%95%E8%83%BD%E9%81%BF%E5%85%8D%E5%90%84%E7%A7%8D%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E6%83%85%E5%86%B5%EF%BC%9F"><span class="nav-text">并发控制可能会产生哪几类数据不一致？用什么方法能避免各种不一致的情况？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%8C%E6%95%B4%E6%80%A7%E4%B8%8E%E5%AE%89%E5%85%A8%E6%80%A7%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">数据库完整性与安全性的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8%E3%80%82"><span class="nav-text">日志文件的定义与作用。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%81%A2%E5%A4%8D%E7%AD%96%E7%95%A5%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%EF%BC%9F"><span class="nav-text">数据库恢复策略有哪几种？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%9A%E4%B8%A4%E6%AE%B5%E9%94%81%E5%8D%8F%E8%AE%AE"><span class="nav-text">数据库：两段锁协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%95%85%E9%9A%9C%E7%9A%84%E7%A7%8D%E7%B1%BB%EF%BC%9F"><span class="nav-text">数据库故障的种类？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BF%9D%E6%8A%A4-%E8%AE%BF%E9%97%AE-%E7%9A%84%E5%86%85%E5%AE%B9%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-text">数据库保护(访问)的内容有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="nav-text">数据库有哪几种备份策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS-%E7%9A%84%E6%8E%A7%E5%88%B6%E6%93%8D%E4%BD%9C%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">DBMS 的控制操作有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8E%A7%E5%88%B6%E5%8A%9F%E8%83%BD%E6%9C%89%E9%82%A3%E4%BA%9B"><span class="nav-text">DBMS的数据控制功能有那些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">Java语言设计数据库</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    <!-- <div class="theme-info info-item">
+        由&nbsp;<a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;驱动&nbsp;&&nbsp;主题&nbsp;<a class="keep-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep</a>
+    </div> -->
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A8%A1%E5%9E%8B"><span class="nav-text">典型数据库模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mydql-postgres-oracle-mongodb"><span class="nav-text">mydql postgres oracle  mongodb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-text">简述数据库、数据库系统、数据库管理系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E6%8A%80%E6%9C%AF%E4%B8%89%E4%B8%AA%E9%98%B6%E6%AE%B5%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E9%98%B6%E6%AE%B5%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-text">数据管理技术三个阶段、数据库系统阶段的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS%E6%94%AF%E6%8C%81%E9%82%A3%E5%87%A0%E7%A7%8D%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="nav-text">DBMS支持那几种数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E9%98%B6%E6%AE%B5"><span class="nav-text">数据库应用系统开发阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E4%B8%BE%E4%BE%8B%EF%BC%9A"><span class="nav-text">典型数据库系统举例：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E4%B8%A4%E7%B1%BB%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B"><span class="nav-text">简述两类数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%B8%89%E7%BA%A7%E6%A8%A1%E5%BC%8F%E3%80%81%E4%B8%A4%E7%BA%A7%E6%98%A0%E5%B0%84%EF%BC%9A"><span class="nav-text">数据库的三级模式、两级映射：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E9%80%9A%E5%B8%B8%E9%83%BD%E6%98%AF%E7%94%B1%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%81%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%E5%92%8C%E5%AE%8C%E6%95%B4%E6%80%A7%E7%BA%A6%E6%9D%9F%E4%B8%89%E4%B8%AA%E8%A6%81%E7%B4%A0%E7%BB%84%E6%88%90%E3%80%82"><span class="nav-text">数据模型通常都是由数据结构、数据操作和完整性约束三个要素组成。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E7%A0%81%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-text">主码的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E6%93%8D%E4%BD%9C%EF%BC%9A"><span class="nav-text">数据操作：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E7%B3%BB%E7%9A%84%E5%AE%8C%E6%95%B4%E6%80%A7"><span class="nav-text">关系的完整性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E7%A0%81"><span class="nav-text">外码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0-SQL-%E8%AF%AD%E8%A8%80%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-text">简述 SQL 语言的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E8%AF%AD%E8%A8%80%E7%B1%BB%E5%88%AB"><span class="nav-text">SQL语言类别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-text">索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%86%E5%9B%BE%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-text">视图的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL%E4%B8%BB%E7%A0%81%E7%BA%A6%E6%9D%9F%E5%92%8C%E5%94%AF%E4%B8%80%E7%BA%A6%E6%9D%9F%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%E5%91%A2%EF%BC%9F"><span class="nav-text">SQL主码约束和唯一约束有什么区别呢？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A1%A8%EF%BC%9F%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%86%E5%9B%BE%EF%BC%9F%E4%B8%A4%E8%80%85%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">什么是表？什么是视图？两者的区别和联系是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B4%E6%98%8E%E7%AD%89%E5%80%BC%E8%BF%9E%E6%8E%A5%E4%B8%8E%E8%87%AA%E7%84%B6%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB%EF%BC%9F"><span class="nav-text">说明等值连接与自然连接的区别与联系？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AD%97%E5%85%B8%E9%80%9A%E5%B8%B8%E5%8C%85%E5%90%AB%E4%BA%94%E4%B8%AA%E9%83%A8%E5%88%86%EF%BC%9A%E6%95%B0%E6%8D%AE%E9%A1%B9%E3%80%81%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E3%80%81%E6%95%B0%E6%8D%AE%E6%B5%81%E3%80%81%E6%95%B0%E6%8D%AE%E5%AD%98%E5%82%A8%E3%80%81%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="nav-text">数据字典通常包含五个部分：数据项、数据结构、数据流、数据存储、处理过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8C%83%E5%BC%8F%EF%BC%9A1NF-2NF-3NF-BCNF-First-Normal-Form-Boycee-Codd-Normal-Form"><span class="nav-text">范式：1NF  2NF   3NF   BCNF    First Normal Form    Boycee Codd Normal Form</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#E-R%E6%A8%A1%E5%9E%8B%E5%88%B0%E5%85%B3%E7%B3%BB%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2"><span class="nav-text">E-R模型到关系模型的转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%AE%A1%E7%90%86%E5%91%98DBA%E7%9A%84%E8%81%8C%E8%B4%A3%EF%BC%9A"><span class="nav-text">数据库管理员DBA的职责：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BA%8B%E5%8A%A1"><span class="nav-text">事务管理与事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BD%AC%E5%82%A8%EF%BC%8C%E6%AF%94%E8%BE%83%E5%90%84%E7%A7%8D%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%82%A8%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="nav-text">为什么要进行数据库转储，比较各种数据转储方法？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6%E5%8F%AF%E8%83%BD%E4%BC%9A%E4%BA%A7%E7%94%9F%E5%93%AA%E5%87%A0%E7%B1%BB%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4%EF%BC%9F%E7%94%A8%E4%BB%80%E4%B9%88%E6%96%B9%E6%B3%95%E8%83%BD%E9%81%BF%E5%85%8D%E5%90%84%E7%A7%8D%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E6%83%85%E5%86%B5%EF%BC%9F"><span class="nav-text">并发控制可能会产生哪几类数据不一致？用什么方法能避免各种不一致的情况？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%8C%E6%95%B4%E6%80%A7%E4%B8%8E%E5%AE%89%E5%85%A8%E6%80%A7%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">数据库完整性与安全性的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%96%87%E4%BB%B6%E7%9A%84%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8%E3%80%82"><span class="nav-text">日志文件的定义与作用。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%81%A2%E5%A4%8D%E7%AD%96%E7%95%A5%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%EF%BC%9F"><span class="nav-text">数据库恢复策略有哪几种？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%9A%E4%B8%A4%E6%AE%B5%E9%94%81%E5%8D%8F%E8%AE%AE"><span class="nav-text">数据库：两段锁协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%95%85%E9%9A%9C%E7%9A%84%E7%A7%8D%E7%B1%BB%EF%BC%9F"><span class="nav-text">数据库故障的种类？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BF%9D%E6%8A%A4-%E8%AE%BF%E9%97%AE-%E7%9A%84%E5%86%85%E5%AE%B9%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-text">数据库保护(访问)的内容有哪些？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="nav-text">数据库有哪几种备份策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS-%E7%9A%84%E6%8E%A7%E5%88%B6%E6%93%8D%E4%BD%9C%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">DBMS 的控制操作有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DBMS%E7%9A%84%E6%95%B0%E6%8D%AE%E6%8E%A7%E5%88%B6%E5%8A%9F%E8%83%BD%E6%9C%89%E9%82%A3%E4%BA%9B"><span class="nav-text">DBMS的数据控制功能有那些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E8%AF%AD%E8%A8%80%E8%AE%BE%E8%AE%A1%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">Java语言设计数据库</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+
+
+    
+
+</body>
+</html>
