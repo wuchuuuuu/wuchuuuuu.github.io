@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Wed Jul 23 2025 19:22:45 GMT+0800">2025-07-23 19:22:45</span>
+                    <span class="datetime" data-updated="Thu Jul 24 2025 11:05:06 GMT+0800">2025-07-24 11:05:06</span>
                 </span>
             
         
@@ -455,9 +455,9 @@
 </ul>
 <h3 id="2、checkpoint"><a href="#2、checkpoint" class="headerlink" title="2、checkpoint"></a>2、checkpoint</h3><p>checkpoint是一个<strong>操作</strong>，执行这个操作的开始时刻，会记录当前开始时刻的 WAL 位置作为<strong>重做点</strong>，这个位置会被保存在文件中。 然后将该<strong>重做点之前</strong>所有 shared buffer 中的脏页均被刷入到存储。checkpoint又名检查点，<strong>一般checkpoint会将某个时间点之前的脏数据全部刷新到磁盘，以实现数据的一致性与完整性。</strong><br>目前各个流行的关系型数据库都具备checkpoint功能，其主要目的是为了缩短崩溃恢复时间，以Oracle为例，在进行数据恢复时，会以最近的checkpoint为参考点执行事务前滚。PostgreSQL在崩溃恢复时会以最近的checkpoint为基础，不断应用这之后的WAL日志。<br>简单来说：</p>
 <ul>
-<li>**确保数据一致性：**定期将内存中的脏页写入磁盘，确保数据库的一致性。</li>
-<li>**加速崩溃恢复：**减少需要重放的 WAL 日志量，从而加速系统崩溃后的恢复过程。</li>
-<li>**控制 WAL 日志大小：**通过记录检查点，限制 WAL 日志的增长，优化存储使用。</li>
+<li><strong>确保数据一致性</strong>：定期将内存中的脏页写入磁盘，确保数据库的一致性。</li>
+<li><strong>加速崩溃恢复</strong>：减少需要重放的 WAL 日志量，从而加速系统崩溃后的恢复过程。</li>
+<li><strong>控制 WAL 日志大小</strong>：通过记录检查点，限制 WAL 日志的增长，优化存储使用。</li>
 </ul>
 <h3 id="3、怎么触发checkpoint？"><a href="#3、怎么触发checkpoint？" class="headerlink" title="3、怎么触发checkpoint？"></a>3、怎么触发checkpoint？</h3><p>分析源码，发现在<code>src/include/access/xlog.h</code>定义了几类触发的场景：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_IS_SHUTDOWN	0x0001	<span class="comment">/* 数据库关闭 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_END_OF_RECOVERY	0x0002	<span class="comment">/* 数据库恢复结束时触发 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_IMMEDIATE	0x0004	<span class="comment">/* 立即执行检查点操作，不进行延迟 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_FORCE		0x0008	<span class="comment">/* 强制执行检查点 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_FLUSH_ALL	0x0010	<span class="comment">/* 刷新所有页面，包括未记录表的页面 */</span></span></span><br><span class="line"><span class="comment">/* 以下标志对 RequestCheckpoint 函数非常重要 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_WAIT			0x0020	<span class="comment">/* 等待检查点操作完成 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_REQUESTED	0x0040	<span class="comment">/* 已发出检查点请求 */</span></span></span><br><span class="line"><span class="comment">/* 以下标志指示检查点请求的原因 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_CAUSE_XLOG	0x0080	<span class="comment">/* XLOG日志量达到一定程度触发 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CHECKPOINT_CAUSE_TIME	0x0100	<span class="comment">/* 周期性触发 */</span></span></span><br></pre></td></tr></table></figure>
