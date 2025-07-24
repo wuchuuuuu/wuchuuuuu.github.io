@@ -9,8 +9,6 @@
     
     <title>
         
-            归档: 2024/10 |
-        
         DBA有话说
     </title>
     
@@ -75,7 +73,7 @@
     
 
     <!-- page content -->
-    <div class="page-main-content border-box">
+    <div class="page-main-content border-box is-home">
         <div class="page-main-content-top">
             
 <header class="header-wrapper">
@@ -109,7 +107,7 @@
                         </li>
                     
                         
-                        <li class="menu-item flex-start border-box active">
+                        <li class="menu-item flex-start border-box">
                             <a class="menu-text-color border-box" href="/archives">
                                 
                                     <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
@@ -230,7 +228,7 @@
                 </li>
             
                 
-                <li class="drawer-menu-item border-box not-sub-menu active">
+                <li class="drawer-menu-item border-box not-sub-menu">
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
                             
@@ -356,66 +354,124 @@
             <div class="main-content border-box">
                 
 
-                    <div class="fade-in-down-animation">
-    <div class="archives-container">
-        <div class="archives-timeline border-box">
-            
-<div class="archive-list-container border-box">
+                    <div class="home-content-container fade-in-down-animation">
     
-        <section class="archive-item border-box">
-            <div class="archive-item-header border-box">
-                <span class="archive-year">2024</span>
+        <div class="website-announcement border-box">
+            <i class="icon left fa-solid fa-bullhorn"></i>
+            <div class="announcement border-box text-ellipsis">
+                <p>DBA有话说</p>
+
             </div>
-            <ul class="archive-item-body border-box">
+            <i class="icon right close fa-solid fa-close"></i>
+        </div>
+    
+    <ul class="home-post-list border-box">
+        
+            <li class="home-post-item">
+
                 
-                    <li class="post-item border-box">
-                        <span class="starting-point border-box flex-center"></span>
-                        <span class="post-date border-box">10-31</span>
-                        <a class="post-title border-box text-ellipsis"
-                           href="/2024/10/31/pg_log/"
-                        >PG 的日志模块，追加写？覆盖写？</a>
-                    </li>
-                
-                    <li class="post-item border-box">
-                        <span class="starting-point border-box flex-center"></span>
-                        <span class="post-date border-box">10-29</span>
-                        <a class="post-title border-box text-ellipsis"
-                           href="/2024/10/29/cgroup_linux_cpu_control_group/"
-                        >Cgroup - 从CPU资源隔离说起</a>
-                    </li>
-                
-                    <li class="post-item border-box">
-                        <span class="starting-point border-box flex-center"></span>
-                        <span class="post-date border-box">10-29</span>
-                        <a class="post-title border-box text-ellipsis"
-                           href="/2024/10/29/cgroup_linux_io_control_group/"
-                        >Cgroup - Linux的IO资源隔离</a>
-                    </li>
-                
-                    <li class="post-item border-box">
-                        <span class="starting-point border-box flex-center"></span>
-                        <span class="post-date border-box">10-29</span>
-                        <a class="post-title border-box text-ellipsis"
-                           href="/2024/10/29/%E5%B8%B8%E7%94%A8SQL/"
-                        >MySQL常用运维SQL</a>
-                    </li>
-                
-                    <li class="post-item border-box">
-                        <span class="starting-point border-box flex-center"></span>
-                        <span class="post-date border-box">10-29</span>
-                        <a class="post-title border-box text-ellipsis"
-                           href="/2024/10/29/cgroup_linux_memory_control_group/"
-                        >Cgroup - Linux内存资源管理</a>
-                    </li>
-                
-            </ul>
-        </section>
+
+                <div class="home-post-item-bottom border-box">
+                    
+                    <h3 class="home-post-title border-box">
+                        <a href="/2024/08/07/mvcc/">
+                            Postgresql中元组的隐藏字段与MVCC
+                        </a>
+                    </h3>
+
+                    <div class="home-post-content keep-markdown-body">
+                        
+                            背景看了两本书，对pg元组隐藏字段的描述都不太清楚，导致我很难理解隐藏字段值的变化原因，这里详细介绍隐藏一下pg中元组每个隐藏字段的意义。
+源码分析安装的pg版本为11，每个元组的头部信息在HeapTupleHeaderData中定义：
+123456...
+                        
+                    </div>
+
+                    
+
+<div class="post-meta-info-container border-box home">
+    <div class="post-meta-info border-box">
+        
+            <span class="meta-info-item border-box">
+                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Wed Jul 23 2025 19:22:55 GMT+0800"
+                >2025-07-23 19:22:55</span>
+            </span>
+        
+
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/MVCC/">MVCC</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+        <a class="home-read-more" href="/2024/08/07/mvcc/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
+                </div>
+            </li>
+        
+    </ul>
+    
+    <div class="paginator border-box flex-center">
+        <div class="border-box first-page paginator-btn allowed">
+            <a class="border-box"><i class="fa-solid fa-angle-double-left"></i></a>
+        </div>
+
+        <div class="border-box paginator-btn allowed">
+            <a class="border-box"
+               href="/"
+            ><i class="fa-solid fa-chevron-left"></i></a>
+        </div>
+
+
+        <div class="page-number-box border-box flex-center">
+            <input class="page-number-input border-box base-style"
+                   type="number"
+                   value="2"
+                   min="1"
+                   max="2"
+            /><span class="delimiter base-style">/</span><span class="base-style">2</span>
+        </div>
+
+
+        <div class="border-box paginator-btn">
+            <a class="border-box"
+               href="/"
+            ><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+
+        <div class="border-box last-page paginator-btn not-allow">
+            <a class="border-box"><i class="fa-solid fa-angle-double-right"></i></a>
         </div>
     </div>
-    
+
 
 
 
@@ -477,7 +533,7 @@
 
     <!-- side tools -->
     <div class="side-tools">
-        <div class="side-tools-container border-box ">
+        <div class="side-tools-container border-box side-tools-show-handle">
     <ul class="side-tools-list side-tools-show-handle border-box">
         <li class="tools-item tool-font-adjust-plus flex-center">
             <i class="fas fa-search-plus"></i>
@@ -610,6 +666,10 @@
 
 <div class="pjax">
     <!-- home page -->
+    
+        
+<script src="/js/page/home-page.js"></script>
+
     
 
     <!-- post page -->
