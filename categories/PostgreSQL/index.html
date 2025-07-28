@@ -9,7 +9,7 @@
     
     <title>
         
-            分类: postgresql |
+            分类: PostgreSQL |
         
         DBA有话说
     </title>
@@ -59,15 +59,74 @@
 
 
 <body>
-<div class="progress-bar-container">
-    
+.progress-bar-container {
+  position fixed
+  top 0
+  left 0
+  z-index $z-index-9
+  width 100%
 
-    
-        <span class="pjax-progress-bar"></span>
-        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
-    
-</div>
+  if (hexo-config('pjax') && hexo-config('pjax.enable') == true) {
 
+    .pjax-progress-bar {
+      position absolute
+      top 0
+      left 0
+      z-index $z-index-8
+      width 0
+      height 2px
+      background var(--pjax-progress-bar-color)
+      visibility hidden
+      opacity 0
+      transition-t("width, opacity", "0, 0", "0.1, 0.1", "linear")
+
+
+      &.show {
+        visibility visible
+        opacity 1
+      }
+    }
+
+
+    .pjax-progress-icon {
+      position absolute
+      top 0.4rem
+      right 0.3rem
+      z-index $z-index-8
+      color var(--text-color-3)
+      font-size 1.1rem
+      visibility hidden
+
+      +keep-tablet() {
+        top 0.3rem
+        right 0.2rem
+        font-size 1rem
+      }
+
+      &.show {
+        visibility visible
+      }
+    }
+  }
+
+  if (hexo-config('scroll') && hexo-config('scroll.progress_bar') == true) {
+    .scroll-progress-bar {
+      position absolute
+      top 0
+      left 0
+      z-index $z-index-7
+      width 0
+      height var(--header-scroll-progress-bar-height)
+      background var(--primary-color)
+      visibility hidden
+      transition-t("width", "0", "0.1", "linear")
+
+      &.hide {
+        display none !important
+      }
+    }
+  }
+}
 
 
 <main class="page-container border-box">
@@ -359,7 +418,7 @@
                     <div class="fade-in-down-animation">
     <div class="category-archive-container border-box">
         <div class="category-name">
-            <i class="fas fa-folder"></i>&nbsp;postgresql
+            <i class="fas fa-folder"></i>&nbsp;PostgreSQL
         </div>
         <div class="category-post-list">
             
@@ -377,6 +436,55 @@
                         <a class="post-title border-box text-ellipsis"
                            href="/2025/07/28/install-pg/"
                         >CentOS-8 源码安装PostgreSQL-16</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">07-23</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2025/07/23/checkpoint/"
+                        >checkpoint是什么东西？一个点吗？一个位置？还是一个操作？</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">07-07</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2025/07/07/sql_join/"
+                        >PostgreSQL的连接查询</a>
+                    </li>
+                
+            </ul>
+        </section>
+    
+        <section class="archive-item border-box">
+            <div class="archive-item-header border-box">
+                <span class="archive-year">2024</span>
+            </div>
+            <ul class="archive-item-body border-box">
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">11-27</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/11/27/mmeoryContext/"
+                        >深入理解 PostgreSQL 中的内存上下文（MmeoryContext）</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">10-31</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/10/31/pg_log/"
+                        >PG 的日志模块，追加写？覆盖写？</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">08-07</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/08/07/mvcc/"
+                        >Postgresql中元组的隐藏字段与MVCC</a>
                     </li>
                 
             </ul>
@@ -525,135 +633,6 @@
                        class="search-input"
                 >
             </div>
-            <span class="close-popup-btn">
-                <i class="fas fa-times"></i>
-            </span>
-        </div>
-        <div id="search-result">
-            <div id="no-result">
-                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
-            </div>
-        </div>
-    </div>
-</div>
-
-    
-
-    <!-- tablet toc -->
-    
-</main>
-
-
-
-
-
-
-<!-- common js -->
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/header-shrink.js"></script>
-
-<script src="/js/back2top.js"></script>
-
-<script src="/js/toggle-theme.js"></script>
-
-<script src="/js/code-block.js"></script>
-
-<script src="/js/main.js"></script>
-
-<script src="/js/libs/anime.min.js"></script>
-
-
-<!-- local search -->
-
-    
-<script src="/js/local-search.js"></script>
-
-
-
-<!-- lazyload -->
-
-    
-<script src="/js/lazyload.js"></script>
-
-
-
-<div class="pjax">
-    <!-- home page -->
-    
-
-    <!-- post page -->
-    
-
-    <!-- categories page -->
-    
-        
-<script src="/js/page/category-page.js"></script>
-
-    
-
-    <!-- links page -->
-    
-
-    <!-- photos page -->
-    
-
-    <!-- tools page -->
-    
-</div>
-
-<!-- mermaid -->
-
-
-<!-- pjax -->
-
-    
-<script src="/js/libs/pjax.min.js"></script>
-
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-        window.pjax = new Pjax({
-            selectors: [
-                'head title',
-                '.page-container',
-                '.pjax'
-            ],
-            history: true,
-            debug: false,
-            cacheBust: false,
-            timeout: 0,
-            analytics: false,
-            currentUrlFullReload: false,
-            scrollRestoration: false,
-        });
-
-        document.addEventListener('pjax:send', () => {
-            KEEP.utils.pjaxProgressBarStart()
-        });
-
-        document.addEventListener('pjax:complete', () => {
-            KEEP.utils.pjaxProgressBarEnd()
-            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
-            KEEP.initExecute()
-        });
-    });
-</script>
-
-
-
-
-    
-        
-            
-<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
-
-        
-    
-
-</body>
-</html>
-v>
             <span class="close-popup-btn">
                 <i class="fas fa-times"></i>
             </span>

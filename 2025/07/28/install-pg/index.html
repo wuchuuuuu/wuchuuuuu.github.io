@@ -59,15 +59,74 @@
 
 
 <body>
-<div class="progress-bar-container">
-    
+.progress-bar-container {
+  position fixed
+  top 0
+  left 0
+  z-index $z-index-9
+  width 100%
 
-    
-        <span class="pjax-progress-bar"></span>
-        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
-    
-</div>
+  if (hexo-config('pjax') && hexo-config('pjax.enable') == true) {
 
+    .pjax-progress-bar {
+      position absolute
+      top 0
+      left 0
+      z-index $z-index-8
+      width 0
+      height 2px
+      background var(--pjax-progress-bar-color)
+      visibility hidden
+      opacity 0
+      transition-t("width, opacity", "0, 0", "0.1, 0.1", "linear")
+
+
+      &.show {
+        visibility visible
+        opacity 1
+      }
+    }
+
+
+    .pjax-progress-icon {
+      position absolute
+      top 0.4rem
+      right 0.3rem
+      z-index $z-index-8
+      color var(--text-color-3)
+      font-size 1.1rem
+      visibility hidden
+
+      +keep-tablet() {
+        top 0.3rem
+        right 0.2rem
+        font-size 1rem
+      }
+
+      &.show {
+        visibility visible
+      }
+    }
+  }
+
+  if (hexo-config('scroll') && hexo-config('scroll.progress_bar') == true) {
+    .scroll-progress-bar {
+      position absolute
+      top 0
+      left 0
+      z-index $z-index-7
+      width 0
+      height var(--header-scroll-progress-bar-height)
+      background var(--primary-color)
+      visibility hidden
+      transition-t("width", "0", "0.1", "linear")
+
+      &.hide {
+        display none !important
+      }
+    }
+  }
+}
 
 
 <main class="page-container border-box">
@@ -399,7 +458,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Mon Jul 28 2025 20:59:24 GMT+0800">2025-07-28 20:59:24</span>
+                    <span class="datetime" data-updated="Mon Jul 28 2025 21:03:31 GMT+0800">2025-07-28 21:03:31</span>
                 </span>
             
         
@@ -408,7 +467,7 @@
             <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
                 <ul class="post-category-ul">
                     
-                            <li class="category-item"><a href="/categories/postgresql/">postgresql</a></li>
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
                         
                     
                 </ul>
@@ -419,7 +478,7 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/postgresql/">postgresql</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E5%AE%89%E8%A3%85PG/">安装PG</a></li>
                         
                     
                 </ul>
@@ -448,7 +507,7 @@
                     
 
                     
-                         <h2 id="1-准备工作"><a href="#1-准备工作" class="headerlink" title="1. 准备工作"></a>1. 准备工作</h2><h3 id="1-1-安装依赖包"><a href="#1-1-安装依赖包" class="headerlink" title="1.1 安装依赖包"></a>1.1 安装依赖包</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install -y epel-release</span><br><span class="line"><span class="built_in">sudo</span> dnf groupinstall -y <span class="string">&quot;Development Tools&quot;</span></span><br><span class="line"><span class="built_in">sudo</span> dnf install -y readline-devel zlib-devel openssl-devel \</span><br><span class="line">    libxml2-devel libxslt-devel uuid-devel pam-devel \</span><br><span class="line">    perl-ExtUtils-Embed python3-devel tcl-devel \</span><br><span class="line">    systemd-devel libicu-devel lz4-devel</span><br></pre></td></tr></table></figure>
+                         <h2 id="1-准备工作"><a href="#1-准备工作" class="headerlink" title="1. 准备工作"></a>1. 准备工作</h2><h3 id="1-1-安装依赖包"><a href="#1-1-安装依赖包" class="headerlink" title="1.1 安装依赖包"></a>1.1 安装依赖包</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> dnf install -y epel-release</span><br><span class="line"><span class="built_in">sudo</span> dnf install -y libuuid-devel e2fsprogs-devel</span><br><span class="line"><span class="built_in">sudo</span> dnf groupinstall -y <span class="string">&quot;Development Tools&quot;</span></span><br><span class="line"><span class="built_in">sudo</span> dnf install -y readline-devel zlib-devel openssl-devel \</span><br><span class="line">    libxml2-devel libxslt-devel uuid-devel pam-devel \</span><br><span class="line">    perl-ExtUtils-Embed python3-devel tcl-devel \</span><br><span class="line">    systemd-devel libicu-devel lz4-devel</span><br></pre></td></tr></table></figure>
 
 <h3 id="1-2-创建专用用户"><a href="#1-2-创建专用用户" class="headerlink" title="1.2 创建专用用户"></a>1.2 创建专用用户</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> useradd postgres -m -U</span><br><span class="line"><span class="built_in">sudo</span> passwd postgres  <span class="comment"># 设置密码</span></span><br></pre></td></tr></table></figure>
 
@@ -552,7 +611,7 @@
                             <ul class="post-tags-box border-box">
                                 
                                     <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/postgresql/">postgresql</a>
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E5%AE%89%E8%A3%85PG/">安装PG</a>
                                     </li>
                                 
                             </ul>
