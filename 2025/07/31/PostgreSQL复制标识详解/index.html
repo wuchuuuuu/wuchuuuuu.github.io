@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            PostgreSQL复制标识详解 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":false},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PostgreSQL复制标识详解
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">结丹通窍</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2025-07-31 19:53:01</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Jul 31 2025 19:55:28 GMT+0800">2025-07-31 19:55:28</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86/">复制标识</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>原文：<a class="link"   target="_blank" rel="noopener" href="https://github.com/Vonng/pg/blob/master/app/sql-replica-identity.md" >https://github.com/Vonng/pg/blob/master/app/sql-replica-identity.md<i class="fas fa-external-link-alt"></i></a> </p>
+</blockquote>
+<h2 id="引子：土法逻辑复制"><a href="#引子：土法逻辑复制" class="headerlink" title="引子：土法逻辑复制"></a>引子：土法逻辑复制</h2><p>逻辑复制的基本工作原理是，将逻辑发布相关表上<strong>对行的增删改</strong>事件解码，复制到逻辑订阅者上执行。</p>
+<p>逻辑复制的工作方式有点类似于行级触发器，在事务执行后对变更的元组逐行触发。</p>
+<p>假设您需要自己通过触发器实现逻辑复制，将一章表A上的变更复制到另一张表B中。通常情况下，这个触发器的函数逻辑通常会长这样：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 通知触发器</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> REPLACE <span class="keyword">FUNCTION</span> replicate_change() <span class="keyword">RETURNS</span> <span class="keyword">TRIGGER</span> <span class="keyword">AS</span> $$</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">  IF    (TG_OP <span class="operator">=</span> <span class="string">&#x27;INSERT&#x27;</span>) <span class="keyword">THEN</span> </span><br><span class="line">  <span class="comment">-- INSERT INTO tbl_b VALUES (NEW.col);</span></span><br><span class="line">  ELSIF (TG_OP <span class="operator">=</span> <span class="string">&#x27;DELETE&#x27;</span>) <span class="keyword">THEN</span> </span><br><span class="line">	<span class="comment">-- DELETE tbl_b WHERE id = OLD.id;</span></span><br><span class="line">  ELSIF (TG_OP <span class="operator">=</span> <span class="string">&#x27;UPDATE&#x27;</span>) <span class="keyword">THEN</span> </span><br><span class="line">	<span class="comment">-- UPDATE tbl_b SET col = NEW.col,... WHERE id = OLD.id;</span></span><br><span class="line">  <span class="keyword">END</span> IF;</span><br><span class="line"><span class="keyword">END</span>; $$ <span class="keyword">LANGUAGE</span> plpgsql;</span><br></pre></td></tr></table></figure>
+
+<p>触发器中会有两个变量<code>OLD</code>与<code>NEW</code>，分别包含了变更记录的旧值与新值。</p>
+<ul>
+<li><code>INSERT</code>操作只有<code>NEW</code>变量，因为它是新插入的，我们直接将其插入到另一张表即可。</li>
+<li><code>DELETE</code>操作只有<code>OLD</code>变量，因为它只是删除已有记录，我们 <strong>根据ID</strong> 在目标表B上。</li>
+<li><code>UPDATE</code>操作同时存在<code>OLD</code>变量与<code>NEW</code>变量，我们需要通过 <code>OLD.id</code> 定位目标表B中的记录，将其更新为新值<code>NEW</code>。</li>
+</ul>
+<p>这样的基于触发器的“逻辑复制”可以完美达到我们的目的，在逻辑复制中与之类似，表A上带有主键字段<code>id</code>。那么当我们删除表A上的记录时，例如：删除<code>id = 1</code>的记录时，我们只需要告诉订阅方<code>id = 1</code>，而不是把整个被删除的元组传递给订阅方。那么这里主键列<code>id</code>就是逻辑复制的<strong>复制标识</strong>。</p>
+<p>但上面的例子中隐含着一个工作假设：表A和表B模式相同，上面有一个名为 <code>id</code> 的主键。</p>
+<p>对于生产级的逻辑复制方案，即PostgreSQL 10.0后提供的逻辑复制，<strong>这样的工作假设是不合理的</strong>。因为系统无法要求用户建表时一定会带有主键，也无法要求主键的名字一定叫<code>id</code>。</p>
+<p>于是，就有了 <strong>复制标识（Replica Identity）</strong> 的概念。复制标识是对<code>OLD.id</code>这样工作假设的进一步泛化与抽象，它用来告诉逻辑复制系统，<strong>哪些信息可以被用于唯一定位表中的一条记录</strong>。</p>
+<h2 id="复制标识"><a href="#复制标识" class="headerlink" title="复制标识"></a>复制标识</h2><p>对于逻辑复制而言，<code>INSERT</code> 事件不需要特殊处理，但要想将<code>DELETE|UPDATE</code>复制到订阅者上时，必须提供一种标识行的方式，即<strong>复制标识（Replica Identity）</strong>。复制标识是一组<strong>列的集合</strong>，这些列可以唯一标识一条记录。其实这样的定义在概念上来说就是<strong>构成主键的列集</strong>，当然非空唯一索引中的列集（<strong>候选键</strong>）也可以起到同样的效果。</p>
+<p>一个被纳入逻辑复制 <strong>发布</strong>中的表，必须配置有 <strong>复制标识（Replica Identity）</strong>，只有这样才可以在<strong>订阅</strong>者一侧定位到需要更新的行，完成<code>UPDATE</code>与<code>DELETE</code>操作的复制。默认情况下，<strong>主键</strong> （Primary Key）和 <strong>非空列上的唯一索引</strong> （UNIQUE NOT NULL）可以用作复制标识。</p>
+<p>注意，<strong>复制标识</strong> 和表上的主键、非空唯一索引并不是一回事。复制标识是<strong>表</strong>上的一个属性，它指明了在逻辑复制时，哪些信息会被用作身份定位标识符写入到逻辑复制的记录中，供订阅端定位并执行变更。</p>
+<p>如PostgreSQL 13<a class="link"   target="_blank" rel="noopener" href="https://www.postgresql.org/docs/13/sql-altertable.html#replica_identity" >官方文档<i class="fas fa-external-link-alt"></i></a>所述，表上的<strong>复制标识</strong> 共有4种配置模式，分别为：</p>
+<ul>
+<li>默认模式（default）：非系统表采用的默认模式，如果有主键，则用主键列作为身份标识，否则用完整模式。</li>
+<li>索引模式（index）：将某一个符合条件的索引中的列，用作身份标识</li>
+<li>完整模式（full）：将整行记录中的所有列作为复制标识（类似于整个表上每一列共同组成主键）</li>
+<li>无身份模式（nothing）：不记录任何复制标识，这意味着<code>UPDATE|DELETE</code>操作无法复制到订阅者上。</li>
+</ul>
+<h3 id="复制标识查询"><a href="#复制标识查询" class="headerlink" title="复制标识查询"></a>复制标识查询</h3><p>表上的<strong>复制标识</strong>可以通过查阅<code>pg_class.relreplident</code>获取。</p>
+<p>这是一个字符类型的“枚举”，标识用于组装 “复制标识” 的列：<code>d</code> &#x3D; default ，<code>f</code> &#x3D; 所有的列，<code>i</code> 使用特定的索引，<code>n</code> 没有复制标识。</p>
+<p>表上是否具有可用作复制标识的索引约束，可以通过以下查询获取：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> quote_ident(nspname) <span class="operator">||</span> <span class="string">&#x27;.&#x27;</span> <span class="operator">||</span> quote_ident(relname) <span class="keyword">AS</span> name, con.ri <span class="keyword">AS</span> keys,</span><br><span class="line">       <span class="keyword">CASE</span> relreplident <span class="keyword">WHEN</span> <span class="string">&#x27;d&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;default&#x27;</span> <span class="keyword">WHEN</span> <span class="string">&#x27;n&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;nothing&#x27;</span> <span class="keyword">WHEN</span> <span class="string">&#x27;f&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;full&#x27;</span> <span class="keyword">WHEN</span> <span class="string">&#x27;i&#x27;</span> <span class="keyword">THEN</span> <span class="string">&#x27;index&#x27;</span> <span class="keyword">END</span> <span class="keyword">AS</span> replica_identity</span><br><span class="line"><span class="keyword">FROM</span> pg_class c <span class="keyword">JOIN</span> pg_namespace n <span class="keyword">ON</span> c.relnamespace <span class="operator">=</span> n.oid, <span class="keyword">LATERAL</span> (<span class="keyword">SELECT</span> <span class="built_in">array_agg</span>(contype) <span class="keyword">AS</span> ri <span class="keyword">FROM</span> pg_constraint <span class="keyword">WHERE</span> conrelid <span class="operator">=</span> c.oid) con</span><br><span class="line"><span class="keyword">WHERE</span> relkind <span class="operator">=</span> <span class="string">&#x27;r&#x27;</span> <span class="keyword">AND</span> nspname <span class="keyword">NOT</span> <span class="keyword">IN</span> (<span class="string">&#x27;pg_catalog&#x27;</span>, <span class="string">&#x27;information_schema&#x27;</span>, <span class="string">&#x27;monitor&#x27;</span>, <span class="string">&#x27;repack&#x27;</span>, <span class="string">&#x27;pg_toast&#x27;</span>)</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="number">2</span>,<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="复制标识配置"><a href="#复制标识配置" class="headerlink" title="复制标识配置"></a>复制标识配置</h3><p>表到复制标识可以通过<code>ALTER TABLE</code>进行修改。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> tbl REPLICA <span class="keyword">IDENTITY</span> &#123; <span class="keyword">DEFAULT</span> <span class="operator">|</span> <span class="keyword">USING</span> INDEX index_name <span class="operator">|</span> <span class="keyword">FULL</span> <span class="operator">|</span> NOTHING &#125;;</span><br><span class="line"><span class="comment">-- 具体有四种形式</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> t_normal REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">DEFAULT</span>;                    <span class="comment">-- 使用主键，如果没有主键则为FULL</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> t_normal REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">FULL</span>;                       <span class="comment">-- 使用整行作为标识</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> t_normal REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">USING</span> INDEX t_normal_v_key; <span class="comment">-- 使用唯一索引</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> t_normal REPLICA <span class="keyword">IDENTITY</span> NOTHING;                    <span class="comment">-- 不设置复制标识</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="复制标识实例"><a href="#复制标识实例" class="headerlink" title="复制标识实例"></a>复制标识实例</h2><p>下面用一个具体的例子来说明复制标识的效果：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> test(k text <span class="keyword">primary key</span>, v <span class="type">int</span> <span class="keyword">not null</span> <span class="keyword">unique</span>);</span><br></pre></td></tr></table></figure>
+
+<p>现在有一个表<code>test</code>，上面有两列<code>k</code>和<code>v</code>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT INTO</span> test <span class="keyword">VALUES</span>(<span class="string">&#x27;Alice&#x27;</span>, <span class="string">&#x27;1&#x27;</span>), (<span class="string">&#x27;Bob&#x27;</span>, <span class="string">&#x27;2&#x27;</span>);</span><br><span class="line"><span class="keyword">UPDATE</span> test <span class="keyword">SET</span> v <span class="operator">=</span> <span class="string">&#x27;3&#x27;</span> <span class="keyword">WHERE</span> k <span class="operator">=</span> <span class="string">&#x27;Alice&#x27;</span>;    <span class="comment">-- update Alice value to 3</span></span><br><span class="line"><span class="keyword">UPDATE</span> test <span class="keyword">SET</span> k <span class="operator">=</span> <span class="string">&#x27;Oscar&#x27;</span> <span class="keyword">WHERE</span> k <span class="operator">=</span> <span class="string">&#x27;Bob&#x27;</span>;  <span class="comment">-- rename Bob to Oscaar</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> test <span class="keyword">WHERE</span> k <span class="operator">=</span> <span class="string">&#x27;Alice&#x27;</span>;           <span class="comment">-- delete Alice</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，我们对表<code>test</code>执行了增删改操作，与之对应的逻辑解码结果为：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:1</span><br><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Bob&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: UPDATE: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:3</span><br><span class="line">table public.test: UPDATE: old-key: k<span class="section">[text]</span>:&#x27;Bob&#x27; new-tuple: k<span class="section">[text]</span>:&#x27;Oscar&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: DELETE: k<span class="section">[text]</span>:&#x27;Alice&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，PostgreSQL会使用表的主键作为<strong>复制标识</strong>，因此在<code>UPDATE|DELETE</code>操作中，都通过<code>k</code>列来定位需要修改的记录。</p>
+<p>如果我们手动修改表的复制标识，使用非空且唯一的列<code>v</code>作为复制标识，也是可以的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> test REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">USING</span> INDEX test_v_key; <span class="comment">-- 基于UNIQUE索引的复制身份</span></span><br></pre></td></tr></table></figure>
+
+<p>同样的变更现在产生如下的逻辑解码结果，这里<code>v</code>作为身份标识，出现在所有的<code>UPDATE|DELETE</code>事件中。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:1</span><br><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Bob&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: UPDATE: old-key: v<span class="section">[integer]</span>:1 new-tuple: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:3</span><br><span class="line">table public.test: UPDATE: k<span class="section">[text]</span>:&#x27;Oscar&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: DELETE: v<span class="section">[integer]</span>:3</span><br></pre></td></tr></table></figure>
+
+<p>如果使用<strong>完整身份模式（full）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> test REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">FULL</span>; <span class="comment">-- 表test现在使用所有列作为表的复制身份</span></span><br></pre></td></tr></table></figure>
+
+<p>这里，<code>k</code>和<code>v</code>同时作为身份标识，记录到<code>UPDATE|DELETE</code>的日志中。对于没有主键的表，这是一种保底方案。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:1</span><br><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Bob&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: UPDATE: old-key: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:1 new-tuple: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:3</span><br><span class="line">table public.test: UPDATE: old-key: k<span class="section">[text]</span>:&#x27;Bob&#x27; v<span class="section">[integer]</span>:2 new-tuple: k<span class="section">[text]</span>:&#x27;Oscar&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: DELETE: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:3</span><br></pre></td></tr></table></figure>
+
+<p>如果使用<strong>无身份模式（nothing）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> test REPLICA <span class="keyword">IDENTITY</span> NOTHING; <span class="comment">-- 表test现在没有复制标识</span></span><br></pre></td></tr></table></figure>
+
+<p>那么逻辑解码的记录中，<code>UPDATE</code>操作中只有新记录，没有包含旧记录中的唯一身份标识，而<code>DELETE</code>操作中则完全没有信息。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:1</span><br><span class="line">table public.test: INSERT: k<span class="section">[text]</span>:&#x27;Bob&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: UPDATE: k<span class="section">[text]</span>:&#x27;Alice&#x27; v<span class="section">[integer]</span>:3</span><br><span class="line">table public.test: UPDATE: k<span class="section">[text]</span>:&#x27;Oscar&#x27; v<span class="section">[integer]</span>:2</span><br><span class="line">table public.test: DELETE: (no-tuple-data)</span><br></pre></td></tr></table></figure>
+
+<p>这样的逻辑变更日志对于订阅端来说完全没用，在实际使用中，对逻辑复制中的无复制标识的表执行<code>DELETE|UPDATE</code>会直接报错。</p>
+<h2 id="复制标识详解"><a href="#复制标识详解" class="headerlink" title="复制标识详解"></a>复制标识详解</h2><p>表上的复制标识配置，与表上有没有索引，是相对正交的两个因素。</p>
+<p>尽管各种排列组合都是可能的，然而在实际使用中，只有三种可行的情况。</p>
+<ul>
+<li>表上有主键，使用默认的 <code>default</code> 复制标识</li>
+<li>表上没有主键，但是有非空唯一索引，显式配置 <code>index</code> 复制标识</li>
+<li>表上既没有主键，也没有非空唯一索引，显式配置<code>full</code>复制标识（运行效率非常低，仅能作为兜底方案）</li>
+<li>其他所有情况，都无法正常完成逻辑复制功能</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">复制身份模式\表上的约束</th>
+<th align="center">主键(p)</th>
+<th align="center">非空唯一索引(u)</th>
+<th align="center">两者皆无(n)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>d</strong>efault</td>
+<td align="center"><strong>有效</strong></td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="center"><strong>i</strong>ndex</td>
+<td align="center">x</td>
+<td align="center"><strong>有效</strong></td>
+<td align="center">x</td>
+</tr>
+<tr>
+<td align="center"><strong>f</strong>ull</td>
+<td align="center"><strong>低效</strong></td>
+<td align="center"><strong>低效</strong></td>
+<td align="center"><strong>低效</strong></td>
+</tr>
+<tr>
+<td align="center"><strong>n</strong>othing</td>
+<td align="center">x</td>
+<td align="center">x</td>
+<td align="center">x</td>
+</tr>
+</tbody></table>
+<p>下面，我们来考虑几个边界条件。</p>
+<h3 id="重建主键"><a href="#重建主键" class="headerlink" title="重建主键"></a>重建主键</h3><p>假设因为索引膨胀，我们希望重建表上的主键索引回收空间。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> test(k text <span class="keyword">primary key</span>, v <span class="type">int</span>);</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">UNIQUE</span> INDEX test_pkey2 <span class="keyword">ON</span> test(k);</span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test <span class="keyword">DROP</span> <span class="keyword">CONSTRAINT</span> test_pkey;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test <span class="keyword">ADD</span> <span class="keyword">PRIMARY KEY</span> <span class="keyword">USING</span> INDEX test_pkey2;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>default</code>模式下，重建并替换主键约束与索引<strong>并不会</strong>影响复制标识。</p>
+<h3 id="重建唯一索引"><a href="#重建唯一索引" class="headerlink" title="重建唯一索引"></a>重建唯一索引</h3><p>假设因为索引膨胀，我们希望重建表上的非空唯一索引回收空间。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> test(k text, v <span class="type">int</span> <span class="keyword">not null</span> <span class="keyword">unique</span>);</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">USING</span> INDEX test_v_key;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">UNIQUE</span> INDEX test_v_key2 <span class="keyword">ON</span> test(v);</span><br><span class="line"><span class="comment">-- 使用新的test_v_key2索引替换老的Unique索引</span></span><br><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test <span class="keyword">ADD</span> <span class="keyword">UNIQUE</span> <span class="keyword">USING</span> INDEX test_v_key2;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test <span class="keyword">DROP</span> <span class="keyword">CONSTRAINT</span> test_v_key;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<p>与<code>default</code>模式不同，<code>index</code>模式下，复制标识是与<strong>具体</strong>的索引绑定的：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">                                    <span class="keyword">Table</span> &quot;public.test&quot;</span><br><span class="line"> <span class="keyword">Column</span> <span class="operator">|</span>  Type   <span class="operator">|</span> <span class="keyword">Collation</span> <span class="operator">|</span> Nullable <span class="operator">|</span> <span class="keyword">Default</span> <span class="operator">|</span> Storage  <span class="operator">|</span> Stats target <span class="operator">|</span> Description</span><br><span class="line"><span class="comment">--------+---------+-----------+----------+---------+----------+--------------+-------------</span></span><br><span class="line"> k      <span class="operator">|</span> text    <span class="operator">|</span>           <span class="operator">|</span>          <span class="operator">|</span>         <span class="operator">|</span> extended <span class="operator">|</span>              <span class="operator">|</span></span><br><span class="line"> v      <span class="operator">|</span> <span class="type">integer</span> <span class="operator">|</span>           <span class="operator">|</span> <span class="keyword">not null</span> <span class="operator">|</span>         <span class="operator">|</span> plain    <span class="operator">|</span>              <span class="operator">|</span></span><br><span class="line">Indexes:</span><br><span class="line">    &quot;test_v_key&quot; <span class="keyword">UNIQUE</span> <span class="keyword">CONSTRAINT</span>, btree (v) REPLICA <span class="keyword">IDENTITY</span></span><br><span class="line">    &quot;test_v_key2&quot; <span class="keyword">UNIQUE</span> <span class="keyword">CONSTRAINT</span>, btree (v)</span><br></pre></td></tr></table></figure>
+
+<p>这意味着如果采用偷天换日的方式替换UNIQUE索引会导致复制身份的丢失。</p>
+<p>解决方案有两种：</p>
+<ol>
+<li>使用<code>REINDEX INDEX (CONCURRENTLY)</code>的方式重建该索引，不会丢失复制标识信息。</li>
+<li>在替换索引时，一并刷新表的默认复制身份：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span>;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test <span class="keyword">ADD</span> <span class="keyword">UNIQUE</span> <span class="keyword">USING</span> INDEX test_v_key2;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test REPLICA <span class="keyword">IDENTITY</span> <span class="keyword">USING</span> INDEX test_v_key2;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> test <span class="keyword">DROP</span> <span class="keyword">CONSTRAINT</span> test_v_key;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<p>顺带一提，移除作为身份标识的索引。尽管在表的配置信息中仍然为<code>index</code>模式，但效果与<code>nothing</code>相同。所以不要随意折腾作为身份的索引。</p>
+<h3 id="使用不合格的索引作为复制标识"><a href="#使用不合格的索引作为复制标识" class="headerlink" title="使用不合格的索引作为复制标识"></a>使用不合格的索引作为复制标识</h3><p>复制标识需要一个 唯一，不可延迟，整表范围的，建立在非空列集上的索引。</p>
+<p>最经典的例子就是主键索引，以及通过<code>col type NOT NULL UNIQUE</code>声明的单列非空索引。</p>
+<p>之所以要求 NOT NULL，是因为NULL值无法进行等值判断，所以表中允许UNIQE的列上存在多条取值为<code>NULL</code>的记录，允许列为空说明这个列无法起到唯一标识记录的效果。如果尝试使用一个普通的<code>UNIQUE</code>索引（列上没有非空约束）作为复制标识，则会报错。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[42809]</span> ERROR: index &quot;t_normal_v_key&quot; cannot be used as replica identity because column &quot;v&quot; is nullable</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用FULL复制标识"><a href="#使用FULL复制标识" class="headerlink" title="使用FULL复制标识"></a>使用FULL复制标识</h3><p>如果没有任何复制标识，可以将复制标识设置为<code>FULL</code>，也就是把整个行当作复制标识。</p>
+<p>使用<code>FULL</code>模式的复制标识效率很低，所以这种配置只能是保底方案，或者用于很小的表。因为每一行修改都需要在订阅者上执行<strong>全表扫描</strong>，<strong>很容易把订阅者拖垮</strong>。</p>
+<h4 id="FULL模式限制"><a href="#FULL模式限制" class="headerlink" title="FULL模式限制"></a>FULL模式限制</h4><p>使用<code>FULL</code>模式的复制标识还有一个限制，订阅端的表上的复制身份所包含的列，要么与发布者一致，要么比发布者更少，否则也无法保证的正确性，下面具体来看一个例子。</p>
+<p>假如发布订阅两侧的表都采用<code>FULL</code>复制标识，但是订阅侧的表要比发布侧多了一列（是的，逻辑复制允许订阅端的表带有发布端表不具有的列）。这样的话，订阅端的表上的复制身份所包含的列要比发布端多了。假设在发布端上删除<code>(f1=a, f2=a)</code>的记录，却会导致在订阅端删除两条满足身份标识等值条件的记录。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">     (Publication)       ------&gt;           (Subscription)</span><br><span class="line">|--- f1 ---|--- f2 ---|          |--- f1 ---|--- f2 ---|--- f3 ---|</span><br><span class="line">|    a     |     a    |          |    a     |     a    |     b    |</span><br><span class="line">                                 |    a     |     a    |     c    |</span><br></pre></td></tr></table></figure>
+
+<h4 id="FULL模式如何应对重复行问题"><a href="#FULL模式如何应对重复行问题" class="headerlink" title="FULL模式如何应对重复行问题"></a>FULL模式如何应对重复行问题</h4><p>PostgreSQL的逻辑复制可以“正确”处理<code>FULL</code>模式下完全相同行的场景。假设有这样一张设计糟糕的表，表中存在多条一模一样的记录。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> shitty_table(</span><br><span class="line">	 f1  TEXT,</span><br><span class="line">	 f2  TEXT,</span><br><span class="line">	 f3  TEXT</span><br><span class="line">);</span><br><span class="line"><span class="keyword">INSERT INTO</span> shitty_table <span class="keyword">VALUES</span> (<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>), (<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>), (<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;a&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>在FULL模式下，整行将作为复制标识使用。假设我们在<code>shitty_table</code>上通过ctid扫描作弊，删除了3条一模一样记录中的其中一条。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># <span class="keyword">SELECT</span> ctid,<span class="operator">*</span> <span class="keyword">FROM</span> shitty_table;</span><br><span class="line"> ctid  <span class="operator">|</span> a <span class="operator">|</span> b <span class="operator">|</span> c</span><br><span class="line"><span class="comment">-------+---+---+---</span></span><br><span class="line"> (<span class="number">0</span>,<span class="number">1</span>) <span class="operator">|</span> a <span class="operator">|</span> a <span class="operator">|</span> a</span><br><span class="line"> (<span class="number">0</span>,<span class="number">2</span>) <span class="operator">|</span> a <span class="operator">|</span> a <span class="operator">|</span> a</span><br><span class="line"> (<span class="number">0</span>,<span class="number">3</span>) <span class="operator">|</span> a <span class="operator">|</span> a <span class="operator">|</span> a</span><br><span class="line"></span><br><span class="line"># <span class="keyword">DELETE</span> <span class="keyword">FROM</span> shitty_table <span class="keyword">WHERE</span> ctid <span class="operator">=</span> <span class="string">&#x27;(0,1)&#x27;</span>;</span><br><span class="line"><span class="keyword">DELETE</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"># <span class="keyword">SELECT</span> ctid,<span class="operator">*</span> <span class="keyword">FROM</span> shitty_table;</span><br><span class="line"> ctid  <span class="operator">|</span> a <span class="operator">|</span> b <span class="operator">|</span> c</span><br><span class="line"><span class="comment">-------+---+---+---</span></span><br><span class="line"> (<span class="number">0</span>,<span class="number">2</span>) <span class="operator">|</span> a <span class="operator">|</span> a <span class="operator">|</span> a</span><br><span class="line"> (<span class="number">0</span>,<span class="number">3</span>) <span class="operator">|</span> a <span class="operator">|</span> a <span class="operator">|</span> a</span><br></pre></td></tr></table></figure>
+
+<p>从逻辑上讲，使用整行作为身份标识，那么订阅端执行以下逻辑，会导致全部3条记录被删除。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> shitty_table <span class="keyword">WHERE</span> f1 <span class="operator">=</span> <span class="string">&#x27;a&#x27;</span> <span class="keyword">AND</span> f2 <span class="operator">=</span> <span class="string">&#x27;a&#x27;</span> <span class="keyword">AND</span> f3 <span class="operator">=</span> <span class="string">&#x27;a&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>但实际情况是，因为PostgreSQL的变更记录以行为单位，这条变更仅会对<strong>第一条匹配</strong>的记录生效，所以在订阅侧的行为也是删除3行中的1行。在逻辑上与发布端等效。</p>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                PostgreSQL复制标识详解
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2025/07/31/PostgreSQL复制标识详解/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2025-07-31 19:53</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86/">复制标识</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2025/07/31/PostgreSQL%E4%B8%AD%E7%9A%84%E9%94%81/"
+                                   title="PostgreSQL中的锁"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PostgreSQL中的锁</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%AD%90%EF%BC%9A%E5%9C%9F%E6%B3%95%E9%80%BB%E8%BE%91%E5%A4%8D%E5%88%B6"><span class="nav-text">引子：土法逻辑复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86"><span class="nav-text">复制标识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E6%9F%A5%E8%AF%A2"><span class="nav-text">复制标识查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E9%85%8D%E7%BD%AE"><span class="nav-text">复制标识配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E5%AE%9E%E4%BE%8B"><span class="nav-text">复制标识实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E8%AF%A6%E8%A7%A3"><span class="nav-text">复制标识详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%BB%BA%E4%B8%BB%E9%94%AE"><span class="nav-text">重建主键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%BB%BA%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95"><span class="nav-text">重建唯一索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%B8%8D%E5%90%88%E6%A0%BC%E7%9A%84%E7%B4%A2%E5%BC%95%E4%BD%9C%E4%B8%BA%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86"><span class="nav-text">使用不合格的索引作为复制标识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8FULL%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86"><span class="nav-text">使用FULL复制标识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FULL%E6%A8%A1%E5%BC%8F%E9%99%90%E5%88%B6"><span class="nav-text">FULL模式限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FULL%E6%A8%A1%E5%BC%8F%E5%A6%82%E4%BD%95%E5%BA%94%E5%AF%B9%E9%87%8D%E5%A4%8D%E8%A1%8C%E9%97%AE%E9%A2%98"><span class="nav-text">FULL模式如何应对重复行问题</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%AD%90%EF%BC%9A%E5%9C%9F%E6%B3%95%E9%80%BB%E8%BE%91%E5%A4%8D%E5%88%B6"><span class="nav-text">引子：土法逻辑复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86"><span class="nav-text">复制标识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E6%9F%A5%E8%AF%A2"><span class="nav-text">复制标识查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E9%85%8D%E7%BD%AE"><span class="nav-text">复制标识配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E5%AE%9E%E4%BE%8B"><span class="nav-text">复制标识实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86%E8%AF%A6%E8%A7%A3"><span class="nav-text">复制标识详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%BB%BA%E4%B8%BB%E9%94%AE"><span class="nav-text">重建主键</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%BB%BA%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95"><span class="nav-text">重建唯一索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%B8%8D%E5%90%88%E6%A0%BC%E7%9A%84%E7%B4%A2%E5%BC%95%E4%BD%9C%E4%B8%BA%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86"><span class="nav-text">使用不合格的索引作为复制标识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8FULL%E5%A4%8D%E5%88%B6%E6%A0%87%E8%AF%86"><span class="nav-text">使用FULL复制标识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FULL%E6%A8%A1%E5%BC%8F%E9%99%90%E5%88%B6"><span class="nav-text">FULL模式限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FULL%E6%A8%A1%E5%BC%8F%E5%A6%82%E4%BD%95%E5%BA%94%E5%AF%B9%E9%87%8D%E5%A4%8D%E8%A1%8C%E9%97%AE%E9%A2%98"><span class="nav-text">FULL模式如何应对重复行问题</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>
