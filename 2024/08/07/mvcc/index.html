@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -453,13 +453,16 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">HeapTupleHeaderData</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">union</span></span><br><span class="line">	&#123;</span><br><span class="line">		HeapTupleFields t_heap; <span class="comment">//存放元组描述信息</span></span><br><span class="line">		DatumTupleFields t_datum;</span><br><span class="line">	&#125;			t_choice;</span><br><span class="line"></span><br><span class="line">	ItemPointerData t_ctid;		<span class="comment">/*元组的存放位置，一般值为“（blockid,itemid）”  */</span></span><br><span class="line">	uint16		t_infomask2;	<span class="comment">/* 属性和标识位 */</span></span><br><span class="line">	uint16		t_infomask;		<span class="comment">/* 其他标识位 */</span></span><br><span class="line">	uint8		t_hoff;			<span class="comment">/* 首部+位图+填充的长度 */</span></span><br><span class="line">	bits8		t_bits[<span class="number">1</span>];	<span class="comment">/* bitmap of NULLs */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 
+
 <p>HeapTupleHeaderData中的<code>t_heap</code>存储着元组的一些描述信息，结构如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">HeapTupleFields</span></span><br><span class="line">&#123;</span><br><span class="line">TransactionId t_xmin;   <span class="comment">/* 插入或修改事务的ID */</span></span><br><span class="line">TransactionId t_xmax;   <span class="comment">/* 删除或者锁定事务的ID */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">union</span></span><br><span class="line">&#123;</span><br><span class="line">   CommandId t_cid;   <span class="comment">/* 插入或者删除的命令ID */</span></span><br><span class="line">   TransactionId t_xvac; <span class="comment">/* 执行vacuum full的事务ID */</span></span><br><span class="line">&#125;    t_field3;</span><br><span class="line">&#125; HeapTupleFields;</span><br></pre></td></tr></table></figure>
+
 
 
 <p>经过分析源码，发现核心的隐藏字段有： t_ctid、t_xmin、t_xmax、t_cid </p>
 <p>执行命令：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> attname, attnum, attisdropped, attlen, attalign, attnotnull</span><br><span class="line"><span class="keyword">FROM</span> pg_catalog.pg_attribute <span class="keyword">WHERE</span> attrelid <span class="operator">=</span> <span class="string">&#x27;test&#x27;</span>::regclass</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> attnum;</span><br></pre></td></tr></table></figure>
+
 
 
 <p>发现实际表的隐藏字段如下所示：</p>

@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -466,8 +466,10 @@
 <h3 id="2-示例"><a href="#2-示例" class="headerlink" title="2. 示例"></a>2. 示例</h3><h4 id="支持比较的结构体"><a href="#支持比较的结构体" class="headerlink" title="支持比较的结构体"></a>支持比较的结构体</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Person <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="type">string</span></span><br><span class="line">    Age  <span class="type">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    p1 := Person&#123;Name: <span class="string">&quot;Alice&quot;</span>, Age: <span class="number">30</span>&#125;</span><br><span class="line">    p2 := Person&#123;Name: <span class="string">&quot;Alice&quot;</span>, Age: <span class="number">30</span>&#125;</span><br><span class="line">    p3 := Person&#123;Name: <span class="string">&quot;Bob&quot;</span>, Age: <span class="number">25</span>&#125;</span><br><span class="line"></span><br><span class="line">    fmt.Println(p1 == p2) <span class="comment">// 输出: true</span></span><br><span class="line">    fmt.Println(p1 == p3) <span class="comment">// 输出: false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+
 <p>在这个例子中，<code>Person</code> 结构体包含两个基本类型字段（<code>string</code> 和 <code>int</code>），它们都是可比较的，因此 <code>Person</code> 结构体也可以比较。</p>
 <h4 id="不支持比较的结构体"><a href="#不支持比较的结构体" class="headerlink" title="不支持比较的结构体"></a>不支持比较的结构体</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> MyFunc <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Example <span class="keyword">struct</span> &#123;</span><br><span class="line">    F MyFunc</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    e1 := Example&#123;&#125;</span><br><span class="line">    e2 := Example&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// fmt.Println(e1 == e2) // 编译错误: cannot compare e1 == e2 (struct contains func)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 
 <p>在这个例子中，<code>Example</code> 结构体包含一个 <code>func</code> 类型的字段，这种字段类型不支持比较，因此结构体 <code>Example</code> 也不能进行比较。</p>
@@ -601,14 +603,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/%E5%A6%82%E4%BD%95%E5%9B%9E%E6%94%B6goroutine/"
-                                   title="如何回收goroutine"
+                                   href="/2025/08/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%9E%8B/"
+                                   title="线程的实现模型"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">如何回收goroutine</span>
+                                        <span class="post-nav-title-item text-ellipsis">线程的实现模型</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
@@ -618,11 +620,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%9E%8B/"
-                                   title="线程的实现模型"
+                                   href="/2025/08/21/%E8%AF%A6%E8%A7%A3%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%8D%8F%E8%AE%AEProtoBuf/"
+                                   title="详解通信数据协议ProtoBuf"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">线程的实现模型</span>
+                                        <span class="post-nav-title-item text-ellipsis">详解通信数据协议ProtoBuf</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

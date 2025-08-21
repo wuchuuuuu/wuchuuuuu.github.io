@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -452,7 +452,7 @@
 
                     
                          <p>在 Go 语言中，有很多内置的标准库包提供了各种功能，以下是一些常用的 Go 标准库包及其简要说明：</p>
-<h3 id="1-fmt"><a href="#1-fmt" class="headerlink" title="1. fmt"></a>1. <code>fmt</code></h3><ul>
+<h3 id="1-fmt"><a href="#1-fmt" class="headerlink" title="1. fmt"></a>1. fmt</h3><ul>
 <li>功能 ：格式化输入输出。</li>
 <li>常用函数 ：</li>
 <li><code>fmt.Println()</code>: 打印并自动换行。</li>
@@ -460,7 +460,7 @@
 <li><code>fmt.Scan()</code>: 从标准输入读取数据。</li>
 <li><code>fmt.Sprintf()</code>: 格式化字符串并返回结果。</li>
 </ul>
-<h3 id="2-os"><a href="#2-os" class="headerlink" title="2. os"></a>2. <code>os</code></h3><ul>
+<h3 id="2-os"><a href="#2-os" class="headerlink" title="2. os"></a>2. os</h3><ul>
 <li>功能 ：与操作系统进行交互，如文件操作、环境变量、进程控制等。</li>
 <li>常用函数 ：</li>
 <li><code>os.Open()</code>: 打开文件。</li>
@@ -468,26 +468,26 @@
 <li><code>os.Remove()</code>: 删除文件。</li>
 <li><code>os.Getenv()</code>: 获取环境变量。</li>
 </ul>
-<h3 id="3-io"><a href="#3-io" class="headerlink" title="3. io"></a>3. <code>io</code></h3><ul>
+<h3 id="3-io"><a href="#3-io" class="headerlink" title="3. io"></a>3. io</h3><ul>
 <li>功能 ：提供基本的 I&#x2F;O 操作接口和实用函数。</li>
 <li>常用接口&#x2F;函数 ：</li>
 <li><code>io.Reader</code>&#x2F;<code>io.Writer</code>: 定义了读写接口。</li>
 <li><code>io.Copy()</code>: 从源 <code>Reader</code> 复制到目标 <code>Writer</code>。</li>
 <li><code>io/ioutil.ReadFile()</code>: 读取文件内容为字节切片。</li>
 </ul>
-<h3 id="4-encoding-json"><a href="#4-encoding-json" class="headerlink" title="4. encoding/json"></a>4. <code>encoding/json</code></h3><ul>
+<h3 id="4-encoding-json"><a href="#4-encoding-json" class="headerlink" title="4. encoding&#x2F;json"></a>4. encoding&#x2F;json</h3><ul>
 <li>功能 ：处理 JSON 编码和解码。</li>
 <li>常用函数 ：</li>
 <li><code>json.Marshal()</code>: 将数据编码为 JSON 格式。</li>
 <li><code>json.Unmarshal()</code>: 将 JSON 格式数据解码为 Go 数据结构。</li>
 </ul>
-<h3 id="5-encoding-xml"><a href="#5-encoding-xml" class="headerlink" title="5. encoding/xml"></a>5. <code>encoding/xml</code></h3><ul>
+<h3 id="5-encoding-xml"><a href="#5-encoding-xml" class="headerlink" title="5. encoding&#x2F;xml"></a>5. encoding&#x2F;xml</h3><ul>
 <li>功能 ：处理 XML 编码和解码。</li>
 <li>常用函数 ：</li>
 <li><code>xml.Marshal()</code>: 将数据编码为 XML 格式。</li>
 <li><code>xml.Unmarshal()</code>: 将 XML 格式数据解码为 Go 数据结构。</li>
 </ul>
-<h3 id="6-net-http"><a href="#6-net-http" class="headerlink" title="6. net/http"></a>6. <code>net/http</code></h3><ul>
+<h3 id="6-net-http"><a href="#6-net-http" class="headerlink" title="6. net&#x2F;http"></a>6. net&#x2F;http</h3><ul>
 <li>功能 ：实现 HTTP 客户端和服务器功能。</li>
 <li>常用函数&#x2F;类型 ：</li>
 <li><code>http.Get()</code>: 发起 GET 请求。</li>
@@ -495,21 +495,21 @@
 <li><code>http.HandleFunc()</code>: 注册 HTTP 处理函数。</li>
 <li><code>http.ListenAndServe()</code>: 启动 HTTP 服务器。</li>
 </ul>
-<h3 id="7-context"><a href="#7-context" class="headerlink" title="7. context"></a>7. <code>context</code></h3><ul>
+<h3 id="7-context"><a href="#7-context" class="headerlink" title="7. context"></a>7. context</h3><ul>
 <li>功能 ：管理上下文和超时、取消信号。</li>
 <li>常用函数 ：</li>
 <li><code>context.Background()</code>: 返回一个背景上下文，通常用作根上下文。</li>
 <li><code>context.WithCancel()</code>: 返回一个子上下文和取消函数。</li>
 <li><code>context.WithTimeout()</code>: 返回一个具有超时功能的上下文。</li>
 </ul>
-<h3 id="8-sync"><a href="#8-sync" class="headerlink" title="8. sync"></a>8. <code>sync</code></h3><ul>
+<h3 id="8-sync"><a href="#8-sync" class="headerlink" title="8. sync"></a>8. sync</h3><ul>
 <li>功能 ：提供同步原语，如互斥锁、读写锁等。</li>
 <li>常用类型&#x2F;函数 ：</li>
 <li><code>sync.Mutex</code>: 提供互斥锁。</li>
 <li><code>sync.RWMutex</code>: 提供读写锁。</li>
 <li><code>sync.WaitGroup</code>: 用于等待一组 Goroutine 完成。</li>
 </ul>
-<h3 id="9-time"><a href="#9-time" class="headerlink" title="9. time"></a>9. <code>time</code></h3><ul>
+<h3 id="9-time"><a href="#9-time" class="headerlink" title="9. time"></a>9. time</h3><ul>
 <li>功能 ：处理时间和日期。</li>
 <li>常用函数&#x2F;类型 ：</li>
 <li><code>time.Now()</code>: 获取当前时间。</li>
@@ -517,7 +517,7 @@
 <li><code>time.Parse()</code>: 解析时间字符串。</li>
 <li><code>time.Format()</code>: 格式化时间为字符串。</li>
 </ul>
-<h3 id="10-math"><a href="#10-math" class="headerlink" title="10. math"></a>10. <code>math</code></h3><ul>
+<h3 id="10-math"><a href="#10-math" class="headerlink" title="10. math"></a>10. math</h3><ul>
 <li>功能 ：提供数学常量和函数。</li>
 <li>常用函数 ：</li>
 <li><code>math.Sqrt()</code>: 计算平方根。</li>
@@ -525,34 +525,34 @@
 <li><code>math.Sin()</code>: 计算正弦值。</li>
 <li><code>math.Cos()</code>: 计算余弦值。</li>
 </ul>
-<h3 id="11-strconv"><a href="#11-strconv" class="headerlink" title="11. strconv"></a>11. <code>strconv</code></h3><ul>
+<h3 id="11-strconv"><a href="#11-strconv" class="headerlink" title="11. strconv"></a>11. strconv</h3><ul>
 <li>功能 ：字符串与基本数据类型之间的转换。</li>
 <li>常用函数 ：</li>
 <li><code>strconv.Itoa()</code>: 整数转字符串。</li>
 <li><code>strconv.Atoi()</code>: 字符串转整数。</li>
 <li><code>strconv.FormatFloat()</code>: 格式化浮点数为字符串。</li>
 </ul>
-<h3 id="12-log"><a href="#12-log" class="headerlink" title="12. log"></a>12. <code>log</code></h3><ul>
+<h3 id="12-log"><a href="#12-log" class="headerlink" title="12. log"></a>12. log</h3><ul>
 <li>功能 ：提供日志记录功能。</li>
 <li>常用函数 ：</li>
 <li><code>log.Println()</code>: 记录日志并自动换行。</li>
 <li><code>log.Printf()</code>: 格式化日志记录。</li>
 <li><code>log.Fatal()</code>: 记录日志并调用 <code>os.Exit()</code> 退出程序。</li>
 </ul>
-<h3 id="13-flag"><a href="#13-flag" class="headerlink" title="13. flag"></a>13. <code>flag</code></h3><ul>
+<h3 id="13-flag"><a href="#13-flag" class="headerlink" title="13. flag"></a>13. flag</h3><ul>
 <li>功能 ：解析命令行标志。</li>
 <li>常用函数 ：</li>
 <li><code>flag.String()</code>: 定义字符串标志。</li>
 <li><code>flag.Int()</code>: 定义整型标志。</li>
 <li><code>flag.Parse()</code>: 解析命令行标志。</li>
 </ul>
-<h3 id="14-regexp"><a href="#14-regexp" class="headerlink" title="14. regexp"></a>14. <code>regexp</code></h3><ul>
+<h3 id="14-regexp"><a href="#14-regexp" class="headerlink" title="14. regexp"></a>14. regexp</h3><ul>
 <li>功能 ：支持正则表达式的匹配和操作。</li>
 <li>常用函数 ：</li>
 <li><code>regexp.MatchString()</code>: 匹配字符串是否符合正则表达式。</li>
 <li><code>regexp.FindAllString()</code>: 找到所有符合正则表达式的字符串。</li>
 </ul>
-<h3 id="15-crypto"><a href="#15-crypto" class="headerlink" title="15. crypto"></a>15. <code>crypto</code></h3><ul>
+<h3 id="15-crypto"><a href="#15-crypto" class="headerlink" title="15. crypto"></a>15. crypto</h3><ul>
 <li>功能 ：提供加密算法和功能。</li>
 <li>常用包 ：</li>
 <li><code>crypto/aes</code>: 提供 AES 加密算法。</li>

@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -488,6 +488,7 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">checkpoint_timeout = 30min</span><br></pre></td></tr></table></figure>
 
 
+
 <p>现在我们需要估计数据库在30分钟内产生多少WAL，以便我们可以使用它来获得max_wal_size。 有几种方法可以确定生成多少WAL：</p>
 <ul>
 <li>使用<code>pg_current_xlog_insert_location()</code> （10之后是<code>pg_current_wal_insert_lsn</code>）查看实际的WAL位置（基本上在文件中偏移），并计算每30分钟测量的位置之间的差异。</li>
@@ -496,6 +497,7 @@
 </ul>
 <p>例如，我们使用第一种方法。 在运行pgbench的测试机上，我看到：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">postgres=# SELECT pg_current_xlog_insert_location();</span><br><span class="line"> pg_current_xlog_insert_location </span><br><span class="line">---------------------------------</span><br><span class="line"> 3D/B4020A58</span><br><span class="line">(1 row)</span><br><span class="line"></span><br><span class="line">... after 5 minutes ...</span><br><span class="line"></span><br><span class="line">postgres=# SELECT pg_current_xlog_insert_location();</span><br><span class="line"> pg_current_xlog_insert_location </span><br><span class="line">---------------------------------</span><br><span class="line"> 3E/2203E0F8</span><br><span class="line">(1 row)</span><br><span class="line"></span><br><span class="line">postgres=# SELECT pg_xlog_location_diff(<span class="string">&#x27;3E/2203E0F8&#x27;</span>, <span class="string">&#x27;3D/B4020A58&#x27;</span>);</span><br><span class="line"> pg_xlog_location_diff </span><br><span class="line">-----------------------</span><br><span class="line">            1845614240</span><br><span class="line">(1 row)</span><br></pre></td></tr></table></figure>
+
 
 
 <p>这表明在5分钟内，数据库生成了〜1.8GB的WAL，因此<code>checkpoint_timeout = 30min</code>将会是约10GB的WAL。不过如前所述，max_wal_size是2 - 3个检查点的配额，所以max_wal_size &#x3D; 30GB（3 x 10GB）似乎是正确的。</p>

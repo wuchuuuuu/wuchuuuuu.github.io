@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:58 GMT+0800">2025-08-21 20:22:58</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -457,8 +457,9 @@
 <li>Lock ：获取锁，如果锁已经被占用，则阻塞当前 Goroutine 直到锁被释放。</li>
 <li>Unlock ：释放锁，唤醒被阻塞的 Goroutine 让它们继续执行。</li>
 </ul>
-<h3 id="2-Go-中-sync-Mutex-的结构"><a href="#2-Go-中-sync-Mutex-的结构" class="headerlink" title="2.  Go 中 sync.Mutex 的结构"></a>2.  Go 中 <code>sync.Mutex</code> 的结构</h3><p>在 Go 语言的 <code>sync</code> 包中，<code>Mutex</code> 的定义如下（简化版）：</p>
+<h3 id="2-Go-中-sync-Mutex-的结构"><a href="#2-Go-中-sync-Mutex-的结构" class="headerlink" title="2.  Go 中 sync.Mutex 的结构"></a>2.  Go 中 sync.Mutex 的结构</h3><p>在 Go 语言的 <code>sync</code> 包中，<code>Mutex</code> 的定义如下（简化版）：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mutex <span class="keyword">struct</span> &#123;</span><br><span class="line">    state <span class="type">int32</span></span><br><span class="line">    sema  <span class="type">uint32</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 
 <h4 id="字段解释-："><a href="#字段解释-：" class="headerlink" title="字段解释 ："></a>字段解释 ：</h4><ul>
@@ -470,7 +471,7 @@
 <li>低位（bit 0） ：表示锁的持有状态（0 表示未锁定，1 表示已锁定）。</li>
 <li>高位（bit 1 及以上） ：表示是否有 Goroutine 在等待锁。</li>
 </ul>
-<h3 id="4-锁的获取-Lock"><a href="#4-锁的获取-Lock" class="headerlink" title="4.  锁的获取 (Lock)"></a>4.  锁的获取 (<code>Lock</code>)</h3><p>当一个 Goroutine 尝试获取锁时，<code>Lock</code> 方法会执行以下步骤：</p>
+<h3 id="4-锁的获取-Lock"><a href="#4-锁的获取-Lock" class="headerlink" title="4.  锁的获取 (Lock)"></a>4.  锁的获取 (Lock)</h3><p>当一个 Goroutine 尝试获取锁时，<code>Lock</code> 方法会执行以下步骤：</p>
 <ol>
 <li>快速路径：CAS 操作</li>
 </ol>
@@ -488,7 +489,8 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span></span> Lock() &#123;</span><br><span class="line">    <span class="keyword">if</span> atomic.CompareAndSwapInt32(&amp;m.state, <span class="number">0</span>, <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 快速路径：成功获取锁</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 慢速路径：自旋、自旋失败后阻塞等待锁</span></span><br><span class="line">    m.lockSlow()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
-<h3 id="5-锁的释放-Unlock"><a href="#5-锁的释放-Unlock" class="headerlink" title="5.  锁的释放 (Unlock)"></a>5.  锁的释放 (<code>Unlock</code>)</h3><p>当一个 Goroutine 释放锁时，<code>Unlock</code> 方法会执行以下步骤：</p>
+
+<h3 id="5-锁的释放-Unlock"><a href="#5-锁的释放-Unlock" class="headerlink" title="5.  锁的释放 (Unlock)"></a>5.  锁的释放 (Unlock)</h3><p>当一个 Goroutine 释放锁时，<code>Unlock</code> 方法会执行以下步骤：</p>
 <ol>
 <li>检查锁状态</li>
 </ol>
@@ -510,6 +512,7 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span></span> Unlock() &#123;</span><br><span class="line">    <span class="keyword">if</span> atomic.AddInt32(&amp;m.state, <span class="number">-1</span>) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="comment">// 锁释放成功且没有等待的 Goroutine</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果有等待的 Goroutine，则唤醒它们</span></span><br><span class="line">    m.unlockSlow()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+
 <h3 id="6-自旋和信号量"><a href="#6-自旋和信号量" class="headerlink" title="6.  自旋和信号量"></a>6.  自旋和信号量</h3><p>在慢速路径中，Go 的 <code>Mutex</code> 采用了自旋锁和信号量相结合的方式来提高锁的性能：</p>
 <ul>
 <li>自旋锁 ：在多核处理器上，当锁短时间内可能被释放时，自旋锁通过占用 CPU 的方式忙等待锁的释放。自旋锁可以减少 Goroutine 切换的开销。</li>
@@ -517,7 +520,7 @@
 </ul>
 <h3 id="7-公平性"><a href="#7-公平性" class="headerlink" title="7.  公平性"></a>7.  公平性</h3><p>Go 的 <code>Mutex</code> 实现中，默认是 非公平锁 ，即锁的释放和获取可能不会遵循先来先得的顺序。这种设计有利于提高锁的吞吐量，但可能导致某些 Goroutine 长时间无法获取到锁。</p>
 <p>然而，在高并发场景下，可能会导致某些 Goroutine 饿死，因此需要根据具体场景选择合适的锁机制。</p>
-<h3 id="8-sync-Mutex-的锁状态管理"><a href="#8-sync-Mutex-的锁状态管理" class="headerlink" title="8.  sync.Mutex 的锁状态管理"></a>8.  <code>sync.Mutex</code> 的锁状态管理</h3><ul>
+<h3 id="8-sync-Mutex-的锁状态管理"><a href="#8-sync-Mutex-的锁状态管理" class="headerlink" title="8.  sync.Mutex 的锁状态管理"></a>8.  sync.Mutex 的锁状态管理</h3><ul>
 <li>没有竞争的情况 ：当锁没有被其他 Goroutine 持有时，<code>Lock</code> 操作能够快速获取锁，<code>Unlock</code> 操作能够直接释放锁。</li>
 <li>竞争激烈的情况 ：在有多个 Goroutine 竞争锁的情况下，Go 的 <code>Mutex</code> 实现会通过自旋+信号量的机制管理等待 Goroutine，平衡锁的性能与公平性。</li>
 </ul>
@@ -647,14 +650,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/sync.Pool/"
-                                   title="sync.Pool"
+                                   href="/2025/08/21/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E5%8F%91%E7%8E%B0%E4%B8%8E%E6%8E%92%E6%9F%A5/"
+                                   title="内存泄露的发现与排查"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">sync.Pool</span>
+                                        <span class="post-nav-title-item text-ellipsis">内存泄露的发现与排查</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
@@ -664,11 +667,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E4%B9%90%E8%A7%82%E9%94%81%E4%B8%8E%E6%82%B2%E8%A7%82%E9%94%81%E4%B8%8EGolang/"
-                                   title="乐观锁与悲观锁与Golang"
+                                   href="/2025/08/21/%E5%A6%82%E4%BD%95%E5%9B%9E%E6%94%B6goroutine/"
+                                   title="如何回收goroutine"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">乐观锁与悲观锁与Golang</span>
+                                        <span class="post-nav-title-item text-ellipsis">如何回收goroutine</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

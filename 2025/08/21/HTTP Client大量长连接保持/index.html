@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -462,6 +462,7 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">transport := &amp;http.Transport&#123;</span><br><span class="line">    MaxIdleConns:       <span class="number">100</span>,  <span class="comment">// 设置整个连接池的最大空闲连接数</span></span><br><span class="line">    MaxIdleConnsPerHost: <span class="number">10</span>,  <span class="comment">// 设置每个主机的最大空闲连接数</span></span><br><span class="line">    <span class="comment">// 其他配置</span></span><br><span class="line">&#125;</span><br><span class="line">client := &amp;http.Client&#123;</span><br><span class="line">    Transport: transport,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+
 <p>通过这种配置，你可以更好地控制连接池行为，提升应用的并发性能。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>出现大量的 <code>TIME_WAIT</code> 状态以及频繁关闭连接的问题，通常与以下几个因素有关：</p>
 <ol>
@@ -500,6 +501,7 @@
 <li>例如，客户端可以通过增加 <code>DefaultMaxIdleConnsPerHost</code> 或 <code>MaxIdleConnsPerHost</code> 参数来保持更多的空闲连接。</li>
 </ul>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">client := &amp;http.Client&#123;</span><br><span class="line">    Transport: &amp;http.Transport&#123;</span><br><span class="line">        MaxIdleConns:        <span class="number">100</span>,</span><br><span class="line">        MaxIdleConnsPerHost: <span class="number">100</span>,</span><br><span class="line">        IdleConnTimeout:     <span class="number">90</span> * time.Second,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 
 <ol start="2">

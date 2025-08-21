@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -452,12 +452,12 @@
 
                     
                          <p><code>sync.Map</code> 是 Go 语言中的一个并发安全的映射（map）实现，设计目的是为了在高并发环境下提高读操作的性能。它支持读写分离，以优化读操作的性能，同时保持对写操作的安全性。以下是 <code>sync.Map</code> 的详细解释及其读写分离特性：</p>
-<h3 id="1-sync-Map-概述"><a href="#1-sync-Map-概述" class="headerlink" title="1. sync.Map 概述"></a>1. <code>sync.Map</code> 概述</h3><p><code>sync.Map</code> 是 Go 1.9 及以后版本引入的一个并发安全的映射类型，提供了以下特性：</p>
+<h3 id="1-sync-Map-概述"><a href="#1-sync-Map-概述" class="headerlink" title="1. sync.Map 概述"></a>1. sync.Map 概述</h3><p><code>sync.Map</code> 是 Go 1.9 及以后版本引入的一个并发安全的映射类型，提供了以下特性：</p>
 <ul>
 <li>并发安全 ：<code>sync.Map</code> 支持并发读写操作，读操作和写操作都能安全地在多个 Goroutine 中进行。</li>
 <li>读写分离 ：<code>sync.Map</code> 内部实现优化了读操作的性能，特别是在高并发场景下。</li>
 </ul>
-<h3 id="2-sync-Map-的基本操作"><a href="#2-sync-Map-的基本操作" class="headerlink" title="2. sync.Map 的基本操作"></a>2. <code>sync.Map</code> 的基本操作</h3><p><code>sync.Map</code> 提供了几种主要的方法：</p>
+<h3 id="2-sync-Map-的基本操作"><a href="#2-sync-Map-的基本操作" class="headerlink" title="2. sync.Map 的基本操作"></a>2. sync.Map 的基本操作</h3><p><code>sync.Map</code> 提供了几种主要的方法：</p>
 <ul>
 <li><p><code>Load(key interface&#123;&#125;) (value interface&#123;&#125;, ok bool)</code> ：</p>
 </li>
@@ -501,6 +501,7 @@
 </ul>
 <h3 id="4-示例代码"><a href="#4-示例代码" class="headerlink" title="4. 示例代码"></a>4. 示例代码</h3><p>以下是一个使用 <code>sync.Map</code> 的示例，展示了基本的操作和读写分离：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> m sync.Map</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 存储键值对</span></span><br><span class="line">    m.Store(<span class="string">&quot;key1&quot;</span>, <span class="string">&quot;value1&quot;</span>)</span><br><span class="line">    m.Store(<span class="string">&quot;key2&quot;</span>, <span class="string">&quot;value2&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取键值对</span></span><br><span class="line">    <span class="keyword">if</span> value, ok := m.Load(<span class="string">&quot;key1&quot;</span>); ok &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;key1:&quot;</span>, value)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历所有键值对</span></span><br><span class="line">    m.Range(<span class="function"><span class="keyword">func</span><span class="params">(key, value <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">        fmt.Println(key, value)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span> <span class="comment">// 返回 true 继续遍历，返回 false 终止遍历</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除键值对</span></span><br><span class="line">    m.Delete(<span class="string">&quot;key1&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 
 <h3 id="5-适用场景"><a href="#5-适用场景" class="headerlink" title="5. 适用场景"></a>5. 适用场景</h3><p><code>sync.Map</code> 适用于以下场景：</p>
@@ -634,14 +635,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/%E7%89%B9%E6%9D%83%20Goroutine%20g0/"
-                                   title="特权 Goroutine g0"
+                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"
+                                   title="读写锁的实现及底层原理"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">特权 Goroutine g0</span>
+                                        <span class="post-nav-title-item text-ellipsis">读写锁的实现及底层原理</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
@@ -651,11 +652,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"
-                                   title="读写锁的实现及底层原理"
+                                   href="/2025/08/21/%E9%95%BF%E8%BF%9E%E6%8E%A5%E5%92%8C%E7%9F%AD%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%AD%A6%E4%B9%A0/"
+                                   title="长连接和短连接的学习"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">读写锁的实现及底层原理</span>
+                                        <span class="post-nav-title-item text-ellipsis">长连接和短连接的学习</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

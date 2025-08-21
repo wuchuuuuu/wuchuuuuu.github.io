@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:58 GMT+0800">2025-08-21 20:22:58</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -457,6 +457,7 @@
 <figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">Person</span> &#123;</span><br><span class="line">    <span class="type">int32</span> id = <span class="number">1</span>;</span><br><span class="line">    <span class="type">string</span> name = <span class="number">2</span>;</span><br><span class="line">    <span class="type">string</span> email = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">repeated</span> <span class="type">string</span> phone_numbers = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">AddressBook</span> &#123;</span><br><span class="line">    <span class="keyword">repeated</span> Person people = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+
 <ul>
 <li><code>syntax = &quot;proto3&quot;;</code> ：指定 ProtoBuf 的语法版本。</li>
 <li><code>message</code> ：定义一个消息类型。</li>
@@ -468,14 +469,17 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protoc --python_out=. addressbook.proto</span><br><span class="line">protoc --java_out=. addressbook.proto</span><br><span class="line">protoc --go_out=. addressbook.proto</span><br></pre></td></tr></table></figure>
 
 
+
 <h3 id="2-ProtoBuf-的序列化和反序列化"><a href="#2-ProtoBuf-的序列化和反序列化" class="headerlink" title="2. ProtoBuf 的序列化和反序列化"></a>2. ProtoBuf 的序列化和反序列化</h3><h4 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h4><p>序列化是将内存中的数据结构转换为字节流的过程。在 ProtoBuf 中，序列化通常涉及将消息对象转换为字节数组，以便存储或传输。</p>
 <p> 示例（Python） ：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> addressbook_pb2</span><br><span class="line"></span><br><span class="line">person = addressbook_pb2.Person()</span><br><span class="line">person.<span class="built_in">id</span> = <span class="number">123</span></span><br><span class="line">person.name = <span class="string">&quot;John Doe&quot;</span></span><br><span class="line">person.email = <span class="string">&quot;johndoe@example.com&quot;</span></span><br><span class="line">person.phone_numbers.append(<span class="string">&quot;555-1234&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 序列化为字节流</span></span><br><span class="line">data = person.SerializeToString()</span><br></pre></td></tr></table></figure>
 
 
+
 <h4 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h4><p>反序列化是将字节流转换回数据结构的过程。在 ProtoBuf 中，反序列化涉及将字节数组转换为消息对象。</p>
 <p> 示例（Python） ：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> addressbook_pb2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个 Person 实例</span></span><br><span class="line">person = addressbook_pb2.Person()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从字节流反序列化</span></span><br><span class="line">person.ParseFromString(data)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(person)</span><br></pre></td></tr></table></figure>
+
 
 
 <h3 id="3-ProtoBuf-的特性"><a href="#3-ProtoBuf-的特性" class="headerlink" title="3. ProtoBuf 的特性"></a>3. ProtoBuf 的特性</h3><h4 id="高效"><a href="#高效" class="headerlink" title="高效"></a>高效</h4><ul>
@@ -624,14 +628,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"
-                                   title="读写锁的实现及底层原理"
+                                   href="/2025/08/21/%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%AF%94%E8%BE%83/"
+                                   title="结构体是否可以比较"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">读写锁的实现及底层原理</span>
+                                        <span class="post-nav-title-item text-ellipsis">结构体是否可以比较</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
@@ -641,11 +645,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E9%95%BF%E8%BF%9E%E6%8E%A5%E5%92%8C%E7%9F%AD%E8%BF%9E%E6%8E%A5%E7%9A%84%E5%AD%A6%E4%B9%A0/"
-                                   title="长连接和短连接的学习"
+                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"
+                                   title="读写锁的实现及底层原理"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">长连接和短连接的学习</span>
+                                        <span class="post-nav-title-item text-ellipsis">读写锁的实现及底层原理</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

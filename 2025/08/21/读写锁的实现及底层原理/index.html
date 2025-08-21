@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -452,7 +452,7 @@
 
                     
                          <p>Go 语言中的读写锁（<code>sync.RWMutex</code>）是一种同步原语，用于控制多个 Goroutine 对共享资源的并发访问。读写锁允许多个 Goroutine 同时进行读操作，但在写操作进行时，所有其他 Goroutine（包括读操作和写操作）都被阻塞。理解读写锁的实现及底层原理有助于高效地使用它。</p>
-<h3 id="1-sync-RWMutex-的基本结构"><a href="#1-sync-RWMutex-的基本结构" class="headerlink" title="1.  sync.RWMutex 的基本结构"></a>1.  <code>sync.RWMutex</code> 的基本结构</h3><p><code>sync.RWMutex</code> 是 Go 标准库中的一个结构体，它主要由以下部分组成：</p>
+<h3 id="1-sync-RWMutex-的基本结构"><a href="#1-sync-RWMutex-的基本结构" class="headerlink" title="1.  sync.RWMutex 的基本结构"></a>1.  sync.RWMutex 的基本结构</h3><p><code>sync.RWMutex</code> 是 Go 标准库中的一个结构体，它主要由以下部分组成：</p>
 <ul>
 <li>w ：表示写锁的状态和数量。写锁是互斥的，也就是说，同时只能有一个 Goroutine 获得写锁。</li>
 <li>writerSem ：用于阻塞等待写锁的 Goroutine。</li>
@@ -460,7 +460,7 @@
 <li>readerCount ：当前持有读锁的 Goroutine 数量。</li>
 <li>readerWait ：表示当前有多少 Goroutine 在等待写锁被释放。</li>
 </ul>
-<h3 id="2-读写锁的基本操作"><a href="#2-读写锁的基本操作" class="headerlink" title="2.  读写锁的基本操作"></a>2.  读写锁的基本操作</h3><h4 id="读锁（RLock-和-RUnlock）"><a href="#读锁（RLock-和-RUnlock）" class="headerlink" title="读锁（RLock 和 RUnlock）"></a>读锁（<code>RLock</code> 和 <code>RUnlock</code>）</h4><ul>
+<h3 id="2-读写锁的基本操作"><a href="#2-读写锁的基本操作" class="headerlink" title="2.  读写锁的基本操作"></a>2.  读写锁的基本操作</h3><h4 id="读锁（RLock-和-RUnlock）"><a href="#读锁（RLock-和-RUnlock）" class="headerlink" title="读锁（RLock 和 RUnlock）"></a>读锁（RLock 和 RUnlock）</h4><ul>
 <li>RLock ：获取读锁。</li>
 </ul>
 <ol>
@@ -473,7 +473,7 @@
 <ol>
 <li><code>readerCount</code> 减少，当最后一个读锁被释放时，检查是否有等待写锁的 Goroutine。如果有，则唤醒其中一个。</li>
 </ol>
-<h4 id="写锁（Lock-和-Unlock）"><a href="#写锁（Lock-和-Unlock）" class="headerlink" title="写锁（Lock 和 Unlock）"></a>写锁（<code>Lock</code> 和 <code>Unlock</code>）</h4><ul>
+<h4 id="写锁（Lock-和-Unlock）"><a href="#写锁（Lock-和-Unlock）" class="headerlink" title="写锁（Lock 和 Unlock）"></a>写锁（Lock 和 Unlock）</h4><ul>
 <li>Lock ：获取写锁。</li>
 </ul>
 <ol>
@@ -634,14 +634,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%20sync.Map/"
-                                   title="读写分离 sync.Map"
+                                   href="/2025/08/21/%E8%AF%A6%E8%A7%A3%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%8D%8F%E8%AE%AEProtoBuf/"
+                                   title="详解通信数据协议ProtoBuf"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">读写分离 sync.Map</span>
+                                        <span class="post-nav-title-item text-ellipsis">详解通信数据协议ProtoBuf</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
@@ -651,11 +651,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E8%AF%A6%E8%A7%A3%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%8D%8F%E8%AE%AEProtoBuf/"
-                                   title="详解通信数据协议ProtoBuf"
+                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%20sync.Map/"
+                                   title="读写分离 sync.Map"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">详解通信数据协议ProtoBuf</span>
+                                        <span class="post-nav-title-item text-ellipsis">读写分离 sync.Map</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

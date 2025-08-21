@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -465,9 +465,11 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mu sync.Mutex</span><br><span class="line"><span class="keyword">var</span> count <span class="type">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">increment</span><span class="params">()</span></span> &#123;</span><br><span class="line">    mu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> mu.Unlock()</span><br><span class="line">    count++</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
+
 <p>在上面的例子中，<code>mu.Lock()</code> 会阻止其他 Goroutine 访问 <code>count</code> 变量，直到 <code>mu.Unlock()</code> 被调用为止。</p>
 <p> <code>sync.RWMutex</code> 示例 ：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> rwMu sync.RWMutex</span><br><span class="line"><span class="keyword">var</span> data <span class="type">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">readData</span><span class="params">()</span></span> <span class="type">int</span> &#123;</span><br><span class="line">    rwMu.RLock()</span><br><span class="line">    <span class="keyword">defer</span> rwMu.RUnlock()</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">writeData</span><span class="params">(newData <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">    rwMu.Lock()</span><br><span class="line">    <span class="keyword">defer</span> rwMu.Unlock()</span><br><span class="line">    data = newData</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 
 <p>在上面的例子中，<code>RWMutex</code> 允许多个 Goroutine 同时读操作（使用 <code>RLock()</code>），但写操作（使用 <code>Lock()</code>）会阻塞其他读和写操作。</p>
@@ -484,6 +486,7 @@
 <li><p>在 Golang 中，乐观锁的实现通常依赖于 CAS（Compare-And-Swap）操作。Go 的标准库 <code>sync/atomic</code> 提供了一些原子操作函数，可以用来实现乐观锁。</p>
 <p> <code>sync/atomic</code> 示例 ：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;sync/atomic&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> counter <span class="type">int64</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">increment</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> &#123;</span><br><span class="line">        oldValue := atomic.LoadInt64(&amp;counter)</span><br><span class="line">        newValue := oldValue + <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> atomic.CompareAndSwapInt64(&amp;counter, oldValue, newValue) &#123;</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 
 <p>在上面的例子中，<code>CompareAndSwapInt64</code> 是一个典型的乐观锁操作。如果 <code>counter</code> 的值在读取后没有变化，那么 <code>CompareAndSwapInt64</code> 会将其更新为新值，并返回 <code>true</code>，否则返回 <code>false</code> 并重试。</p>
@@ -632,14 +635,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/%E4%BA%92%E6%96%A5%E9%94%81%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E5%89%96%E6%9E%90/"
-                                   title="互斥锁实现原理剖析"
+                                   href="/2025/08/21/slice%E5%AE%9E%E8%B7%B5%E4%BB%A5%E5%8F%8A%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0/"
+                                   title="slice实践以及底层实现"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">互斥锁实现原理剖析</span>
+                                        <span class="post-nav-title-item text-ellipsis">slice实践以及底层实现</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>

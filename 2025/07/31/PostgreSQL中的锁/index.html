@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
                 </span>
             
         
@@ -517,6 +517,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOCK [ <span class="keyword">TABLE</span> ] [ <span class="keyword">ONLY</span> ] name [ <span class="operator">*</span> ] [, ...] [ <span class="keyword">IN</span> lockmode MODE ] [ NOWAIT ]</span><br></pre></td></tr></table></figure>
 
 
+
 <ul>
 <li>显式锁表必须在事务中进行，在事务外锁表会报错。</li>
 <li>锁定视图时，视图定义中所有出现的表都会被锁定。</li>
@@ -538,8 +539,10 @@
 
 
 
+
 <h2 id="锁的查询"><a href="#锁的查询" class="headerlink" title="锁的查询"></a>锁的查询</h2><p>PostgreSQL提供了一个系统视图<a target="_blank" rel="noopener" href="http://www.postgres.cn/docs/11/view-pg-locks.html"><code>pg_locks</code></a>，包含了当前活动进程持锁的信息。可以锁定的对象包括：关系，页面，元组，事务标识（虚拟的或真实的），其他数据库对象（带有OID）。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> pg_locks</span><br><span class="line">(</span><br><span class="line">    <span class="comment">-- 锁针对的客体对象</span></span><br><span class="line">    locktype           text, <span class="comment">-- 锁类型：关系，页面，元组，事务ID，对象等</span></span><br><span class="line">    database           oid,  <span class="comment">-- 数据库OID</span></span><br><span class="line">    relation           oid,  <span class="comment">-- 关系OID</span></span><br><span class="line">    page               <span class="type">integer</span>, <span class="comment">-- 关系内页号</span></span><br><span class="line">    tuple              <span class="type">smallint</span>, <span class="comment">-- 页内元组号</span></span><br><span class="line">    virtualxid         text,     <span class="comment">-- 虚拟事务ID</span></span><br><span class="line">    transactionid      xid,      <span class="comment">-- 事务ID</span></span><br><span class="line">    classid            oid,      <span class="comment">-- 锁对象所属系统目录表本身的OID</span></span><br><span class="line">    objid              oid,      <span class="comment">-- 系统目录内的对象的OID</span></span><br><span class="line">    objsubid           <span class="type">smallint</span>, <span class="comment">-- 列号</span></span><br><span class="line">  </span><br><span class="line">    <span class="comment">-- 持有|等待锁的主体</span></span><br><span class="line">    virtualtransaction text,     <span class="comment">-- 持锁|等待锁的虚拟事务ID</span></span><br><span class="line">    pid                <span class="type">integer</span>,  <span class="comment">-- 持锁|等待锁的进程PID</span></span><br><span class="line">    mode               text,     <span class="comment">-- 锁模式</span></span><br><span class="line">    granted            <span class="type">boolean</span>,  <span class="comment">-- t已获取，f等待中</span></span><br><span class="line">    fastpath           <span class="type">boolean</span>   <span class="comment">-- t通过fastpath获取</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
 
 
 <table>
@@ -663,8 +666,10 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> tbl <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> mtime <span class="type">TIMESTAMP</span>;</span><br></pre></td></tr></table></figure>
 
 
+
 <p>即使这是一个不带默认值的加列操作（不会重写整个表，因而很快），但本命令需要表上的<code>AccessExclusive</code>锁，如果这张表上面已经有不少查询，那么这个命令可能会等待相当一段时间。因为它需要等待其他查询结束并释放掉锁后才能执行。相应地，因为这条命令已经在等待队列中，后续的查询都会被它所阻塞。因此，当执行此类命令时的一个最佳实践是在此类命令前修改<code>lock_timeout</code>，从而避免雪崩。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> lock_timeout <span class="keyword">TO</span> <span class="string">&#x27;1s&#x27;</span>;</span><br><span class="line"><span class="keyword">ALTER TABLE</span> tbl <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> mtime <span class="type">TIMESTAMP</span>;</span><br></pre></td></tr></table></figure>
+
 
 
 <p>这个设计的好处是，命令不会饿死：不会出现源源不断的短小只读查询无限阻塞住一个排他操作。</p>
@@ -679,14 +684,17 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> tbl <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> mtime <span class="type">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="built_in">CURRENT_TIMESTAMP</span>;</span><br></pre></td></tr></table></figure>
 
 
+
 <p>如果只是个小表，业务负载也不大，那么也许可以直接这么干。但如果是很大的表，以及很高的负载，那么阻塞的时间就会很可观。在这段时间里，命令都会持有表上的<code>AccessExclusive</code>锁阻塞一切访问。</p>
 <p>可以通过先加一个空列，再慢慢更新的方式来最小化锁等待时间：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> tbl <span class="keyword">ADD</span> <span class="keyword">COLUMN</span> mtime <span class="type">TIMESTAMP</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> tbl <span class="keyword">SET</span> mtime <span class="operator">=</span> <span class="built_in">CURRENT_TIMESTAMP</span>; <span class="comment">-- 可以分批进行</span></span><br></pre></td></tr></table></figure>
 
 
+
 <p>这样，第一条加列操作的锁阻塞时间就会非常短，而后面的更新（重写）操作就可以以不阻塞读写的形式慢慢进行，最小化锁阻塞。</p>
 <p>同理，当想要为表添加新的约束时（例如新的主键），也可以采用这种方式：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">UNIQUE</span> INDEX CONCURRENTLY tbl_pk <span class="keyword">ON</span> tbl(id); <span class="comment">-- 很慢，但不阻塞读写</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> tbl <span class="keyword">ADD CONSTRAINT</span> tbl_pk <span class="keyword">PRIMARY KEY</span> <span class="keyword">USING</span> INDEX tbl_pk;  <span class="comment">-- 阻塞读写，但很快</span></span><br></pre></td></tr></table></figure>
+
 
 
 <p>替代单纯的</p>
