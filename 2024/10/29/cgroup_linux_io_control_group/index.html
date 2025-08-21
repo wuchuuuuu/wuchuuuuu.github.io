@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            Cgroup - Linux的IO资源隔离 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        Cgroup - Linux的IO资源隔离
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">元婴问道</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-10-29 20:38:08</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/Linux/">Linux</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E8%B5%84%E6%BA%90%E9%9A%94%E7%A6%BB/">资源隔离</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <h3 id="Linux的IO隔离"><a href="#Linux的IO隔离" class="headerlink" title="Linux的IO隔离"></a>Linux的IO隔离</h3><p>跟内存管理那部分复杂度类似，IO的资源隔离要讲清楚也是比较麻烦的。这部分内容都是这样，配置起来简单，但是要理解清楚确没那么简单。这次是跟Linux内核的IO实现有关系。对于IO的速度限制，实现思路跟CPU和内存都不一样。CPU是针对进程占用时间的比例限制，内存是空间限制，而当我们讨论IO资源隔离的时候，实际上有两个资源需要考虑，一个是空间，另一个是速度。对于空间来说，这个很简单，大不了分区就是了。现实手段中，分区、LVM、磁盘配额、目录配额等等，不同的分区管理方式，不同的文件系统都给出了很多不同的解决方案。所以，空间的限制实际上不是cgroup要解决的问题，那就是说，我们在这里要解决的问题是：如何进行IO数据传输的速度限制。</p>
+<p>限速这件事情，现实中有很多模型、算法去解决这个问题。比如，如果我们想控制高速公路上的汽车单位时间通过率，就让收费站每隔固定时间周期只允许通过固定个数的车就好了。这是一种非常有效的控制手段－－漏斗算法。现实中这种算法可能在特定情况下会造成资源浪费以及用户的体验不好，于是又演化出令牌桶算法。这里我们不去详细分析这些算法，但是我们要知道，对io的限速基本是一个漏斗算法的限速效果。无论如何，这种限速都要有个“收费站”这样的设施来执行限速，那么对于Linux的IO体系来说，这个”收费站”建在哪里呢？于是我们就必须先来了解一下：</p>
+<h3 id="Linux的IO体系"><a href="#Linux的IO体系" class="headerlink" title="Linux的IO体系"></a>Linux的IO体系</h3><p>Linux的IO体系是个层级还算清晰的结构，它基本上分成了如图示这样几层：</p>
+
+
+<p>我们可以通过追踪一个read()系统调用来一窥这些层次的结构，当read()系统调用发生，内核首先会通过汇编指令引发一个软中断，然后根据中断传入的参数查询系统调用影射表，找到read()对应的内核调用方法名，并去执行相关调用，这个系统调用名一般情况下就是sys_read()。从此，便开始了调用在内核中处理的过程的第一步：</p>
+<ol>
+<li>VFS层：虚拟文件系统层。由于内核要跟多种文件系统打交道，而每一种文件系统所实现的数据结构和相关方法都可能不尽相同，所以，内核抽象了这一层，专门用来适配各种文件系统，并对外提供统一操作接口。</li>
+<li>文件系统层：不同的文件系统实现自己的操作过程，提供自己特有的特征，具体不多说了，大家愿意的话自己去看代码即可。</li>
+<li>页缓存层：我们的老朋友了，如果不了解缓存是什么的，可以先来看看<a class="link"   target="_blank" rel="noopener" href="http://pan.baidu.com/s/1dEjMnXv" >Linux内存资源<i class="fas fa-external-link-alt"></i></a>管理部分。</li>
+<li>通用块层：由于绝大多数情况的io操作是跟块设备打交道，所以Linux在此提供了一个类似vfs层的块设备操作抽象层。下层对接各种不同属性的块设备，对上提供统一的Block IO请求标准。</li>
+<li>IO调度层：因为绝大多数的块设备都是类似磁盘这样的设备，所以有必要根据这类设备的特点以及应用的不同特点来设置一些不同的调度算法和队列。以便在不同的应用环境下有针对性的提高磁盘的读写效率，这里就是大名鼎鼎的Linux电梯所起作用的地方。针对机械硬盘的各种调度方法就是在这实现的。</li>
+<li>块设备驱动层：驱动层对外提供相对比较高级的设备操作接口，往往是C语言的，而下层对接设备本身的操作方法和规范。</li>
+<li>块设备层：这层就是具体的物理设备了，定义了各种真对设备操作方法和规范。</li>
+</ol>
+<p>根据这几层的特点，如果你是设计者，你会在哪里实现真对块设备的限速策略呢？6、7都是相关具体设备的，如果在这个层次提供，那就不是内核全局的功能，而是某些设备自己的feture。文件系统层也可以实现，但是如果要全局实现也是不可能的，需要每种文件系统中都实现一遍，成本太高。所以，可以实现限速的地方比较合适的是VFS、缓存层、通用块层和IO调度层。而VFS和page cache这样的机制并不是面向块设备设计的，都是做其他事情用的，虽然也在io体系中，但是并不适合用来做block io的限速。所以这几层中，最适合并且成本最低就可以实现的地方就是IO调度层和通用块层。IO调度层本身已经有队列了，我们只要在队列里面实现一个限速机制即可，但是在IO调度层实现的限速会因为不同调度算法的侧重点不一样而有很多局限性，从通用块层实现的限速，原则上就可以对几乎所有的块设备进行带宽和iops的限制。截止目前（4.3.3内核），IO限速主要实现在这两层中。</p>
+<p>根据IO调度层和通用块层的特点，这两层分别实现了两种不同策略的IO控制策略，也是目前blkio子系统提供的两种控制策略，一个是权重比例方式的控制，另一个是针对IO带宽和IOPS的控制。</p>
+<h3 id="IO调度层"><a href="#IO调度层" class="headerlink" title="IO调度层"></a>IO调度层</h3><p>我们需要先来认识一下IO调度层。这一层要解决的核心问题是，如何提高块设备IO的整体性能？这一层也主要是针对用途最广泛的机械硬盘结构而设计的。众所周知，机械硬盘的存储介质是磁介质，并且是盘状，用磁头在盘片上移动进行数据的寻址，这类似播放一张唱片。这种结构的特点是，顺序的数据读写效率比较理想，但是如果一旦对盘片有随机读写，那么大量的时间都会浪费在磁头的移动上，这时候就会导致每次IO的响应时间很长，极大的降低IO的响应速度。磁头在盘片上寻道的操作，类似电梯调度，如果在寻道的过程中，能把路过的相关磁道的数据请求都“顺便”处理掉，那么就可以在比较小影响响应速度的前提下，提高整体IO的吞吐量。所以，一个好的IO调度算法的需求就此产生。在最开始的阶段，Linux就把这个算法命名为Linux电梯算法。目前在内核中默认开启了三种算法，其实严格算应该是两种，因为第一种叫做noop，就是空操作调度算法，也就是没有任何调度操作，并不对io请求进行排序，仅仅做适当的io合并的一个fifo队列。</p>
+<p>目前内核中默认的调度算法应该是cfq，叫做完全公平队列调度。这个调度算法人如其名，它试图给所有进程提供一个完全公平的IO操作环境。它为每个进程创建一个同步IO调度队列，并默认以时间片和请求数限定的方式分配IO资源，以此保证每个进程的IO资源占用是公平的，cfq还实现了针对进程级别的优先级调度，这里我们不去细节解释。我们在此只需要知道，既然时间片分好了，优先级实现了，那么cfq肯定是实现进程级别的权重比例分配的最好方案。内核就是这么做的，cgroup blkio的权重比例限制就是基于cfq调度器实现的。如果你要使用权重比例分配，请先确定对应的块设备的IO调度算法是cfq。</p>
+<p>查看和修改的方法是：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">zorro</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> ~]<span class="variable">$</span> <span class="built_in">cat</span> /sys/block/sda/queue/scheduler </span><br><span class="line">noop deadline [<span class="type">cfq</span>] </span><br><span class="line">[<span class="type">zorro</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> ~]<span class="variable">$</span> <span class="built_in">echo</span> cfq &gt; /sys/block/sda/queue/scheduler</span><br></pre></td></tr></table></figure>
+
+<p>cfq是通用服务器比较好的IO调度算法选择，对桌面用户也是比较好的选择。但是对于很多IO压力较大的场景就并不是很适应，尤其是IO压力集中在某些进程上的场景。因为这种场景我们需要更多的满足某个或者某几个进程的IO响应速度，而不是让所有的进程公平的使用IO，比如数据库应用。</p>
+<p>deadline调度（最终期限调度）就是更适应这样的场景的解决方案。deadline实现了四个队列，其中两个分别处理正常read和write，按扇区号排序，进行正常io的合并处理以提高吞吐量.因为IO请求可能会集中在某些磁盘位置，这样会导致新来的请求一直被合并，于是可能会有其他磁盘位置的io请求被饿死。于是实现了另外两个处理超时read和write的队列，按请求创建时间排序，如果有超时的请求出现，就放进这两个队列，调度算法保证超时（达到最终期限时间）的队列中的请求会优先被处理，防止请求被饿死。由于deadline的特点，无疑在这里无法区分进程，也就不能实现针对进程的io资源控制。</p>
+<p>其实不久前，内核还是默认标配四种算法，还有一种叫做as的算法（Anticipatory scheduler），预测调度算法。一个高大上的名字，搞得我一度认为Linux内核都会算命了。结果发现，无非是在基于deadline算法做io调度的之前等一小会时间，如果这段时间内有可以合并的io请求到来，就可以合并处理，提高deadline调度的在顺序读写情况下的数据吞吐量。其实这根本不是啥预测，我觉得不如叫撞大运调度算法。估计结果是不仅没有提高吞吐量，还降低了响应速度，所以内核干脆把它从默认配置里删除了。毕竟Linux的宗旨是实用。</p>
+<p>根据以上几种io调度算法的简单分析，我们也能对各种调度算法的使用场景有一些大致的思路了。从原理上看，cfq是一种比较通用的调度算法，是一种以进程为出发点考虑的调度算法，保证大家尽量公平。deadline是一种以提高机械硬盘吞吐量为思考出发点的调度算法，只有当有io请求达到最终期限的时候才进行调度，非常适合业务比较单一并且IO压力比较重的业务，比如数据库。而noop呢？其实如果我们把我们的思考对象拓展到固态硬盘，那么你就会发现，无论cfq还是deadline，都是针对机械硬盘的结构进行的队列算法调整，而这种调整对于固态硬盘来说，完全没有意义。对于固态硬盘来说，IO调度算法越复杂，效率就越低，因为额外要处理的逻辑越多。所以，固态硬盘这种场景下，使用noop是最好的，deadline次之，而cfq由于复杂度的原因，无疑效率最低。但是，如果你想对你的固态硬盘做基于权重比例的IO限速的话，那就没啥办法了，毕竟这时候，效率并不是你的需求，要不你限速干嘛？</p>
+<h3 id="通用块设备层"><a href="#通用块设备层" class="headerlink" title="通用块设备层"></a>通用块设备层</h3><p>这层的作用我这里就不再复述了，本节其实主要想解释的是，既然这里实现了对blkio的带宽和iops的速度限制，那么有没有什么需要注意的地方？这自然是有的。首先我们还是要先来搞清楚IO中的几个概念。</p>
+<p> 一般IO ：</p>
+<p>一个正常的文件io，需要经过vfs -&gt; buffer\page cache -&gt; 文件系统 -&gt; 通用块设备层 -&gt; IO调度层 -&gt; 块设备驱动 -&gt; 硬件设备这所有几个层次。其实这就是一般IO。当然，不同的状态可能会有变化，比如一个进程正好open并read一个已经存在于page cache中的数据。这样的事情我们排出在外不分析。那么什么是比较特别的io呢？</p>
+<p> Direct IO ：</p>
+<p>中文也可以叫直接IO操作，其特点是，VFS之后跳过buffer\page cache层，直接从文件系统层进行操作。那么就意味着，无论读还是写，都不会进行cache。我们基本上可以理解这样的io看起来效率要低很多，直接看到的速度就是设备的速度，并且缺少了cache层对数据的缓存之后，文件系统和数据块的操作效率直接暴露给了应用程序，块的大小会直接影响io速度。</p>
+<p> Sync IO  &amp;  write-through :</p>
+<p>中文叫做同步IO操作，如果是写操作的话也叫write-through，这个操作往往容易跟上面的DIO搞混，因为看起来他们速度上差不多，但是是有本质区别的。这种方式写的数据要等待存储写入返回才能成功返回，所以跟DIO效率差不多，但是，写的数据仍然是要在cache中写入的，这样其他一般IO的程度仍然可以使用cache机制加速IO操作。所以，这里的sync的意思就是，在执行write操作的时候，让cache和存储上的数据一致。那么他跟一般IO其实一样，数据是要经过cache层的。</p>
+<p> write-back :</p>
+<p>既然明白了write-thuough，那么write-back就好理解了，无非就是将目前在cache中还没写回存储的脏数据写回到存储。这个名词一般指的是一个独立的过程，这个过程不是随着应用的写而发生，这往往是内核自己找个时间来单独操作的。说白了就是，应用写文件，感觉自己很快写完了，其实内核都把数据放倒cache里了，然后内核自己找时间再去写回到存储上。实际上write-back只是在一般IO的情况下，保证数据一致性的一种机制而已。</p>
+<p>有人将IO过程中，以是否使用缓冲（缓存）的区别，将IO分成了缓存IO（Buffered IO）和直接IO（Direct io）。其实就是名词上的不同而已。这里面的buffer的含义跟内存中buffer cache有概念上的不同。实际上这里Buffered IO的含义，相当于内存中的buffer cache+page cache，就是IO经过缓存的意思。到这我们思考一个问题，如果cgroup针对IO的资源限制实现在了通用块设备层，那么将会对哪些IO操作有影响呢？其实原则上说都有影响，因为绝大多数数据都是要经过通用块设备层写入存储的，但是对于应用程序来说感受可能不一样。在一般IO的情况下，应用程序很可能很快的就写完了数据（在数据量小于缓存空间的情况下），然后去做其他事情了。这时应用程序感受不到自己被限速了，而内核在处理write-back的阶段，由于没有相关page cache中的inode是属于那个cgroup的信息记录，所以所有的page cache的回写只能放到cgroup的root组中进行限制，而不能在其他cgroup中进行限制，因为root组的cgroup一般是不做限制的，所以就相当于目前的cgroup的blkio对buffered IO是没有限速支持的。这个功能将在使用了unified-hierarchy体系的cgroup v2中的部分文件系统（ext系列）已经得到得到支持，目前这个功能还在开发中，据说将在4.5版本的内核中正式发布。</p>
+<p>而在Sync IO和Direct IO的情况下，由于应用程序写的数据是不经过缓存层的，所以能直接感受到速度被限制，一定要等到整个数据按限制好的速度写完或者读完，才能返回。这就是当前cgroup的blkio限制所能起作用的环境限制。了解了这个之后，我们就可以来看：</p>
+<h3 id="blkio配置方法"><a href="#blkio配置方法" class="headerlink" title="blkio配置方法"></a>blkio配置方法</h3><h4 id="权重比例分配"><a href="#权重比例分配" class="headerlink" title="权重比例分配"></a>权重比例分配</h4><p>我们这次直接使用命令行的方式对cgroup进行操作。在我们的系统上，我们现在想创建两个cgroup组，一个叫test1，一个叫test2。我们想让这两个组的进程在对&#x2F;dev&#x2F;sdb，设备号为8:16的这个磁盘进行读写的时候按权重比例进行io资源的分配。具体配置方法如下：</p>
+<p>首先确认系统上已经mount了相关的cgroup目录：</p>
+<pre><code>[root@zorrozou-pc0 ~]# ls /sys/fs/cgroup/blkio/
+blkio.io_merged		   blkio.io_service_bytes_recursive  blkio.io_wait_time		   blkio.sectors		    blkio.throttle.read_iops_device   blkio.weight	     tasks
+blkio.io_merged_recursive  blkio.io_serviced		     blkio.io_wait_time_recursive  blkio.sectors_recursive	    blkio.throttle.write_bps_device   blkio.weight_device
+blkio.io_queued		   blkio.io_serviced_recursive	     blkio.leaf_weight		   blkio.throttle.io_service_bytes  blkio.throttle.write_iops_device  cgroup.clone_children
+blkio.io_queued_recursive  blkio.io_service_time	     blkio.leaf_weight_device	   blkio.throttle.io_serviced	    blkio.time			      cgroup.procs
+blkio.io_service_bytes	   blkio.io_service_time_recursive   blkio.reset_stats		   blkio.throttle.read_bps_device   blkio.time_recursive	      notify_on_release
+</code></pre>
+<p>然后创建两个针对blkio的cgroup</p>
+<pre><code>[root@zorrozou-pc0 ~]# mkdir /sys/fs/cgroup/blkio/test1
+[root@zorrozou-pc0 ~]# mkdir /sys/fs/cgroup/blkio/test2
+</code></pre>
+<p>相关目录下会自动产生相关配置项：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> ~]<span class="comment"># ls /sys/fs/cgroup/blkio/test&#123;1,2&#125;</span></span><br><span class="line">/sys/fs/cgroup/blkio/test1:</span><br><span class="line">blkio.io_merged		   blkio.io_service_bytes_recursive  blkio.io_wait_time		   blkio.sectors		    blkio.throttle.read_iops_device   blkio.weight	     tasks</span><br><span class="line">blkio.io_merged_recursive  blkio.io_serviced		     blkio.io_wait_time_recursive  blkio.sectors_recursive	    blkio.throttle.write_bps_device   blkio.weight_device</span><br><span class="line">blkio.io_queued		   blkio.io_serviced_recursive	     blkio.leaf_weight		   blkio.throttle.io_service_bytes  blkio.throttle.write_iops_device  cgroup.clone_children</span><br><span class="line">blkio.io_queued_recursive  blkio.io_service_time	     blkio.leaf_weight_device	   blkio.throttle.io_serviced	    blkio.time			      cgroup.procs</span><br><span class="line">blkio.io_service_bytes	   blkio.io_service_time_recursive   blkio.reset_stats		   blkio.throttle.read_bps_device   blkio.time_recursive	      notify_on_release</span><br><span class="line"></span><br><span class="line">/sys/fs/cgroup/blkio/test2:</span><br><span class="line">blkio.io_merged		   blkio.io_service_bytes_recursive  blkio.io_wait_time		   blkio.sectors		    blkio.throttle.read_iops_device   blkio.weight	     tasks</span><br><span class="line">blkio.io_merged_recursive  blkio.io_serviced		     blkio.io_wait_time_recursive  blkio.sectors_recursive	    blkio.throttle.write_bps_device   blkio.weight_device</span><br><span class="line">blkio.io_queued		   blkio.io_serviced_recursive	     blkio.leaf_weight		   blkio.throttle.io_service_bytes  blkio.throttle.write_iops_device  cgroup.clone_children</span><br><span class="line">blkio.io_queued_recursive  blkio.io_service_time	     blkio.leaf_weight_device	   blkio.throttle.io_serviced	    blkio.time			      cgroup.procs</span><br><span class="line">blkio.io_service_bytes	   blkio.io_service_time_recursive   blkio.reset_stats		   blkio.throttle.read_bps_device   blkio.time_recursive	      notify_on_release</span><br></pre></td></tr></table></figure>
+
+
+<p>之后我们就可以进行限制了。针对cgroup进行权重限制的配置有 blkio.weight ，是单纯针对cgroup进行权重配置的，还有 blkio.weight_device 可以针对设备单独进行限制，我们都来试试。首先我们想设置test1和test2使用任何设备的io权重比例都是1:2：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo 100 &gt; /sys/fs/cgroup/blkio/test1/blkio.weight</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo 200 &gt; /sys/fs/cgroup/blkio/test2/blkio.weight</span></span><br></pre></td></tr></table></figure>
+
+<p>注意权重设置的取值范围为：10-1000。然后我们来写一个测试脚本：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">testfile1=/home/test1</span><br><span class="line">testfile2=/home/test2</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -<span class="type">e</span> <span class="variable">$testfile1</span> ]</span><br><span class="line">then</span><br><span class="line">    <span class="built_in">rm</span> <span class="literal">-rf</span> <span class="variable">$testfile1</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -<span class="type">e</span> <span class="variable">$testfile2</span> ]</span><br><span class="line">then</span><br><span class="line">    <span class="built_in">rm</span> <span class="literal">-rf</span> <span class="variable">$testfile2</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">sync</span><br><span class="line"><span class="built_in">echo</span> <span class="number">3</span> &gt; /proc/sys/vm/drop_caches</span><br><span class="line"></span><br><span class="line">cgexec <span class="literal">-g</span> blkio:test1 dd <span class="keyword">if</span>=/dev/zero of=<span class="variable">$testfile1</span> oflag=direct bs=<span class="number">1</span>M count=<span class="number">1023</span> &amp;</span><br><span class="line"></span><br><span class="line">cgexec <span class="literal">-g</span> blkio:test2 dd <span class="keyword">if</span>=/dev/zero of=<span class="variable">$testfile2</span> oflag=direct bs=<span class="number">1</span>M count=<span class="number">1023</span> &amp;</span><br></pre></td></tr></table></figure>
+
+
+<p>我们dd的时候使用的是direct标记，在这使用sync和不加任何标记的话都达不到效果。因为权重限制是基于cfq实现，cfq要标记进程，而buffered IO都是内核同步，无法标记进程。使用iotop查看限制效果：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># iotop -b -n1|grep direct</span></span><br><span class="line"> <span class="number">1519</span> be/<span class="number">4</span> root        <span class="number">0.00</span> B/s  <span class="number">110.00</span> M/s  <span class="number">0.00</span> % <span class="number">99.99</span> % dd <span class="keyword">if</span>=/dev/zero of=/home/test2 oflag=direct bs=<span class="number">1</span>M count=<span class="number">1023</span></span><br><span class="line"> <span class="number">1518</span> be/<span class="number">4</span> root        <span class="number">0.00</span> B/s   <span class="number">55.00</span> M/s  <span class="number">0.00</span> % <span class="number">99.99</span> % dd <span class="keyword">if</span>=/dev/zero of=/home/test1 oflag=direct bs=<span class="number">1</span>M count=<span class="number">1023</span></span><br></pre></td></tr></table></figure>
+
+<p>却是达到了1:2比例限速的效果。此时对于磁盘读取的限制效果也一样，具体测试用例大家可以自己编写。读取的时候要注意，仍然要保证读取的文件不在page cache中，方法就是：echo 3 &gt; &#x2F;proc&#x2F;sys&#x2F;vm&#x2F;drop_caches。因为在page cache中的数据已经在内存里了，直接修改是直接改内存中的内容，只有write-back的时候才会经过cfq。</p>
+<p>我们再来试一下针对设备的权重分配，请注意设备号的填写格式：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo &quot;8:16 400&quot; &gt; /sys/fs/cgroup/blkio/test1/blkio.weight_device </span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo &quot;8:16 200&quot; &gt; /sys/fs/cgroup/blkio/test2/blkio.weight_device </span></span><br><span class="line"></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># iotop -b -n1|grep direct</span></span><br><span class="line"> <span class="number">1800</span> be/<span class="number">4</span> root        <span class="number">0.00</span> B/s  <span class="number">102.24</span> M/s  <span class="number">0.00</span> % <span class="number">99.99</span> % dd <span class="keyword">if</span>=/dev/zero of=/home/test1 oflag=direct bs=<span class="number">1</span>M count=<span class="number">1023</span></span><br><span class="line"> <span class="number">1801</span> be/<span class="number">4</span> root        <span class="number">0.00</span> B/s   <span class="number">51.12</span> M/s  <span class="number">0.00</span> % <span class="number">99.99</span> % dd <span class="keyword">if</span>=/dev/zero of=/home/test2 oflag=direct bs=<span class="number">1</span>M count=<span class="number">1023</span></span><br></pre></td></tr></table></figure>
+
+<p>我们会发现，这时权重确实是按照最后一次的设置，test1和test2变成了2:1的比例，而不是1:2了。这里要说明的就是，注意blkio.weight_device的设置会覆盖blkio.weight的设置，因为前者的设置精确到了设备，Linux在这里的策略是，越精确越优先。</p>
+<h4 id="读写带宽和iops限制"><a href="#读写带宽和iops限制" class="headerlink" title="读写带宽和iops限制"></a>读写带宽和iops限制</h4><p>针对读写带宽和iops的限制都是绝对值限制，所以我们不用两个cgroup做对比了。我们就设置test1的写带宽速度为1M&#x2F;s:</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo &quot;8:16  1048576&quot; &gt; /sys/fs/cgroup/blkio/test1/blkio.throttle.write_bps_device</span></span><br><span class="line"></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># sync</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo 3 &gt; /proc/sys/vm/drop_caches</span></span><br><span class="line"></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># cgexec -g blkio:test1 dd if=/dev/zero of=/home/test oflag=direct count=1024 bs=1M</span></span><br><span class="line">^C21+<span class="number">0</span> records <span class="keyword">in</span></span><br><span class="line"><span class="number">21</span>+<span class="number">0</span> records out</span><br><span class="line"><span class="number">22020096</span> bytes (<span class="number">22</span> MB) copied, <span class="number">21.012</span> s, <span class="number">1.0</span> MB/s</span><br></pre></td></tr></table></figure>
+
+<p>此时不用dd命令执行完，稍等一下中断执行就能看到速度确实限制在了1M／s。写的同时，iostat显示为：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">zorro</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> ~]<span class="variable">$</span> iostat <span class="literal">-x</span> <span class="number">1</span></span><br><span class="line">Linux <span class="number">4.3</span>.<span class="number">3</span><span class="literal">-2-ARCH</span> (zorrozou<span class="literal">-pc0</span>.tencent.com) 	<span class="number">2016</span>年<span class="number">01</span>月<span class="number">15</span>日 	_x86_64_	(<span class="number">4</span> CPU)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">0.50</span>    <span class="number">0.00</span>    <span class="number">0.50</span>   <span class="number">25.13</span>    <span class="number">0.00</span>   <span class="number">73.87</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">1.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>  <span class="number">2048.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">1.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>  <span class="number">2048.00</span>     <span class="number">1.00</span> <span class="number">1000.00</span>    <span class="number">0.00</span> <span class="number">1000.00</span> <span class="number">1000.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line"></span><br><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">        <span class="number">1.25</span>    <span class="number">0.00</span>    <span class="number">0.50</span>   <span class="number">24.81</span>    <span class="number">0.00</span>   <span class="number">73.43</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">5.00</span>    <span class="number">0.00</span>    <span class="number">6.00</span>     <span class="number">0.00</span>  <span class="number">1060.00</span>   <span class="number">353.33</span>     <span class="number">0.06</span>    <span class="number">9.33</span>    <span class="number">0.00</span>    <span class="number">9.33</span>   <span class="number">9.50</span>   <span class="number">5.70</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">10.00</span>     <span class="number">0.00</span>  <span class="number">1060.00</span>   <span class="number">212.00</span>     <span class="number">1.08</span>  <span class="number">109.00</span>    <span class="number">0.00</span>  <span class="number">109.00</span> <span class="number">100.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line"></span><br><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">1.25</span>    <span class="number">0.00</span>    <span class="number">1.00</span>   <span class="number">24.44</span>    <span class="number">0.00</span>   <span class="number">73.32</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">1.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>  <span class="number">2048.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">1.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>  <span class="number">2048.00</span>     <span class="number">1.00</span>  <span class="number">993.00</span>    <span class="number">0.00</span>  <span class="number">993.00</span> <span class="number">1000.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line"></span><br><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">1.50</span>    <span class="number">0.25</span>    <span class="number">0.75</span>   <span class="number">24.50</span>    <span class="number">0.00</span>   <span class="number">73.00</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">1.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>  <span class="number">2048.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">1.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>  <span class="number">2048.00</span>     <span class="number">1.00</span> <span class="number">1000.00</span>    <span class="number">0.00</span> <span class="number">1000.00</span> <span class="number">1000.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到写的速度确实为1024wkB&#x2F;s左右。我们再来试试读，先创建一个大文件，此处没有限速：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># dd if=/dev/zero of=/home/test oflag=direct count=1024 bs=1M</span></span><br><span class="line"><span class="number">1024</span>+<span class="number">0</span> records <span class="keyword">in</span></span><br><span class="line"><span class="number">1024</span>+<span class="number">0</span> records out</span><br><span class="line"><span class="number">1073741824</span> bytes (<span class="number">1.1</span> GB) copied, <span class="number">10.213</span> s, <span class="number">105</span> MB/s</span><br></pre></td></tr></table></figure>
+
+<p>然后进行限速设置并确认：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># sync</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo 3 &gt; /proc/sys/vm/drop_caches </span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo &quot;8:16  1048576&quot; &gt; /sys/fs/cgroup/blkio/test1/blkio.throttle.read_bps_device</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># cgexec -g blkio:test1 dd if=/home/test of=/dev/null iflag=direct count=1024 bs=1M</span></span><br><span class="line">^C15+<span class="number">0</span> records <span class="keyword">in</span></span><br><span class="line"><span class="number">14</span>+<span class="number">0</span> records out</span><br><span class="line"><span class="number">14680064</span> bytes (<span class="number">15</span> MB) copied, <span class="number">15.0032</span> s, <span class="number">978</span> kB/s</span><br></pre></td></tr></table></figure>
+
+<p>iostat结果：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">0.75</span>    <span class="number">0.00</span>    <span class="number">0.75</span>   <span class="number">24.63</span>    <span class="number">0.00</span>   <span class="number">73.88</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">2.00</span>    <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">2.00</span>    <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">1.65</span>  <span class="number">825.00</span>  <span class="number">825.00</span>    <span class="number">0.00</span> <span class="number">500.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line"></span><br><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">0.75</span>    <span class="number">0.00</span>    <span class="number">0.50</span>   <span class="number">24.87</span>    <span class="number">0.00</span>   <span class="number">73.87</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">2.00</span>    <span class="number">0.00</span>    <span class="number">2.00</span>     <span class="number">0.00</span>    <span class="number">16.00</span>    <span class="number">16.00</span>     <span class="number">0.02</span>   <span class="number">10.00</span>    <span class="number">0.00</span>   <span class="number">10.00</span>  <span class="number">10.00</span>   <span class="number">2.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">2.00</span>    <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">2.00</span>    <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>  <span class="number">1024.00</span>     <span class="number">1.65</span>  <span class="number">825.00</span>  <span class="number">825.00</span>    <span class="number">0.00</span> <span class="number">500.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br></pre></td></tr></table></figure>
+
+<p>最后是iops的限制，我就不废话了，直接上命令执行结果：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo &quot;8:16  20&quot; &gt; /sys/fs/cgroup/blkio/test1/blkio.throttle.write_iops_device </span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># rm /home/test </span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># sync</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># echo 3 &gt; /proc/sys/vm/drop_caches</span></span><br><span class="line">[<span class="type">root</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> <span class="type">zorro</span>]<span class="comment"># cgexec -g blkio:test1 dd if=/dev/zero of=/home/test oflag=direct count=1024 bs=1M</span></span><br><span class="line">^C121+<span class="number">0</span> records <span class="keyword">in</span></span><br><span class="line"><span class="number">121</span>+<span class="number">0</span> records out</span><br><span class="line"><span class="number">126877696</span> bytes (<span class="number">127</span> MB) copied, <span class="number">12.0576</span> s, <span class="number">10.5</span> MB/s</span><br><span class="line"></span><br><span class="line">[<span class="type">zorro</span>@<span class="type">zorrozou</span>-<span class="type">pc0</span> ~]<span class="variable">$</span> iostat <span class="literal">-x</span> <span class="number">1</span></span><br><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">0.50</span>    <span class="number">0.00</span>    <span class="number">0.25</span>   <span class="number">24.81</span>    <span class="number">0.00</span>   <span class="number">74.44</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">20.00</span>     <span class="number">0.00</span> <span class="number">10240.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">20.00</span>     <span class="number">0.00</span> <span class="number">10240.00</span>  <span class="number">1024.00</span>     <span class="number">2.00</span>  <span class="number">100.00</span>    <span class="number">0.00</span>  <span class="number">100.00</span>  <span class="number">50.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line"></span><br><span class="line">avg<span class="literal">-cpu</span>:  %user   %nice %system %iowait  %steal   %idle</span><br><span class="line">       <span class="number">0.75</span>    <span class="number">0.00</span>    <span class="number">0.25</span>   <span class="number">24.31</span>    <span class="number">0.00</span>   <span class="number">74.69</span></span><br><span class="line"></span><br><span class="line">Device:         rrqm/s   wrqm/s     <span class="built_in">r</span>/s     w/s    rkB/s    wkB/s avgrq<span class="literal">-sz</span> avgqu<span class="literal">-sz</span>   await r_await w_await  svctm  %util</span><br><span class="line">sda               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">sdb               <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">20.00</span>     <span class="number">0.00</span> <span class="number">10240.00</span>  <span class="number">1024.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-0</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">20.00</span>     <span class="number">0.00</span> <span class="number">10240.00</span>  <span class="number">1024.00</span>     <span class="number">2.00</span>  <span class="number">100.00</span>    <span class="number">0.00</span>  <span class="number">100.00</span>  <span class="number">50.00</span> <span class="number">100.00</span></span><br><span class="line">dm<span class="literal">-1</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-2</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br><span class="line">dm<span class="literal">-3</span>              <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>     <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>    <span class="number">0.00</span>   <span class="number">0.00</span>   <span class="number">0.00</span></span><br></pre></td></tr></table></figure>
+
+<p>iops的读限制我就不在废话了，大家可以自己做实验测试一下。</p>
+<h3 id="其他相关文件"><a href="#其他相关文件" class="headerlink" title="其他相关文件"></a>其他相关文件</h3><h4 id="针对权重比例限制的相关文件"><a href="#针对权重比例限制的相关文件" class="headerlink" title="针对权重比例限制的相关文件"></a>针对权重比例限制的相关文件</h4><p> blkio.leaf_weight[_device] </p>
+<p>其意义等同于blkio.weight[_device]，主要表示当本cgroup中有子cgroup的时候，本cgroup的进程和子cgroup中的进程所分配的资源比例是怎么样的。举个例子说吧，假设有一组cgroups的关系是这样的：</p>
+<pre><code>          root
+       /    |   \
+      A     B    leaf
+     400   200   200
+</code></pre>
+<p>leaf就表示root组下的进程所占io资源的比例。<br>此时A组中的进程可以占用的比例为：400&#x2F;（400+200+200） ＊ 100% ＝ 50%<br>B为：200&#x2F;（400+200+200） ＊ 100% ＝ 25%<br>而root下的进程为：200&#x2F;（400+200+200） ＊ 100% ＝ 25%</p>
+<p> blkio.time </p>
+<p>统计相关设备的分配给本组的io处理时间，单位为ms。权重就是依据此时间比例进行分配的。</p>
+<p> blkio.sectors </p>
+<p>统计本cgroup对设备的读写扇区个数。</p>
+<p> blkio.io_service_bytes </p>
+<p>统计本cgroup对设备的读写字节个数。</p>
+<p> blkio.io_serviced </p>
+<p>统计本cgroup对设备的读写操作个数。</p>
+<p> blkio.io_service_time </p>
+<p>统计本cgroup对设备的各种操作时间。时间单位是ns。</p>
+<p> blkio.io_wait_time </p>
+<p>统计本cgroup对设备的各种操作的等待时间。时间单位是ns。</p>
+<p> blkio.io_merged </p>
+<p>统计本cgroup对设备的各种操作的合并处理次数。</p>
+<p> blkio.io_queued </p>
+<p>统计本cgroup对设备的各种操作的当前正在排队的请求个数。</p>
+<p> blkio.*_recursive </p>
+<p>这一堆文件是相对应的不带_recursive的文件的递归显示版本，所谓递归的意思就是，它会显示出包括本cgroup在内的衍生cgroup的所有信息的总和。</p>
+<h4 id="针对带宽和iops限制的相关文件"><a href="#针对带宽和iops限制的相关文件" class="headerlink" title="针对带宽和iops限制的相关文件"></a>针对带宽和iops限制的相关文件</h4><p> blkio.throttle.io_serviced </p>
+<p>统计本cgroup对设备的读写操作个数。</p>
+<p> blkio.throttle.io_service_bytes </p>
+<p>统计本cgroup对设备的读写字节个数。</p>
+<p> blkio.reset_stats </p>
+<p>对本文件写入一个int可以对以上所有文件的值置零，重新开始累计。</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>其实一直纠结要不要写这部分IO隔离的文档，因为看上去意义不大。一则因为目前IO隔离似乎工作场景里用的不多，二则因为目前内核中这部分代码还在进行较大变化的调整，还要继续加入其它功能。从内核Linux 3.16版本之后，cgroup调整方向，开始了基于unified hierarchy架构的cgroup v2。IO部分在write-back部分进行了较大调整，加入了对buffered IO的资源限制。我们这次系统环境为ArchLinux，内核版本为Linux 4.3.3，虽然环境中的unified hierarchy的开发版本功能已经部分支持了，但是思考再三还是暂时不加入到此文档中。新架构的cgoup v2预计会跟随Linux 4.5一起推出，到时候我们再做详细分析好了。</p>
+<p>附送一张更详细的Linux 4.0 IO协议栈框架图:</p>
+<img  
+                       lazyload
+                       alt="image"
+                       data-src="https://www.thomas-krenn.com/de/wikiDE/images/b/ba/Linux-storage-stack-diagram_v4.0.png"
+                        class="" width="700" height="1000" title="vi-vim-cheat-sheet"
+                 >
+
+<hr>
+<blockquote>
+<p>文章来源于：<a class="link"   target="_blank" rel="noopener" href="https://github.com/zorrozou" >https://github.com/zorrozou<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                Cgroup - Linux的IO资源隔离
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2024/10/29/cgroup_linux_io_control_group/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2024-10-29 20:38</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E8%B5%84%E6%BA%90%E9%9A%94%E7%A6%BB/">资源隔离</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2024/10/29/cgroup_linux_cpu_control_group/"
+                                   title="Cgroup - 从CPU资源隔离说起"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Cgroup - 从CPU资源隔离说起</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2024/10/29/cgroup_linux_memory_control_group/"
+                                   title="Cgroup - Linux内存资源管理"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Cgroup - Linux内存资源管理</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E7%9A%84IO%E9%9A%94%E7%A6%BB"><span class="nav-text">Linux的IO隔离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E7%9A%84IO%E4%BD%93%E7%B3%BB"><span class="nav-text">Linux的IO体系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO%E8%B0%83%E5%BA%A6%E5%B1%82"><span class="nav-text">IO调度层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9D%97%E8%AE%BE%E5%A4%87%E5%B1%82"><span class="nav-text">通用块设备层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blkio%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-text">blkio配置方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E9%87%8D%E6%AF%94%E4%BE%8B%E5%88%86%E9%85%8D"><span class="nav-text">权重比例分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%B8%A6%E5%AE%BD%E5%92%8Ciops%E9%99%90%E5%88%B6"><span class="nav-text">读写带宽和iops限制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-text">其他相关文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%92%88%E5%AF%B9%E6%9D%83%E9%87%8D%E6%AF%94%E4%BE%8B%E9%99%90%E5%88%B6%E7%9A%84%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-text">针对权重比例限制的相关文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%92%88%E5%AF%B9%E5%B8%A6%E5%AE%BD%E5%92%8Ciops%E9%99%90%E5%88%B6%E7%9A%84%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-text">针对带宽和iops限制的相关文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E"><span class="nav-text">最后</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2025
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E7%9A%84IO%E9%9A%94%E7%A6%BB"><span class="nav-text">Linux的IO隔离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E7%9A%84IO%E4%BD%93%E7%B3%BB"><span class="nav-text">Linux的IO体系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IO%E8%B0%83%E5%BA%A6%E5%B1%82"><span class="nav-text">IO调度层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E5%9D%97%E8%AE%BE%E5%A4%87%E5%B1%82"><span class="nav-text">通用块设备层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blkio%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-text">blkio配置方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E9%87%8D%E6%AF%94%E4%BE%8B%E5%88%86%E9%85%8D"><span class="nav-text">权重比例分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E5%B8%A6%E5%AE%BD%E5%92%8Ciops%E9%99%90%E5%88%B6"><span class="nav-text">读写带宽和iops限制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-text">其他相关文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%92%88%E5%AF%B9%E6%9D%83%E9%87%8D%E6%AF%94%E4%BE%8B%E9%99%90%E5%88%B6%E7%9A%84%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-text">针对权重比例限制的相关文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%92%88%E5%AF%B9%E5%B8%A6%E5%AE%BD%E5%92%8Ciops%E9%99%90%E5%88%B6%E7%9A%84%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6"><span class="nav-text">针对带宽和iops限制的相关文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%90%8E"><span class="nav-text">最后</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>
