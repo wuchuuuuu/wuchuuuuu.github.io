@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -481,6 +481,7 @@
 <h4 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h4><p>在 Go 的运行时中，<code>gopark</code> 的实现涉及底层的调度和同步机制，但在用户层面，我们通常不直接调用这个函数。以下是一个简化的描述：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">gopark</span><span class="params">(reason <span class="type">string</span>, lock *runtime.Mutex, seq <span class="type">uintptr</span>, traceskip <span class="type">int</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 标记当前 Goroutine 需要挂起</span></span><br><span class="line">    runtime.goparkunlock(lock)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 将当前 Goroutine 添加到等待队列</span></span><br><span class="line">    <span class="comment">// 当前 Goroutine 进入等待状态，直到被唤醒</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 调度器切换到其他 Goroutine</span></span><br><span class="line">    runtime.schedule()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <h3 id="2-goready-函数"><a href="#2-goready-函数" class="headerlink" title="2. goready 函数"></a>2. <code>goready</code> 函数</h3><h4 id="作用-1"><a href="#作用-1" class="headerlink" title="作用"></a>作用</h4><p><code>goready</code> 函数用于将一个之前被挂起的 Goroutine 恢复为可运行状态，使其能够再次参与调度并被执行。它通常在某些事件发生时调用，例如 IO 操作完成、锁被释放等。</p>
 <h4 id="工作流程-1"><a href="#工作流程-1" class="headerlink" title="工作流程"></a>工作流程</h4><ol>
 <li>标记 Goroutine 为就绪 ：</li>
@@ -502,6 +503,7 @@
 </ul>
 <h4 id="代码示例-1"><a href="#代码示例-1" class="headerlink" title="代码示例"></a>代码示例</h4><p>在 Go 的运行时中，<code>goready</code> 的实现涉及底层的调度和同步机制，具体实现通常较复杂。以下是一个简化的描述：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">goready</span><span class="params">(g *g, reason <span class="type">string</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 将 Goroutine 从等待队列中移除</span></span><br><span class="line">    <span class="comment">// 标记 Goroutine 为就绪状态</span></span><br><span class="line">    g.status = Gwaiting</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 将 Goroutine 添加到调度队列中</span></span><br><span class="line">    runtime.schedule()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <h3 id="3-gopark-和-goready-的核心原理分析"><a href="#3-gopark-和-goready-的核心原理分析" class="headerlink" title="3.   gopark 和 goready 的核心原理分析"></a>3.   <code>gopark</code> 和 <code>goready</code> 的核心原理分析</h3><h4 id="调度机制"><a href="#调度机制" class="headerlink" title="调度机制"></a>调度机制</h4><ul>
 <li><code>gopark</code>  和  <code>goready</code>  是 Go 运行时调度机制的核心部分，用于管理 Goroutine 的挂起和恢复。</li>
@@ -638,14 +640,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/go%20runtime%20%E7%AE%80%E6%9E%90/"
-                                   title="go runtime 简析"
+                                   href="/2025/08/21/gofunc%E8%BF%87%E7%A8%8B/"
+                                   title="gofunc过程"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">go runtime 简析</span>
+                                        <span class="post-nav-title-item text-ellipsis">gofunc过程</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>

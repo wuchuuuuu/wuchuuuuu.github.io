@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -455,6 +455,7 @@
 <h3 id="1-等待-I-O-操作"><a href="#1-等待-I-O-操作" class="headerlink" title="1.  等待 I&#x2F;O 操作"></a>1.  等待 I&#x2F;O 操作</h3><p>   当一个 <code>goroutine</code> 发起 I&#x2F;O 操作（例如读取文件、网络请求、数据库查询等）时，除非是异步操作，<code>goroutine</code> 会被阻塞直到 I&#x2F;O 操作完成。例如，读取文件或网络时，<code>goroutine</code> 可能会阻塞直到读取完成。</p>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 例子：网络请求导致 goroutine 阻塞</span></span><br><span class="line">response, err := http.Get(<span class="string">&quot;https://example.com&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">defer</span> response.Body.Close()</span><br></pre></td></tr></table></figure>
 
+
 <h3 id="2-等待-Channel-的操作"><a href="#2-等待-Channel-的操作" class="headerlink" title="2.  等待 Channel 的操作"></a>2.  等待 Channel 的操作</h3><p>   <code>goroutine</code> 可能会在与 <code>channel</code> 的通信过程中被阻塞，具体表现为：</p>
 <ul>
 <li>发送数据到未缓冲的 channel ：发送方会阻塞直到有接收方接收数据。</li>
@@ -463,21 +464,27 @@
 </ul>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 例子：从 channel 接收数据阻塞</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="type">int</span>)</span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ch &lt;- <span class="number">42</span> <span class="comment">// 阻塞，直到有接收方</span></span><br><span class="line">&#125;()</span><br><span class="line"></span><br><span class="line">data := &lt;-ch <span class="comment">// 阻塞，直到有发送方发送数据</span></span><br></pre></td></tr></table></figure>
 
+
 <h3 id="3-锁（Mutex）竞争"><a href="#3-锁（Mutex）竞争" class="headerlink" title="3.  锁（Mutex）竞争"></a>3.  锁（Mutex）竞争</h3><p>   在多 <code>goroutine</code> 的情况下，如果一个 <code>goroutine</code> 需要访问某些共享资源，而该资源已经被其它 <code>goroutine</code> 锁定，那么当前 <code>goroutine</code> 就会阻塞，直到锁被释放。</p>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mu sync.Mutex</span><br><span class="line">mu.Lock()    <span class="comment">// 获得锁，进入临界区</span></span><br><span class="line"><span class="comment">// 如果其他 goroutine 调用 mu.Lock()，它们会阻塞直到锁被释放</span></span><br><span class="line">mu.Unlock()  <span class="comment">// 释放锁</span></span><br></pre></td></tr></table></figure>
+
 
 <h3 id="4-等待条件变量（Cond）"><a href="#4-等待条件变量（Cond）" class="headerlink" title="4.  等待条件变量（Cond）"></a>4.  等待条件变量（Cond）</h3><p>   <code>sync.Cond</code> 是一种用于 <code>goroutine</code> 通知的机制，通常用于协调 <code>goroutine</code> 的状态变化。使用 <code>Cond.Wait()</code> 的 <code>goroutine</code> 会阻塞，直到收到 <code>Cond.Signal()</code> 或 <code>Cond.Broadcast()</code> 通知。</p>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mu sync.Mutex</span><br><span class="line">cond := sync.NewCond(&amp;mu)</span><br><span class="line"></span><br><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    cond.L.Lock()</span><br><span class="line">    cond.Wait() <span class="comment">// 阻塞，直到收到通知</span></span><br><span class="line">    cond.L.Unlock()</span><br><span class="line">&#125;()</span><br><span class="line"></span><br><span class="line">cond.L.Lock()</span><br><span class="line">cond.Signal() <span class="comment">// 通知一个阻塞的 goroutine</span></span><br><span class="line">cond.L.Unlock()</span><br></pre></td></tr></table></figure>
 
+
 <h3 id="5-select-语句中所有分支都被阻塞"><a href="#5-select-语句中所有分支都被阻塞" class="headerlink" title="5.  select 语句中所有分支都被阻塞"></a>5.  <code>select</code> 语句中所有分支都被阻塞</h3><p>   如果 <code>select</code> 语句中的所有 <code>channel</code> 操作都被阻塞，那么 <code>goroutine</code> 也会阻塞，直到其中一个 <code>channel</code> 能继续操作。</p>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> &#123;</span><br><span class="line"><span class="keyword">case</span> msg := &lt;-ch1: <span class="comment">// 如果 ch1 没有数据，阻塞</span></span><br><span class="line">    fmt.Println(msg)</span><br><span class="line"><span class="keyword">case</span> msg := &lt;-ch2: <span class="comment">// 如果 ch2 没有数据，阻塞</span></span><br><span class="line">    fmt.Println(msg)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <h3 id="6-time-Sleep-或者-time-After"><a href="#6-time-Sleep-或者-time-After" class="headerlink" title="6.  time.Sleep() 或者 time.After()"></a>6.  <code>time.Sleep()</code> 或者 <code>time.After()</code></h3><p>   <code>goroutine</code> 会在调用 <code>time.Sleep()</code> 期间阻塞，直到指定的时间过期。</p>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">time.Sleep(<span class="number">2</span> * time.Second) <span class="comment">// 阻塞 2 秒</span></span><br></pre></td></tr></table></figure>
 
+
 <h3 id="7-等待系统调用（syscall）或外部依赖"><a href="#7-等待系统调用（syscall）或外部依赖" class="headerlink" title="7.  等待系统调用（syscall）或外部依赖"></a>7.  等待系统调用（syscall）或外部依赖</h3><p>   当 <code>goroutine</code> 发起系统调用，或者通过 <code>CGO</code> 调用外部库时，也可能会发生阻塞。系统调用或外部库的操作完成后，<code>goroutine</code> 才能恢复执行。</p>
 <h3 id="8-主-goroutine-阻塞导致其他-goroutine-终止"><a href="#8-主-goroutine-阻塞导致其他-goroutine-终止" class="headerlink" title="8.  主 goroutine 阻塞导致其他 goroutine 终止"></a>8.  主 <code>goroutine</code> 阻塞导致其他 <code>goroutine</code> 终止</h3><p>   如果主 <code>goroutine</code>（即 <code>main</code> 函数）阻塞或退出，所有其他 <code>goroutine</code> 会被终止。所以，在 <code>main</code> 函数中，也可能需要防止主 <code>goroutine</code> 提前结束而导致阻塞。</p>
    <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">&quot;This will not print if main exits early&quot;</span>)</span><br><span class="line">&#125;()</span><br><span class="line"></span><br><span class="line">time.Sleep(<span class="number">1</span> * time.Second) <span class="comment">// 防止 main 退出过早</span></span><br></pre></td></tr></table></figure>
+
 
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在 Go 中，<code>goroutine</code> 可能会因为 I&#x2F;O 操作、channel 操作、锁竞争、条件变量等待、<code>select</code> 语句的阻塞、系统调用等原因被阻塞。因此在设计并发程序时，需要仔细考虑如何避免不必要的阻塞，以提高程序的并发性能。</p>
 

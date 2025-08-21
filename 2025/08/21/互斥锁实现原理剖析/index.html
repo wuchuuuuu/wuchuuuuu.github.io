@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:58 GMT+0800">2025-08-21 20:22:58</span>
                 </span>
             
         
@@ -460,6 +460,7 @@
 <h3 id="2-Go-中-sync-Mutex-的结构"><a href="#2-Go-中-sync-Mutex-的结构" class="headerlink" title="2.  Go 中 sync.Mutex 的结构"></a>2.  Go 中 <code>sync.Mutex</code> 的结构</h3><p>在 Go 语言的 <code>sync</code> 包中，<code>Mutex</code> 的定义如下（简化版）：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Mutex <span class="keyword">struct</span> &#123;</span><br><span class="line">    state <span class="type">int32</span></span><br><span class="line">    sema  <span class="type">uint32</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <h4 id="字段解释-："><a href="#字段解释-：" class="headerlink" title="字段解释 ："></a>字段解释 ：</h4><ul>
 <li><code>state</code>：锁的状态信息，包括锁的持有状态、锁是否被唤醒、是否有等待的 Goroutine 等。</li>
 <li><code>sema</code>：用于实现阻塞和唤醒的信号量。</li>
@@ -486,6 +487,7 @@
 </ul>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span></span> Lock() &#123;</span><br><span class="line">    <span class="keyword">if</span> atomic.CompareAndSwapInt32(&amp;m.state, <span class="number">0</span>, <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 快速路径：成功获取锁</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 慢速路径：自旋、自旋失败后阻塞等待锁</span></span><br><span class="line">    m.lockSlow()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <h3 id="5-锁的释放-Unlock"><a href="#5-锁的释放-Unlock" class="headerlink" title="5.  锁的释放 (Unlock)"></a>5.  锁的释放 (<code>Unlock</code>)</h3><p>当一个 Goroutine 释放锁时，<code>Unlock</code> 方法会执行以下步骤：</p>
 <ol>
 <li>检查锁状态</li>
@@ -506,6 +508,7 @@
 <li>如果有其他 Goroutine 在等待锁（即 <code>state</code> 的高位标记有 Goroutine 在等待），则唤醒等待队列中的一个 Goroutine，让它重新尝试获取锁。</li>
 </ul>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(m *Mutex)</span></span> Unlock() &#123;</span><br><span class="line">    <span class="keyword">if</span> atomic.AddInt32(&amp;m.state, <span class="number">-1</span>) == <span class="number">0</span> &#123;</span><br><span class="line">        <span class="comment">// 锁释放成功且没有等待的 Goroutine</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果有等待的 Goroutine，则唤醒它们</span></span><br><span class="line">    m.unlockSlow()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <h3 id="6-自旋和信号量"><a href="#6-自旋和信号量" class="headerlink" title="6.  自旋和信号量"></a>6.  自旋和信号量</h3><p>在慢速路径中，Go 的 <code>Mutex</code> 采用了自旋锁和信号量相结合的方式来提高锁的性能：</p>
 <ul>

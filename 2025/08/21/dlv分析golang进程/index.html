@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -455,39 +455,49 @@
 <h3 id="使用-dlv-分析-Go-进程-CPU-占用高问题的步骤"><a href="#使用-dlv-分析-Go-进程-CPU-占用高问题的步骤" class="headerlink" title="使用 dlv 分析 Go 进程 CPU 占用高问题的步骤"></a>使用 <code>dlv</code> 分析 Go 进程 CPU 占用高问题的步骤</h3><h4 id="1-确认-CPU-占用高的进程"><a href="#1-确认-CPU-占用高的进程" class="headerlink" title="1.  确认 CPU 占用高的进程"></a>1.  确认 CPU 占用高的进程</h4><p>首先，你需要找到 CPU 占用高的进程。在 Linux 环境下，可以使用 <code>top</code> 或 <code>htop</code> 命令来查看系统中各个进程的 CPU 使用情况。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top</span><br></pre></td></tr></table></figure>
 
+
 <p>通过 <code>top</code>，你可以找到 Go 程序的进程 ID（PID）。</p>
 <h4 id="2-使用-dlv-附加到运行中的进程"><a href="#2-使用-dlv-附加到运行中的进程" class="headerlink" title="2.  使用 dlv 附加到运行中的进程"></a>2.  使用 <code>dlv</code> 附加到运行中的进程</h4><p>当找到占用 CPU 高的进程后，可以通过 <code>dlv</code> 附加到正在运行的 Go 进程。假设目标进程的 PID 为 <code>12345</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dlv attach 12345</span><br></pre></td></tr></table></figure>
+
 
 <p><code>dlv attach</code> 会暂停该进程并进入调试模式。进入调试模式后，你可以查看进程的运行状态、查看当前的 Goroutine、函数调用栈等信息。</p>
 <h4 id="3-查看-Goroutine"><a href="#3-查看-Goroutine" class="headerlink" title="3.  查看 Goroutine"></a>3.  查看 Goroutine</h4><p>使用 <code>dlv</code>，你可以查看当前所有的 Goroutine，检查是否有 Goroutine 堆积或死锁。运行以下命令来查看所有 Goroutine 的状态：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">goroutines</span><br></pre></td></tr></table></figure>
 
+
 <p>你会看到当前所有 Goroutine 的列表，带有每个 Goroutine 的 ID 和执行中的函数信息。如果某些 Goroutine 在某个点停滞不前或有大量 Goroutine 堆积，这可能是导致高 CPU 使用的原因。</p>
 <h4 id="4-检查-Goroutine-的堆栈"><a href="#4-检查-Goroutine-的堆栈" class="headerlink" title="4.  检查 Goroutine 的堆栈"></a>4.  检查 Goroutine 的堆栈</h4><p>对于特定的 Goroutine，可以进一步查看其调用栈，确认它正在执行的代码。可以通过以下命令查看某个 Goroutine 的调用栈：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">goroutine &lt;Goroutine_ID&gt; stack</span><br></pre></td></tr></table></figure>
 
+
 <p>例如：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">goroutine 1 stack</span><br></pre></td></tr></table></figure>
+
 
 <p>这会显示该 Goroutine 的调用栈，可以帮助你找出哪部分代码可能导致高 CPU 占用。</p>
 <h4 id="5-查看当前执行的位置"><a href="#5-查看当前执行的位置" class="headerlink" title="5.  查看当前执行的位置"></a>5.  查看当前执行的位置</h4><p>你还可以检查当前进程正在执行的代码，查看 CPU 消耗的具体位置。通过 <code>break</code> 设置断点，在特定的代码行停止执行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">break</span> main.go:20</span><br></pre></td></tr></table></figure>
+
 
 <p>然后使用 <code>continue</code> 命令继续执行程序，程序将在达到该断点时暂停，这样可以了解程序在特定代码路径上的运行情况。</p>
 <h4 id="6-分析-CPU-Profiling"><a href="#6-分析-CPU-Profiling" class="headerlink" title="6.  分析 CPU Profiling"></a>6.  分析 CPU Profiling</h4><p>对于更深层次的 CPU 占用问题分析，可以利用 <code>pprof</code> 工具生成 CPU 性能报告。使用 <code>runtime/pprof</code> 包，可以通过代码生成 CPU profile 文件，并使用 <code>go tool pprof</code> 分析。</p>
 <p>首先，在程序中添加以下代码来记录 CPU profile：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;os&quot;</span></span><br><span class="line">    <span class="string">&quot;runtime/pprof&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f, _ := os.Create(<span class="string">&quot;cpu.prof&quot;</span>)</span><br><span class="line">    pprof.StartCPUProfile(f)</span><br><span class="line">    <span class="keyword">defer</span> pprof.StopCPUProfile()</span><br><span class="line">    <span class="comment">// your code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <p>运行程序后，使用 <code>go tool pprof</code> 来分析 <code>cpu.prof</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool pprof cpu.prof</span><br></pre></td></tr></table></figure>
+
 
 <p>进入 <code>pprof</code> 后，可以使用 <code>top</code>、<code>list</code> 等命令来查看哪些函数占用了最多的 CPU 时间。</p>
 <h4 id="7-通过-trace-分析更多细节"><a href="#7-通过-trace-分析更多细节" class="headerlink" title="7.  通过 trace 分析更多细节"></a>7.  通过 <code>trace</code> 分析更多细节</h4><p>除了 <code>dlv</code> 和 <code>pprof</code>，还可以使用 Go 提供的 <code>trace</code> 工具来捕获更多的运行时信息。首先，修改代码以捕获 trace：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;os&quot;</span></span><br><span class="line">    <span class="string">&quot;runtime/trace&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f, _ := os.Create(<span class="string">&quot;trace.out&quot;</span>)</span><br><span class="line">    trace.Start(f)</span><br><span class="line">    <span class="keyword">defer</span> trace.Stop()</span><br><span class="line">    <span class="comment">// your code</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <p>然后使用 <code>go tool trace</code> 查看 trace 文件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go tool trace trace.out</span><br></pre></td></tr></table></figure>
+
 
 <p><code>trace</code> 工具能展示更多的调度、Goroutine 切换、GC 事件等，帮助更全面地分析程序性能。</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>使用 <code>dlv</code> 调试 Go 进程 CPU 占用高的问题，可以从以下几方面着手：</p>

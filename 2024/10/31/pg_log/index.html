@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:58 GMT+0800">2025-08-21 20:22:58</span>
                 </span>
             
         
@@ -490,6 +490,7 @@
 <p>这几个参数的具体使用可参考 PG 官方文档。看完上面的介绍，想必大家已经精通日志参数设置了，那么接下来做几道题检验自己的学习成果。</p>
 <p>假如，我们按照以下值设定日志相关参数</p>
 <figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">log_filename=<span class="string">&#x27;postgres_%d_%h.log&#x27;</span></span><br><span class="line">log_rotation_age = <span class="number">2</span>h</span><br><span class="line">log_rotation_size = <span class="number">10</span>MB</span><br><span class="line">log_truncate_on_rotation = <span class="keyword">on</span></span><br></pre></td></tr></table></figure>
+
 
 <h4 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h4><p>Q：此时时间刚到 14 号下午 17 点 ，日志文件为 postgres_14_16.log，且大小为 5MB，请问接下来要写的日志文件是什么？<br>A： postgres_14_16.log  。因为此时距离 15 点仅过了 1h，没有超过 log_rotation_age；大小并没有超过 log_rotation_size ，所以并不发生轮转。</p>
 <h4 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h4><p>Q：此时时间为 14 号下午 16 点 30 分 ，日志文件为 postgres_14_16.log，且大小刚刚超过 10MB 到达 10.9MB，请问接下来要写的日志文件是什么？<br>A： postgres_14_16.log  。因为 log_filename 参数的最小精度值就到小时，哪怕当前日志文件大小变成 1TB 也只会继续追加写这个文件。</p>

@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -501,6 +501,7 @@
 </ul>
 <h3 id="4-示例代码"><a href="#4-示例代码" class="headerlink" title="4. 示例代码"></a>4. 示例代码</h3><p>以下是一个使用 <code>sync.Map</code> 的示例，展示了基本的操作和读写分离：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;fmt&quot;</span></span><br><span class="line">    <span class="string">&quot;sync&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> m sync.Map</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 存储键值对</span></span><br><span class="line">    m.Store(<span class="string">&quot;key1&quot;</span>, <span class="string">&quot;value1&quot;</span>)</span><br><span class="line">    m.Store(<span class="string">&quot;key2&quot;</span>, <span class="string">&quot;value2&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取键值对</span></span><br><span class="line">    <span class="keyword">if</span> value, ok := m.Load(<span class="string">&quot;key1&quot;</span>); ok &#123;</span><br><span class="line">        fmt.Println(<span class="string">&quot;key1:&quot;</span>, value)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历所有键值对</span></span><br><span class="line">    m.Range(<span class="function"><span class="keyword">func</span><span class="params">(key, value <span class="keyword">interface</span>&#123;&#125;)</span></span> <span class="type">bool</span> &#123;</span><br><span class="line">        fmt.Println(key, value)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span> <span class="comment">// 返回 true 继续遍历，返回 false 终止遍历</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除键值对</span></span><br><span class="line">    m.Delete(<span class="string">&quot;key1&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <h3 id="5-适用场景"><a href="#5-适用场景" class="headerlink" title="5. 适用场景"></a>5. 适用场景</h3><p><code>sync.Map</code> 适用于以下场景：</p>
 <ul>
@@ -633,14 +634,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%9E%8B/"
-                                   title="线程的实现模型"
+                                   href="/2025/08/21/%E7%89%B9%E6%9D%83%20Goroutine%20g0/"
+                                   title="特权 Goroutine g0"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">线程的实现模型</span>
+                                        <span class="post-nav-title-item text-ellipsis">特权 Goroutine g0</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
@@ -650,11 +651,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E8%AF%A6%E8%A7%A3%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%8D%8F%E8%AE%AEProtoBuf/"
-                                   title="详解通信数据协议ProtoBuf"
+                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8F%8A%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/"
+                                   title="读写锁的实现及底层原理"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">详解通信数据协议ProtoBuf</span>
+                                        <span class="post-nav-title-item text-ellipsis">读写锁的实现及底层原理</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -452,12 +452,15 @@
 <h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>安装的pg版本为<code>11</code>，每个元组的头部信息在<code>HeapTupleHeaderData</code>中定义：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">HeapTupleHeaderData</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">union</span></span><br><span class="line">	&#123;</span><br><span class="line">		HeapTupleFields t_heap; <span class="comment">//存放元组描述信息</span></span><br><span class="line">		DatumTupleFields t_datum;</span><br><span class="line">	&#125;			t_choice;</span><br><span class="line"></span><br><span class="line">	ItemPointerData t_ctid;		<span class="comment">/*元组的存放位置，一般值为“（blockid,itemid）”  */</span></span><br><span class="line">	uint16		t_infomask2;	<span class="comment">/* 属性和标识位 */</span></span><br><span class="line">	uint16		t_infomask;		<span class="comment">/* 其他标识位 */</span></span><br><span class="line">	uint8		t_hoff;			<span class="comment">/* 首部+位图+填充的长度 */</span></span><br><span class="line">	bits8		t_bits[<span class="number">1</span>];	<span class="comment">/* bitmap of NULLs */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
+
 <p>HeapTupleHeaderData中的<code>t_heap</code>存储着元组的一些描述信息，结构如下：</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">HeapTupleFields</span></span><br><span class="line">&#123;</span><br><span class="line">TransactionId t_xmin;   <span class="comment">/* 插入或修改事务的ID */</span></span><br><span class="line">TransactionId t_xmax;   <span class="comment">/* 删除或者锁定事务的ID */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">union</span></span><br><span class="line">&#123;</span><br><span class="line">   CommandId t_cid;   <span class="comment">/* 插入或者删除的命令ID */</span></span><br><span class="line">   TransactionId t_xvac; <span class="comment">/* 执行vacuum full的事务ID */</span></span><br><span class="line">&#125;    t_field3;</span><br><span class="line">&#125; HeapTupleFields;</span><br></pre></td></tr></table></figure>
+
 
 <p>经过分析源码，发现核心的隐藏字段有： t_ctid、t_xmin、t_xmax、t_cid </p>
 <p>执行命令：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> attname, attnum, attisdropped, attlen, attalign, attnotnull</span><br><span class="line"><span class="keyword">FROM</span> pg_catalog.pg_attribute <span class="keyword">WHERE</span> attrelid <span class="operator">=</span> <span class="string">&#x27;test&#x27;</span>::regclass</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> attnum;</span><br></pre></td></tr></table></figure>
+
 
 <p>发现实际表的隐藏字段如下所示：</p>
 
@@ -487,7 +490,7 @@
 <td>cmax、cmin</td>
 </tr>
 </tbody></table>
-<h3 id="隐藏字段详细分析"><a href="#隐藏字段详细分析" class="headerlink" title="隐藏字段详细分析"></a>隐藏字段详细分析</h3><h5 id="t-ctid"><a href="#t-ctid" class="headerlink" title="t_ctid"></a>t_ctid</h5> 
+<h3 id="隐藏字段详细分析"><a href="#隐藏字段详细分析" class="headerlink" title="隐藏字段详细分析"></a>隐藏字段详细分析</h3><h4 id="t-ctid"><a href="#t-ctid" class="headerlink" title="t_ctid"></a>t_ctid</h4> 
 
 
 
@@ -801,7 +804,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%AD%97%E6%AE%B5%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90"><span class="nav-text">隐藏字段详细分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#t-ctid"><span class="nav-text">t_ctid</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmin"><span class="nav-text">t_xmin</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmax"><span class="nav-text">t_xmax</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-cid"><span class="nav-text">t_cid</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E5%88%A4%E6%96%AD"><span class="nav-text">MVCC的可见性判断</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%AD%97%E6%AE%B5%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90"><span class="nav-text">隐藏字段详细分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#t-ctid"><span class="nav-text">t_ctid</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmin"><span class="nav-text">t_xmin</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmax"><span class="nav-text">t_xmax</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-cid"><span class="nav-text">t_cid</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E5%88%A4%E6%96%AD"><span class="nav-text">MVCC的可见性判断</span></a></li></ol>
     </div>
 </div>
 
@@ -1001,7 +1004,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%AD%97%E6%AE%B5%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90"><span class="nav-text">隐藏字段详细分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#t-ctid"><span class="nav-text">t_ctid</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmin"><span class="nav-text">t_xmin</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmax"><span class="nav-text">t_xmax</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-cid"><span class="nav-text">t_cid</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E5%88%A4%E6%96%AD"><span class="nav-text">MVCC的可见性判断</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E8%97%8F%E5%AD%97%E6%AE%B5%E8%AF%A6%E7%BB%86%E5%88%86%E6%9E%90"><span class="nav-text">隐藏字段详细分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#t-ctid"><span class="nav-text">t_ctid</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmin"><span class="nav-text">t_xmin</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-xmax"><span class="nav-text">t_xmax</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#t-cid"><span class="nav-text">t_cid</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVCC%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E5%88%A4%E6%96%AD"><span class="nav-text">MVCC的可见性判断</span></a></li></ol>
     </div>
 </div>
 

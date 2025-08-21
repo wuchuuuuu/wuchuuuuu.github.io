@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -462,8 +462,10 @@
 <h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>假设你在 Gin 中定义了以下几个路由：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">router := gin.Default()</span><br><span class="line"></span><br><span class="line">router.GET(<span class="string">&quot;/user/profile&quot;</span>, handlerProfile)</span><br><span class="line">router.GET(<span class="string">&quot;/user/:id&quot;</span>, handlerUser)</span><br><span class="line">router.GET(<span class="string">&quot;/assets/*filepath&quot;</span>, handlerAssets)</span><br></pre></td></tr></table></figure>
 
+
 <p>在这个例子中，Gin 的路由树大致结构如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">        /</span><br><span class="line">        |</span><br><span class="line">      user</span><br><span class="line">      /   \</span><br><span class="line">profile   :id</span><br><span class="line">           |</span><br><span class="line">      assets/*filepath</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">        /</span><br><span class="line">        |</span><br><span class="line">      user</span><br><span class="line">      /   \</span><br><span class="line">profile   :id</span><br><span class="line">           |</span><br><span class="line">      assets/*filepath</span><br></pre></td></tr></table></figure>
+
 
 <ol>
 <li><code>/user/profile</code> 是一个静态路径，会直接匹配到 <code>handlerProfile</code>。</li>
@@ -485,6 +487,7 @@
 </ul>
 <h3 id="Golang-代码示例"><a href="#Golang-代码示例" class="headerlink" title="Golang 代码示例"></a>Golang 代码示例</h3><p>以下是一个简单的 Gin 路由定义示例，并展示了如何匹配静态路径、参数路径和通配符路径。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">&quot;github.com/gin-gonic/gin&quot;</span></span><br><span class="line">    <span class="string">&quot;net/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    router := gin.Default()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 静态路由</span></span><br><span class="line">    router.GET(<span class="string">&quot;/user/profile&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">        c.String(http.StatusOK, <span class="string">&quot;User Profile&quot;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 带参数的路由</span></span><br><span class="line">    router.GET(<span class="string">&quot;/user/:id&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">        id := c.Param(<span class="string">&quot;id&quot;</span>)</span><br><span class="line">        c.String(http.StatusOK, <span class="string">&quot;User ID: %s&quot;</span>, id)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通配符路由</span></span><br><span class="line">    router.GET(<span class="string">&quot;/assets/*filepath&quot;</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">        filepath := c.Param(<span class="string">&quot;filepath&quot;</span>)</span><br><span class="line">        c.String(http.StatusOK, <span class="string">&quot;Filepath: %s&quot;</span>, filepath)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    router.Run(<span class="string">&quot;:8080&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <ul>
 <li>访问 <code>/user/profile</code>，返回 <code>&quot;User Profile&quot;</code>。</li>
@@ -635,11 +638,11 @@
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/gofunc%E8%BF%87%E7%A8%8B/"
-                                   title="gofunc过程"
+                                   href="/2025/08/21/go%20runtime%20%E7%AE%80%E6%9E%90/"
+                                   title="go runtime 简析"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">gofunc过程</span>
+                                        <span class="post-nav-title-item text-ellipsis">go runtime 简析</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">

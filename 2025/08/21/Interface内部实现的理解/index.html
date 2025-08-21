@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:15:26 GMT+0800">2025-08-21 20:15:26</span>
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:22:57 GMT+0800">2025-08-21 20:22:57</span>
                 </span>
             
         
@@ -455,8 +455,10 @@
 <h3 id="1-接口的定义和使用"><a href="#1-接口的定义和使用" class="headerlink" title="1. 接口的定义和使用"></a>1. 接口的定义和使用</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>接口在 Go 中定义了一个方法集，这些方法没有具体的实现，具体的实现由类型提供。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Animal <span class="keyword">interface</span> &#123;</span><br><span class="line">    Speak() <span class="type">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>类型通过实现接口定义的方法集来满足接口。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Dog <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(d Dog)</span></span> Speak() <span class="type">string</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Woof&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Cat <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c Cat)</span></span> Speak() <span class="type">string</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;Meow&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <h3 id="2-接口的内部结构"><a href="#2-接口的内部结构" class="headerlink" title="2. 接口的内部结构"></a>2. 接口的内部结构</h3><p>在 Go 的运行时系统中，接口的实现涉及以下几个关键数据结构：</p>
 <h4 id="接口类型（interface）"><a href="#接口类型（interface）" class="headerlink" title="接口类型（interface）"></a>接口类型（<code>interface</code>）</h4><p>接口在 Go 中通常由两个部分组成：</p>
@@ -467,12 +469,14 @@
 <p>Go 运行时将接口的数据结构定义为一个结构体：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> iface <span class="keyword">struct</span> &#123;</span><br><span class="line">    typ *rtype   <span class="comment">// 类型信息</span></span><br><span class="line">    value unsafe.Pointer <span class="comment">// 值信息</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+
 <ul>
 <li><code>typ</code> ：指向类型描述符的指针，用于确定实际的实现类型。</li>
 <li><code>value</code> ：指向实际值的指针，存储具体的数据。</li>
 </ul>
 <h4 id="类型描述符（rtype）"><a href="#类型描述符（rtype）" class="headerlink" title="类型描述符（rtype）"></a>类型描述符（<code>rtype</code>）</h4><p><code>rtype</code> 是 Go 运行时中用来描述类型的结构体，包含了关于类型的所有信息，包括方法集、类型大小等。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> rtype <span class="keyword">struct</span> &#123;</span><br><span class="line">    size        <span class="type">uintptr</span></span><br><span class="line">    ptrdata     <span class="type">uintptr</span></span><br><span class="line">    hash        <span class="type">uint32</span></span><br><span class="line">    tflag       tflag</span><br><span class="line">    align       <span class="type">uint8</span></span><br><span class="line">    fieldAlign  <span class="type">uint8</span></span><br><span class="line">    kind        <span class="type">uint8</span></span><br><span class="line">    alg         *typeAlg</span><br><span class="line">    gcdata      *<span class="type">byte</span></span><br><span class="line">    str         nameOff</span><br><span class="line">    ptrToThis   typeOff</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <ul>
 <li><code>size</code> ：类型的大小。</li>
@@ -507,6 +511,7 @@
 <li>类型断言 ：用于将接口值转换为具体类型。它通过 <code>iface</code> 的 <code>typ</code> 信息来检查接口的实际类型，并进行类型转换。</li>
 </ul>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a Animal = Dog&#123;&#125;</span><br><span class="line">d, ok := a.(Dog)</span><br><span class="line"><span class="keyword">if</span> ok &#123;</span><br><span class="line">    fmt.Println(d.Speak())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
 <h3 id="5-性能优化"><a href="#5-性能优化" class="headerlink" title="5. 性能优化"></a>5. 性能优化</h3><ul>
 <li>接口值的存储 ：接口的值存储为指针，可以避免在接口赋值时进行大量的数据复制，提高性能。</li>
@@ -638,14 +643,14 @@
                             <div class="prev-post">
                                 <a class="prev"
                                    rel="prev"
-                                   href="/2025/08/21/GC%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/"
-                                   title="GC垃圾回收算法"
+                                   href="/2025/08/21/HTTP%20Client%E5%A4%A7%E9%87%8F%E9%95%BF%E8%BF%9E%E6%8E%A5%E4%BF%9D%E6%8C%81/"
+                                   title="HTTP Client大量长连接保持"
                                 >
                                     <span class="left arrow-icon flex-center">
                                         <i class="fas fa-chevron-left"></i>
                                     </span>
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">GC垃圾回收算法</span>
+                                        <span class="post-nav-title-item text-ellipsis">HTTP Client大量长连接保持</span>
                                         <span class="post-nav-item">上一篇</span>
                                     </span>
                                 </a>
