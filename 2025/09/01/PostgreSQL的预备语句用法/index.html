@@ -9,7 +9,7 @@
     
     <title>
         
-            详解通信数据协议ProtoBuf |
+            PostgreSQL的预备语句用法 |
         
         DBA有话说
     </title>
@@ -365,7 +365,7 @@
             <div class="post-content-bottom border-box">
                 
                     <div class="post-title">
-                        详解通信数据协议ProtoBuf
+                        PostgreSQL的预备语句用法
                     </div>
                 
 
@@ -393,40 +393,19 @@
         
             <span class="meta-info-item post-create-date">
                 <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
-                <span class="datetime">2025-08-21 20:08:41</span>
+                <span class="datetime">2025-09-01 20:09:48</span>
             </span>
 
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
+                    <span class="datetime" data-updated="Mon Sep 01 2025 20:10:54 GMT+0800">2025-09-01 20:10:54</span>
                 </span>
             
         
 
         
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
-                    
-                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
 
-        
-            <span class="post-tag meta-info-item border-box">
-                <ul class="post-tag-ul">
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/protobuf/">protobuf</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/person/">person</a></li>
-                        
-                    
-                </ul>
-            </span>
         
 
         
@@ -451,58 +430,85 @@
                     
 
                     
-                         <p> Protocol Buffers （通常缩写为  ProtoBuf ）是一种由 Google 开发的语言中立、平台中立、可扩展的序列化结构数据的方法。它用于将数据结构序列化为紧凑的字节流，并将这些字节流传输或存储。ProtoBuf 提供了一种高效的方式来定义数据结构并对其进行序列化和反序列化。</p>
-<h3 id="1-ProtoBuf-的基本概念"><a href="#1-ProtoBuf-的基本概念" class="headerlink" title="1. ProtoBuf 的基本概念"></a>1. ProtoBuf 的基本概念</h3><h4 id="数据定义语言（IDL）"><a href="#数据定义语言（IDL）" class="headerlink" title="数据定义语言（IDL）"></a>数据定义语言（IDL）</h4><p>ProtoBuf 使用  <code>.proto</code>  文件定义数据结构。这些定义包含了消息类型及其字段。<code>.proto</code> 文件是平台和语言无关的，用于生成多种语言的代码。</p>
-<p> 示例 <code>.proto</code> 文件 ：</p>
-<figure class="highlight proto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">syntax = <span class="string">&quot;proto3&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">Person</span> &#123;</span><br><span class="line">    <span class="type">int32</span> id = <span class="number">1</span>;</span><br><span class="line">    <span class="type">string</span> name = <span class="number">2</span>;</span><br><span class="line">    <span class="type">string</span> email = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">repeated</span> <span class="type">string</span> phone_numbers = <span class="number">4</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">message </span><span class="title class_">AddressBook</span> &#123;</span><br><span class="line">    <span class="keyword">repeated</span> Person people = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
+                         <h3 id="一、什么是预备语句？"><a href="#一、什么是预备语句？" class="headerlink" title="一、什么是预备语句？"></a>一、什么是预备语句？</h3><p>预备语句（Prepared Statement），有时也称为参数化语句（Parameterized Statement），是关系型数据库中的一个特性。它允许你将 SQL 语句的<strong>结构</strong>与它的<strong>参数值</strong>分开发送给数据库。</p>
+<p>它通常遵循一个“准备-执行”的两步模型：</p>
+<ol>
+<li><strong>准备（Prepare）</strong>: 将带占位符的 SQL 模板发送到数据库服务器。数据库会解析（Parse）、检查语法和语义、并进行查询优化，生成一个执行计划。然后将这个编译好的语句存储起来，并返回一个句柄（如名称或 ID）。</li>
+<li><strong>执行（Execute）</strong>: 之后，你只需要将参数值和这个句柄发送给数据库服务器。服务器会将参数与之前编译好的模板结合，直接执行。</li>
+</ol>
+<h3 id="二、工作原理"><a href="#二、工作原理" class="headerlink" title="二、工作原理"></a>二、工作原理</h3><p><strong>没有预备语句的传统查询：</strong><br><code>&quot;SELECT * FROM users WHERE id = 123&quot;</code><br>每次执行这条语句，数据库都需要完成：<strong>语法解析 -&gt; 语义检查（表&#x2F;列是否存在）-&gt; 查询优化（选择最优执行计划）-&gt; 执行</strong>。对于只是 <code>id</code> 值不同的重复查询，前三个步骤是完全冗余的，浪费资源。</p>
+<p><strong>使用预备语句的查询：</strong></p>
+<ol>
+<li><strong>准备阶段</strong>：应用程序发送 <code>&quot;SELECT * FROM users WHERE id = $1&quot;</code>。<ul>
+<li>数据库完成：<strong>解析 -&gt; 语义检查 -&gt; 查询优化</strong>。</li>
+<li>将编译好的计划存储，并命名为 <code>user_query</code>。</li>
+</ul>
+</li>
+<li><strong>执行阶段</strong>：应用程序发送 <code>EXECUTE user_query(123)</code>。<ul>
+<li>数据库跳过前三个步骤，直接使用 <code>user_query</code> 的计划，将参数 <code>123</code> 代入，然后<strong>执行</strong>。</li>
+</ul>
+</li>
+<li>后续执行只需发送 <code>EXECUTE user_query(456)</code>，<code>EXECUTE user_query(789)</code>，效率极高。</li>
+</ol>
+<h3 id="三、核心作用与优势"><a href="#三、核心作用与优势" class="headerlink" title="三、核心作用与优势"></a>三、核心作用与优势</h3><ol>
+<li><p><strong>防止 SQL 注入（最重要作用）</strong></p>
 <ul>
-<li><code>syntax = &quot;proto3&quot;;</code> ：指定 ProtoBuf 的语法版本。</li>
-<li><code>message</code> ：定义一个消息类型。</li>
-<li><code>int32</code>、<code>string</code>  等：字段的类型。</li>
-<li><code>repeated</code> ：表示字段可以有零个或多个值。</li>
-<li><code>= 1</code> 、 <code>= 2</code>  等：字段的唯一标识符，用于序列化时的字段标签。</li>
+<li><strong>原因</strong>：因为 SQL 结构（代码）和参数值（数据）是分开发的。即使用户输入的参数值中包含恶意的 SQL 代码（如 <code>&#39; OR &#39;1&#39;=&#39;1</code>），数据库也会始终将其视为<strong>纯数据</strong>，而不会将其作为 SQL 代码的一部分来解析和执行。</li>
+<li><strong>结论</strong>：这是防范 SQL 注入攻击的<strong>首选且最有效</strong>的方法，远比手动转义用户输入可靠。</li>
 </ul>
-<h4 id="生成代码"><a href="#生成代码" class="headerlink" title="生成代码"></a>生成代码</h4><p>使用 ProtoBuf 编译器（<code>protoc</code>）将 <code>.proto</code> 文件编译为不同编程语言的源代码。这些生成的代码包含了数据结构的类，以及用于序列化和反序列化的函数。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protoc --python_out=. addressbook.proto</span><br><span class="line">protoc --java_out=. addressbook.proto</span><br><span class="line">protoc --go_out=. addressbook.proto</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="2-ProtoBuf-的序列化和反序列化"><a href="#2-ProtoBuf-的序列化和反序列化" class="headerlink" title="2. ProtoBuf 的序列化和反序列化"></a>2. ProtoBuf 的序列化和反序列化</h3><h4 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h4><p>序列化是将内存中的数据结构转换为字节流的过程。在 ProtoBuf 中，序列化通常涉及将消息对象转换为字节数组，以便存储或传输。</p>
-<p> 示例（Python） ：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> addressbook_pb2</span><br><span class="line"></span><br><span class="line">person = addressbook_pb2.Person()</span><br><span class="line">person.<span class="built_in">id</span> = <span class="number">123</span></span><br><span class="line">person.name = <span class="string">&quot;John Doe&quot;</span></span><br><span class="line">person.email = <span class="string">&quot;johndoe@example.com&quot;</span></span><br><span class="line">person.phone_numbers.append(<span class="string">&quot;555-1234&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 序列化为字节流</span></span><br><span class="line">data = person.SerializeToString()</span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h4><p>反序列化是将字节流转换回数据结构的过程。在 ProtoBuf 中，反序列化涉及将字节数组转换为消息对象。</p>
-<p> 示例（Python） ：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> addressbook_pb2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建一个 Person 实例</span></span><br><span class="line">person = addressbook_pb2.Person()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从字节流反序列化</span></span><br><span class="line">person.ParseFromString(data)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(person)</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-ProtoBuf-的特性"><a href="#3-ProtoBuf-的特性" class="headerlink" title="3. ProtoBuf 的特性"></a>3. ProtoBuf 的特性</h3><h4 id="高效"><a href="#高效" class="headerlink" title="高效"></a>高效</h4><ul>
-<li>紧凑 ：ProtoBuf 使用了高效的编码格式，通常比 XML 或 JSON 更紧凑。</li>
-<li>快速 ：序列化和反序列化速度快，适合高性能要求的应用场景。</li>
-</ul>
-<h4 id="兼容性"><a href="#兼容性" class="headerlink" title="兼容性"></a>兼容性</h4><ul>
-<li>向前兼容性和向后兼容性 ：ProtoBuf 允许在不破坏旧版本的情况下添加新字段，支持版本控制。</li>
-<li>字段默认值 ：可以在 <code>.proto</code> 文件中指定字段的默认值。</li>
-</ul>
-<h4 id="跨语言支持"><a href="#跨语言支持" class="headerlink" title="跨语言支持"></a>跨语言支持</h4><p>ProtoBuf 支持多种编程语言，包括 C++, Java, Python, Go, JavaScript 等，使得不同语言之间的数据交换变得简单。</p>
-<h3 id="4-ProtoBuf-的编码和解码"><a href="#4-ProtoBuf-的编码和解码" class="headerlink" title="4. ProtoBuf 的编码和解码"></a>4. ProtoBuf 的编码和解码</h3><h4 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h4><p>ProtoBuf 的编码方式包括了字段编号、类型信息和实际数据。数据被压缩成字节流，以提高存储和传输效率。</p>
+</li>
+<li><p><strong>提升性能（尤其适用于重复查询）</strong></p>
 <ul>
-<li>Varint 编码 ：用于表示整数，使用可变长度的字节。</li>
-<li>长度前缀 ：用于表示字符串、字节数组等，包含一个前缀来表示数据的长度。</li>
+<li><strong>原因</strong>：避免了多次解析和优化相同结构的 SQL 语句，只需一次准备，多次执行。对于在循环中执行的 INSERT、UPDATE 或高频 SELECT 查询，性能提升非常显著。</li>
 </ul>
-<h4 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h4><p>在解码过程中，ProtoBuf 解析字节流并根据字段编号和类型信息恢复原始数据结构。字段编号在编码时确定数据的顺序，并允许在消息中自由添加或删除字段。</p>
-<h3 id="5-ProtoBuf-的使用场景"><a href="#5-ProtoBuf-的使用场景" class="headerlink" title="5. ProtoBuf 的使用场景"></a>5. ProtoBuf 的使用场景</h3><ul>
-<li>RPC（远程过程调用） ：在 gRPC 中，ProtoBuf 用于定义服务接口和消息格式，支持高效的通信。</li>
-<li>数据存储 ：适用于需要存储结构化数据的应用，例如数据库存储。</li>
-<li>消息传递 ：用于不同系统之间的数据交换，特别是在分布式系统中。</li>
+</li>
+<li><p><strong>简化数据类型处理</strong></p>
+<ul>
+<li>在准备阶段，参数的数据类型就已经确定了。应用程序在传递参数时，无需担心如何将字符串正确地转换为日期、数字等SQL数据类型，数据库驱动会自动处理转换。</li>
 </ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Protocol Buffers 提供了一种高效、灵活的数据序列化方式，支持多种编程语言，适合用于高性能的数据交换和存储场景。通过定义 <code>.proto</code> 文件，生成代码，并利用 ProtoBuf 提供的 API，开发者可以轻松地进行数据序列化和反序列化。理解 ProtoBuf 的编码和解码机制，有助于优化数据传输效率和系统性能。</p>
+</li>
+</ol>
+<h3 id="四、在常用编程语言中的使用教程"><a href="#四、在常用编程语言中的使用教程" class="headerlink" title="四、在常用编程语言中的使用教程"></a>四、在常用编程语言中的使用教程</h3><p>在现代编程中，你很少会直接使用 <code>PREPARE</code> 和 <code>EXECUTE</code> 这样的原始 SQL 命令。绝大多数数据库驱动（如 JDBC, PDO, psycopg2 等）都提供了抽象的接口，它们底层会自动使用预备语句。</p>
+<h4 id="1-Python-使用-psycopg2-库连接-PostgreSQL"><a href="#1-Python-使用-psycopg2-库连接-PostgreSQL" class="headerlink" title="1. Python (使用 psycopg2 库连接 PostgreSQL)"></a>1. Python (使用 <code>psycopg2</code> 库连接 PostgreSQL)</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> psycopg2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 连接数据库</span></span><br><span class="line">conn = psycopg2.connect(<span class="string">&quot;dbname=test user=postgres password=secret&quot;</span>)</span><br><span class="line">cur = conn.cursor()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 错误示范：字符串拼接，易导致SQL注入！</span></span><br><span class="line">user_id = <span class="string">&quot;1; DROP TABLE users; --&quot;</span></span><br><span class="line">cur.execute(<span class="string">f&quot;SELECT * FROM users WHERE id = <span class="subst">&#123;user_id&#125;</span>&quot;</span>) <span class="comment"># 危险！</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 正确示范：使用参数化查询（驱动自动转为预备语句）</span></span><br><span class="line"><span class="comment"># 方法一：使用 %s 占位符</span></span><br><span class="line">user_id = <span class="number">1</span></span><br><span class="line">cur.execute(<span class="string">&quot;SELECT * FROM users WHERE id = %s&quot;</span>, (user_id,)) <span class="comment"># 注意参数必须是元组</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二：用于多次执行（显式受益于预备语句）</span></span><br><span class="line">data = [(<span class="string">&#x27;Alice&#x27;</span>, <span class="number">30</span>), (<span class="string">&#x27;Bob&#x27;</span>, <span class="number">25</span>), (<span class="string">&#x27;Charlie&#x27;</span>, <span class="number">35</span>)]</span><br><span class="line">cur.executemany(</span><br><span class="line">    <span class="string">&quot;INSERT INTO users (name, age) VALUES (%s, %s)&quot;</span>,</span><br><span class="line">    data</span><br><span class="line">) <span class="comment"># 驱动会自动创建一个预备语句并重复执行</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 获取结果</span></span><br><span class="line">rows = cur.fetchall()</span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> rows:</span><br><span class="line">    <span class="built_in">print</span>(row)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 关闭连接</span></span><br><span class="line">cur.close()</span><br><span class="line">conn.close()</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-Java-使用-JDBC-连接数据库"><a href="#2-Java-使用-JDBC-连接数据库" class="headerlink" title="2. Java (使用 JDBC 连接数据库)"></a>2. Java (使用 <code>JDBC</code> 连接数据库)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.sql.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PreparedStatementExample</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;jdbc:postgresql://localhost:5432/test&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">user</span> <span class="operator">=</span> <span class="string">&quot;postgres&quot;</span>;</span><br><span class="line">        <span class="type">String</span> <span class="variable">password</span> <span class="operator">=</span> <span class="string">&quot;secret&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1. 使用 try-with-resources 自动关闭连接</span></span><br><span class="line">        <span class="keyword">try</span> (<span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(url, user, password)) &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 2. 错误示范：Statement（用于静态语句，不安全）</span></span><br><span class="line">            <span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line">            <span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(<span class="string">&quot;SELECT * FROM users WHERE id = 1&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 3. 正确示范：使用 PreparedStatement（安全且高效）</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">sql</span> <span class="operator">=</span> <span class="string">&quot;SELECT * FROM users WHERE id = ?&quot;</span>; <span class="comment">// 使用 ? 作为占位符</span></span><br><span class="line">            <span class="type">PreparedStatement</span> <span class="variable">pstmt</span> <span class="operator">=</span> conn.prepareStatement(sql);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 设置参数（索引从1开始）</span></span><br><span class="line">            pstmt.setInt(<span class="number">1</span>, <span class="number">1</span>); <span class="comment">// 第一个参数设置为整数 1</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 执行查询</span></span><br><span class="line">            <span class="type">ResultSet</span> <span class="variable">pRs</span> <span class="operator">=</span> pstmt.executeQuery();</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 处理结果</span></span><br><span class="line">            <span class="keyword">while</span> (pRs.next()) &#123;</span><br><span class="line">                System.out.println(pRs.getString(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 4. 用于批量插入</span></span><br><span class="line">            <span class="type">PreparedStatement</span> <span class="variable">insertStmt</span> <span class="operator">=</span> conn.prepareStatement(<span class="string">&quot;INSERT INTO users (name, age) VALUES (?, ?)&quot;</span>);</span><br><span class="line">            insertStmt.setString(<span class="number">1</span>, <span class="string">&quot;Alice&quot;</span>);</span><br><span class="line">            insertStmt.setInt(<span class="number">2</span>, <span class="number">30</span>);</span><br><span class="line">            insertStmt.addBatch(); <span class="comment">// 添加到批处理</span></span><br><span class="line"></span><br><span class="line">            insertStmt.setString(<span class="number">1</span>, <span class="string">&quot;Bob&quot;</span>);</span><br><span class="line">            insertStmt.setInt(<span class="number">2</span>, <span class="number">25</span>);</span><br><span class="line">            insertStmt.addBatch();</span><br><span class="line"></span><br><span class="line">            insertStmt.executeBatch(); <span class="comment">// 执行所有批处理操作</span></span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-PHP-使用-PDO-扩展"><a href="#3-PHP-使用-PDO-扩展" class="headerlink" title="3. PHP (使用 PDO 扩展)"></a>3. PHP (使用 <code>PDO</code> 扩展)</h4><p>PDO (PHP Data Objects) 是 PHP 中数据库访问的推荐方式，它天然支持预备语句。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$host</span> = <span class="string">&#x27;localhost&#x27;</span>;</span><br><span class="line"><span class="variable">$dbname</span> = <span class="string">&#x27;test&#x27;</span>;</span><br><span class="line"><span class="variable">$user</span> = <span class="string">&#x27;postgres&#x27;</span>;</span><br><span class="line"><span class="variable">$pass</span> = <span class="string">&#x27;secret&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 创建数据库连接</span></span><br><span class="line">    <span class="variable">$pdo</span> = <span class="keyword">new</span> <span class="title function_ invoke__">PDO</span>(<span class="string">&quot;pgsql:host=<span class="subst">$host</span>;dbname=<span class="subst">$dbname</span>&quot;</span>, <span class="variable">$user</span>, <span class="variable">$pass</span>);</span><br><span class="line">    <span class="comment">// 设置错误模式为异常</span></span><br><span class="line">    <span class="variable">$pdo</span>-&gt;<span class="title function_ invoke__">setAttribute</span>(PDO::<span class="variable constant_">ATTR_ERRMODE</span>, PDO::<span class="variable constant_">ERRMODE_EXCEPTION</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 错误示范：拼接查询</span></span><br><span class="line">    <span class="comment">// $id = $_GET[&#x27;id&#x27;]; // 用户输入，极度危险！</span></span><br><span class="line">    <span class="comment">// $sql = &quot;SELECT * FROM users WHERE id = $id&quot;; // 严重SQL注入风险！</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 正确示范：使用 PDO 预备语句</span></span><br><span class="line">    <span class="variable">$id</span> = <span class="number">1</span>;</span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE id = :id&quot;</span>; <span class="comment">// 命名参数</span></span><br><span class="line">    <span class="comment">// 也可以用问号：$sql = &quot;SELECT * FROM users WHERE id = ?&quot;;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 准备语句</span></span><br><span class="line">    <span class="variable">$stmt</span> = <span class="variable">$pdo</span>-&gt;<span class="title function_ invoke__">prepare</span>(<span class="variable">$sql</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 绑定参数并执行</span></span><br><span class="line">    <span class="variable">$stmt</span>-&gt;<span class="title function_ invoke__">bindValue</span>(<span class="string">&#x27;:id&#x27;</span>, <span class="variable">$id</span>, PDO::<span class="variable constant_">PARAM_INT</span>); <span class="comment">// 明确指定类型</span></span><br><span class="line">    <span class="variable">$stmt</span>-&gt;<span class="title function_ invoke__">execute</span>(); <span class="comment">// 执行</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取结果</span></span><br><span class="line">    <span class="variable">$result</span> = <span class="variable">$stmt</span>-&gt;<span class="title function_ invoke__">fetchAll</span>(PDO::<span class="variable constant_">FETCH_ASSOC</span>);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$result</span> <span class="keyword">as</span> <span class="variable">$row</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable">$row</span>[<span class="string">&#x27;name&#x27;</span>] . <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span> (PDOException <span class="variable">$e</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;Connection failed: &quot;</span> . <span class="variable">$e</span>-&gt;<span class="title function_ invoke__">getMessage</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="4-Node-js-使用-node-postgres-库"><a href="#4-Node-js-使用-node-postgres-库" class="headerlink" title="4. Node.js (使用 node-postgres 库)"></a>4. Node.js (使用 <code>node-postgres</code> 库)</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; <span class="title class_">Client</span> &#125; = <span class="built_in">require</span>(<span class="string">&#x27;pg&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> client = <span class="keyword">new</span> <span class="title class_">Client</span>(&#123;</span><br><span class="line">  <span class="attr">user</span>: <span class="string">&#x27;postgres&#x27;</span>,</span><br><span class="line">  <span class="attr">host</span>: <span class="string">&#x27;localhost&#x27;</span>,</span><br><span class="line">  <span class="attr">database</span>: <span class="string">&#x27;test&#x27;</span>,</span><br><span class="line">  <span class="attr">password</span>: <span class="string">&#x27;secret&#x27;</span>,</span><br><span class="line">  <span class="attr">port</span>: <span class="number">5432</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">main</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">await</span> client.<span class="title function_">connect</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 1. 错误示范：拼接查询</span></span><br><span class="line">  <span class="comment">// const userId = &quot;1; DROP TABLE users; --&quot;;</span></span><br><span class="line">  <span class="comment">// const res = await client.query(`SELECT * FROM users WHERE id = $&#123;userId&#125;`); // 危险！</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. 正确示范：参数化查询（库自动使用预备语句）</span></span><br><span class="line">  <span class="keyword">const</span> query = &#123;</span><br><span class="line">    <span class="attr">text</span>: <span class="string">&#x27;SELECT * FROM users WHERE id = $1&#x27;</span>, <span class="comment">// 使用 $1, $2... 作为占位符</span></span><br><span class="line">    <span class="attr">values</span>: [<span class="number">1</span>], <span class="comment">// 传递参数值数组</span></span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">const</span> res = <span class="keyword">await</span> client.<span class="title function_">query</span>(query);</span><br><span class="line"></span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(res.<span class="property">rows</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3. 插入示例</span></span><br><span class="line">  <span class="keyword">const</span> insertQuery = &#123;</span><br><span class="line">    <span class="attr">text</span>: <span class="string">&#x27;INSERT INTO users (name, age) VALUES ($1, $2)&#x27;</span>,</span><br><span class="line">    <span class="attr">values</span>: [<span class="string">&#x27;Alice&#x27;</span>, <span class="number">30</span>],</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">await</span> client.<span class="title function_">query</span>(insertQuery);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">await</span> client.<span class="title function_">end</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">main</span>().<span class="title function_">catch</span>(<span class="variable language_">console</span>.<span class="property">error</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><table>
+<thead>
+<tr>
+<th align="left">特性</th>
+<th align="left">传统语句</th>
+<th align="left">预备语句</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>安全性</strong></td>
+<td align="left">低，易受 SQL 注入攻击</td>
+<td align="left"><strong>高，有效防止 SQL 注入</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>性能</strong></td>
+<td align="left">每次都需要解析和优化</td>
+<td align="left"><strong>一次准备，多次执行，性能高</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>开发体验</strong></td>
+<td align="left">需要手动处理数据类型和转义</td>
+<td align="left">驱动自动处理参数，<strong>更简单可靠</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>适用场景</strong></td>
+<td align="left">一次性、动态复杂的查询</td>
+<td align="left"><strong>重复性高、结构固定的查询</strong>（如循环插入）</td>
+</tr>
+</tbody></table>
+<p><strong>最佳实践：</strong> 除非是极其特殊的情况（如动态构建复杂的、不确定的 <code>WHERE</code> 子句），否则<strong>应始终使用参数化查询（预备语句）来执行所有涉及用户输入的 SQL 操作</strong>。这应被视为编写数据库操作代码的黄金准则。</p>
 
                     
                 </div>
@@ -513,11 +519,11 @@
     <div class="copyright-info-content border-box">
         <div class="copyright-info-top border-box">
             <div class="copyright-post-title border-box text-ellipsis">
-                详解通信数据协议ProtoBuf
+                PostgreSQL的预备语句用法
             </div>
 
             <div class="copyright-post-link border-box text-ellipsis">
-                2025/08/21/详解通信数据协议ProtoBuf/
+                2025/09/01/PostgreSQL的预备语句用法/
             </div>
         </div>
 
@@ -533,7 +539,7 @@
                 <div class="type">
                     发布于
                 </div>
-                <div class="content">2025-08-21 20:08</div>
+                <div class="content">2025-09-01 20:09</div>
             </div>
 
 
@@ -565,18 +571,6 @@
 
                 <div class="post-bottom-tags-and-share border-box">
                     <div>
-                        
-                            <ul class="post-tags-box border-box">
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/protobuf/">protobuf</a>
-                                    </li>
-                                
-                                    <li class="tag-item border-box">
-                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/person/">person</a>
-                                    </li>
-                                
-                            </ul>
                         
                     </div>
                     <div>
@@ -625,31 +619,15 @@
                 
                     <div class="post-nav border-box">
                         
-                            <div class="prev-post">
-                                <a class="prev"
-                                   rel="prev"
-                                   href="/2025/08/21/%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%AF%94%E8%BE%83/"
-                                   title="结构体是否可以比较"
-                                >
-                                    <span class="left arrow-icon flex-center">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </span>
-                                    <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">结构体是否可以比较</span>
-                                        <span class="post-nav-item">上一篇</span>
-                                    </span>
-                                </a>
-                            </div>
-                        
                         
                             <div class="next-post">
                                 <a class="next"
                                    rel="next"
-                                   href="/2025/08/21/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%20sync.Map/"
-                                   title="读写分离 sync.Map"
+                                   href="/2025/08/21/CSP%E5%B9%B6%E5%8F%91%E6%A8%A1%E5%9E%8B/"
+                                   title="CSP并发模型"
                                 >
                                     <span class="title flex-center">
-                                        <span class="post-nav-title-item text-ellipsis">读写分离 sync.Map</span>
+                                        <span class="post-nav-title-item text-ellipsis">CSP并发模型</span>
                                         <span class="post-nav-item">下一篇</span>
                                     </span>
                                     <span class="right arrow-icon flex-center">
@@ -749,7 +727,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ProtoBuf-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">1. ProtoBuf 的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80%EF%BC%88IDL%EF%BC%89"><span class="nav-text">数据定义语言（IDL）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81"><span class="nav-text">生成代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ProtoBuf-%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">2. ProtoBuf 的序列化和反序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">序列化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">反序列化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ProtoBuf-%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-text">3. ProtoBuf 的特性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E6%95%88"><span class="nav-text">高效</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-text">兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%A8%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81"><span class="nav-text">跨语言支持</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ProtoBuf-%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E8%A7%A3%E7%A0%81"><span class="nav-text">4. ProtoBuf 的编码和解码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E7%A0%81"><span class="nav-text">编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E7%A0%81"><span class="nav-text">解码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-ProtoBuf-%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">5. ProtoBuf 的使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E9%A2%84%E5%A4%87%E8%AF%AD%E5%8F%A5%EF%BC%9F"><span class="nav-text">一、什么是预备语句？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">二、工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%A0%B8%E5%BF%83%E4%BD%9C%E7%94%A8%E4%B8%8E%E4%BC%98%E5%8A%BF"><span class="nav-text">三、核心作用与优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%9C%A8%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="nav-text">四、在常用编程语言中的使用教程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Python-%E4%BD%BF%E7%94%A8-psycopg2-%E5%BA%93%E8%BF%9E%E6%8E%A5-PostgreSQL"><span class="nav-text">1. Python (使用 psycopg2 库连接 PostgreSQL)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Java-%E4%BD%BF%E7%94%A8-JDBC-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">2. Java (使用 JDBC 连接数据库)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-PHP-%E4%BD%BF%E7%94%A8-PDO-%E6%89%A9%E5%B1%95"><span class="nav-text">3. PHP (使用 PDO 扩展)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Node-js-%E4%BD%BF%E7%94%A8-node-postgres-%E5%BA%93"><span class="nav-text">4. Node.js (使用 node-postgres 库)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
     </div>
 </div>
 
@@ -949,7 +927,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ProtoBuf-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">1. ProtoBuf 的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AE%9A%E4%B9%89%E8%AF%AD%E8%A8%80%EF%BC%88IDL%EF%BC%89"><span class="nav-text">数据定义语言（IDL）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%BB%A3%E7%A0%81"><span class="nav-text">生成代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ProtoBuf-%E7%9A%84%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">2. ProtoBuf 的序列化和反序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">序列化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">反序列化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ProtoBuf-%E7%9A%84%E7%89%B9%E6%80%A7"><span class="nav-text">3. ProtoBuf 的特性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E6%95%88"><span class="nav-text">高效</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7"><span class="nav-text">兼容性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%A8%E8%AF%AD%E8%A8%80%E6%94%AF%E6%8C%81"><span class="nav-text">跨语言支持</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ProtoBuf-%E7%9A%84%E7%BC%96%E7%A0%81%E5%92%8C%E8%A7%A3%E7%A0%81"><span class="nav-text">4. ProtoBuf 的编码和解码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%96%E7%A0%81"><span class="nav-text">编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E7%A0%81"><span class="nav-text">解码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-ProtoBuf-%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">5. ProtoBuf 的使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E9%A2%84%E5%A4%87%E8%AF%AD%E5%8F%A5%EF%BC%9F"><span class="nav-text">一、什么是预备语句？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">二、工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%A0%B8%E5%BF%83%E4%BD%9C%E7%94%A8%E4%B8%8E%E4%BC%98%E5%8A%BF"><span class="nav-text">三、核心作用与优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%9C%A8%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="nav-text">四、在常用编程语言中的使用教程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Python-%E4%BD%BF%E7%94%A8-psycopg2-%E5%BA%93%E8%BF%9E%E6%8E%A5-PostgreSQL"><span class="nav-text">1. Python (使用 psycopg2 库连接 PostgreSQL)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Java-%E4%BD%BF%E7%94%A8-JDBC-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">2. Java (使用 JDBC 连接数据库)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-PHP-%E4%BD%BF%E7%94%A8-PDO-%E6%89%A9%E5%B1%95"><span class="nav-text">3. PHP (使用 PDO 扩展)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-Node-js-%E4%BD%BF%E7%94%A8-node-postgres-%E5%BA%93"><span class="nav-text">4. Node.js (使用 node-postgres 库)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol>
     </div>
 </div>
 
