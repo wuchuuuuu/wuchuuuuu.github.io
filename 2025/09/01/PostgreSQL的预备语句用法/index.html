@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Mon Sep 01 2025 20:35:51 GMT+0800">2025-09-01 20:35:51</span>
+                    <span class="datetime" data-updated="Mon Sep 01 2025 20:38:13 GMT+0800">2025-09-01 20:38:13</span>
                 </span>
             
         
@@ -455,7 +455,7 @@
 <li><strong>执行（Execute）</strong>: 之后，你只需要将参数值和这个句柄发送给数据库服务器。服务器会将参数与之前编译好的模板结合，直接执行。</li>
 </ol>
 <blockquote>
-<p>需要注意的是，预备语句只在当前连接存活期间有效，一旦连接关闭，它就会失效。</p>
+<p>需要注意的是，预备语句只在当前连接存活期间有效，一旦连接关闭，它就会失效。详细原理见：<a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Sulc6CB5OfT8j_zCNj1tIg" >https://mp.weixin.qq.com/s/Sulc6CB5OfT8j_zCNj1tIg<i class="fas fa-external-link-alt"></i></a></p>
 </blockquote>
 <h3 id="二、工作原理"><a href="#二、工作原理" class="headerlink" title="二、工作原理"></a>二、工作原理</h3><p><strong>没有预备语句的传统查询：</strong><br><code>&quot;SELECT * FROM users WHERE id = 123&quot;</code><br>每次执行这条语句，数据库都需要完成：<strong>语法解析 -&gt; 语义检查（表&#x2F;列是否存在）-&gt; 查询优化（选择最优执行计划）-&gt; 执行</strong>。对于只是 <code>id</code> 值不同的重复查询，前三个步骤是完全冗余的，浪费资源。</p>
 <p><strong>使用预备语句的查询：</strong></p>
