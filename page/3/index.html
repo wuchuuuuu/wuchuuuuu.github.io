@@ -374,6 +374,79 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
+                        <a href="/2025/08/21/sync.Pool/">
+                            sync.Pool
+                        </a>
+                    </h3>
+
+                    <div class="home-post-content keep-markdown-body">
+                        
+                            sync.Pool 是 Go 标准库中的一种用于临时对象缓存的并发安全的对象池。它的主要目的是减少内存分配和垃圾回收的开销，通过重用对象来提高性能。以下是 sync.Pool 的详细介绍：
+1.  基本概念
+sync.Pool 是一个可以存储任意类型...
+                        
+                    </div>
+
+                    
+
+<div class="post-meta-info-container border-box home">
+    <div class="post-meta-info border-box">
+        
+            <span class="meta-info-item border-box">
+                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Thu Aug 21 2025 20:30:50 GMT+0800"
+                >2025-08-21 20:30:50</span>
+            </span>
+        
+
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/sync/">sync</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/pool/">pool</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+        <a class="home-read-more" href="/2025/08/21/sync.Pool/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
+    
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-post-item">
+
+                
+
+                <div class="home-post-item-bottom border-box">
+                    
+                    <h3 class="home-post-title border-box">
                         <a href="/2025/08/21/%E4%B9%90%E8%A7%82%E9%94%81%E4%B8%8E%E6%82%B2%E8%A7%82%E9%94%81%E4%B8%8EGolang/">
                             乐观锁与悲观锁与Golang
                         </a>
@@ -663,15 +736,15 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2025/08/21/%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%AF%94%E8%BE%83/">
-                            结构体是否可以比较
+                        <a href="/2025/08/21/%E7%89%B9%E6%9D%83%20Goroutine%20g0/">
+                            特权 Goroutine g0
                         </a>
                     </h3>
 
                     <div class="home-post-content keep-markdown-body">
                         
-                            在 Go 语言中，结构体（struct）的比较是一个重要的面试问题。是否可以比较结构体，取决于结构体的字段及其类型。以下是关于 Go 结构体是否可以比较的详细分析：
-1. 结构体的比较规则可以比较的结构体在 Go 中，一个结构体可以进行比较（使用 =...
+                            在 Go 语言的运行时系统中，g0 是一个特殊的 Goroutine。了解 g0 可以帮助你更好地理解 Go 的 Goroutine 调度和管理机制。
+1. g0 的定义g0 是 Go 运行时内部使用的一个 Goroutine，它不参与普通的用户代码...
                         
                     </div>
 
@@ -707,7 +780,7 @@
                             <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/go/">go</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/func/">func</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/g0/">g0</a></li>
                         
                     
                 </ul>
@@ -721,7 +794,7 @@
     </div>
 
     
-        <a class="home-read-more" href="/2025/08/21/%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%AF%94%E8%BE%83/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/2025/08/21/%E7%89%B9%E6%9D%83%20Goroutine%20g0/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
@@ -808,78 +881,6 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2025/08/21/%E7%89%B9%E6%9D%83%20Goroutine%20g0/">
-                            特权 Goroutine g0
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            在 Go 语言的运行时系统中，g0 是一个特殊的 Goroutine。了解 g0 可以帮助你更好地理解 Go 的 Goroutine 调度和管理机制。
-1. g0 的定义g0 是 Go 运行时内部使用的一个 Goroutine，它不参与普通的用户代码...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Thu Aug 21 2025 20:30:50 GMT+0800"
-                >2025-08-21 20:30:50</span>
-            </span>
-        
-
-        
-
-        
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
-                    
-                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-            <span class="post-tag meta-info-item border-box">
-                <ul class="post-tag-ul">
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/go/">go</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/g0/">g0</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/2025/08/21/%E7%89%B9%E6%9D%83%20Goroutine%20g0/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
                         <a href="/2025/08/21/%E8%AF%A6%E8%A7%A3%E9%80%9A%E4%BF%A1%E6%95%B0%E6%8D%AE%E5%8D%8F%E8%AE%AEProtoBuf/">
                             详解通信数据协议ProtoBuf
                         </a>
@@ -951,15 +952,15 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2025/08/21/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%20sync.Map/">
-                            读写分离 sync.Map
+                        <a href="/2025/08/21/%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%AF%94%E8%BE%83/">
+                            结构体是否可以比较
                         </a>
                     </h3>
 
                     <div class="home-post-content keep-markdown-body">
                         
-                            sync.Map 是 Go 语言中的一个并发安全的映射（map）实现，设计目的是为了在高并发环境下提高读操作的性能。它支持读写分离，以优化读操作的性能，同时保持对写操作的安全性。以下是 sync.Map 的详细解释及其读写分离特性：
-1. sync....
+                            在 Go 语言中，结构体（struct）的比较是一个重要的面试问题。是否可以比较结构体，取决于结构体的字段及其类型。以下是关于 Go 结构体是否可以比较的详细分析：
+1. 结构体的比较规则可以比较的结构体在 Go 中，一个结构体可以进行比较（使用 =...
                         
                     </div>
 
@@ -992,10 +993,10 @@
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/sync/">sync</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/go/">go</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/map/">map</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/func/">func</a></li>
                         
                     
                 </ul>
@@ -1009,7 +1010,7 @@
     </div>
 
     
-        <a class="home-read-more" href="/2025/08/21/%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%20sync.Map/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/2025/08/21/%E7%BB%93%E6%9E%84%E4%BD%93%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E6%AF%94%E8%BE%83/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
