@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Sep 04 2025 14:39:22 GMT+0800">2025-09-04 14:39:22</span>
+                    <span class="datetime" data-updated="Thu Sep 04 2025 14:41:52 GMT+0800">2025-09-04 14:41:52</span>
                 </span>
             
         
@@ -451,8 +451,8 @@
                          <blockquote>
 <p>在 PostgreSQL 数据库的管理中，删除表（DROP TABLE）操作通常是一个不可逆的过程。当用户执行删除操作时，相关数据会被永久丢弃，除非事先做好备份。然而，在实际生产环境中，删除表有时可能是一个错误操作，或者是需要暂时“隐藏”某些表而非完全删除。为了防止误删重要数据，提出了一个“安全删除”功能：即在执行 DROP TABLE 时，表不会被删除，而是被移动到一个名为“回收站”（trashcan）的 schema 中。</p>
 </blockquote>
-<h3 id="pg-safe-drop-插件的目标与功能"><a href="#pg-safe-drop-插件的目标与功能" class="headerlink" title="pg_safe_drop 插件的目标与功能"></a>pg_safe_drop 插件的目标与功能</h3><p>pg_safe_drop 插件通过拦截 PostgreSQL 的 DROP TABLE 命令，将待删除的表移动到指定的回收站 schema 中，而不是完全删除。这种方式可以有效避免误操作，同时在不需要时可以通过恢复的方式找回表和数据。</p>
-<h4 id="实现的主要功能："><a href="#实现的主要功能：" class="headerlink" title="实现的主要功能："></a>实现的主要功能：</h4><ol>
+<h3 id="pg-safe-drop"><a href="#pg-safe-drop" class="headerlink" title="pg_safe_drop"></a>pg_safe_drop</h3><p>pg_safe_drop 插件通过拦截 PostgreSQL 的 DROP TABLE 命令，将待删除的表移动到指定的回收站 schema 中，而不是完全删除。这种方式可以有效避免误操作，同时在不需要时可以通过恢复的方式找回表和数据。</p>
+<h4 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h4><ol>
 <li><strong>拦截 DROP TABLE 操作：</strong> 通过定制的 ProcessUtility hook，拦截用户执行的 DROP TABLE 命令，避免直接删除表。</li>
 <li><strong>将表移入回收站 schema：</strong> 在执行删除命令时，将表移动到指定的回收站 schema 中，表结构和数据保持不变。</li>
 <li><strong>处理多个表删除：</strong> 支持一次性删除多个表，并将它们一并移动到回收站 schema。</li>
@@ -461,7 +461,7 @@
 <li><strong>可配置性：</strong> 插件支持通过 GUC（Grand Unified Configuration）参数进行配置，可以自定义回收站 schema 的名称以及是否启用安全删除功能。</li>
 <li><strong>表的 schema 迁移：</strong> 插件使用 ALTER TABLE … SET SCHEMA 命令将表迁移到回收站 schema 中，而不是直接删除表。</li>
 </ol>
-<h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><p>pg_safe_drop的核心是通过钩子（hook）机制拦截 PostgreSQL 内部的 SQL 命令流。具体来说，插件通过 ProcessUtility hook 函数，在每次执行 SQL 语句时被触发，检查语句是否为 DROP TABLE，如果是，则执行相应的逻辑。</p>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><p>pg_safe_drop的核心是通过钩子（hook）机制拦截 PostgreSQL 内部的 SQL 命令流。具体来说，插件通过 ProcessUtility hook 函数，在每次执行 SQL 语句时被触发，检查语句是否为 DROP TABLE，如果是，则执行相应的逻辑。</p>
 <ol>
 <li><p><strong>模块初始化：</strong><br> 在 pg_safe_drop 插件加载时，首先通过 _PG_init() 函数定义了两个 GUC 参数：<code>pg_safe_drop.safe_drop_schema</code>（指定回收站 schema 的名称）和 <code>pg_safe_drop.safe_drop_enabled</code>（控制插件是否启用）。插件会尝试创建指定的回收站 schema（如果不存在的话）。</p>
 </li>
@@ -748,7 +748,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop-%E6%8F%92%E4%BB%B6%E7%9A%84%E7%9B%AE%E6%A0%87%E4%B8%8E%E5%8A%9F%E8%83%BD"><span class="nav-text">pg_safe_drop 插件的目标与功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD%EF%BC%9A"><span class="nav-text">实现的主要功能：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ProcessUtility-Hook%E4%BB%8B%E7%BB%8D"><span class="nav-text">ProcessUtility Hook介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hook%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="nav-text">Hook链式调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop%E7%9A%84Hook%E5%AE%9E%E7%8E%B0"><span class="nav-text">pg_safe_drop的Hook实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-text">扩展初始化过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pg-safe-drop-ProcessUtility"><span class="nav-text">pg_safe_drop_ProcessUtility</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop"><span class="nav-text">pg_safe_drop</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-text">主要功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ProcessUtility-Hook%E4%BB%8B%E7%BB%8D"><span class="nav-text">ProcessUtility Hook介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hook%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="nav-text">Hook链式调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop%E7%9A%84Hook%E5%AE%9E%E7%8E%B0"><span class="nav-text">pg_safe_drop的Hook实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-text">扩展初始化过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pg-safe-drop-ProcessUtility"><span class="nav-text">pg_safe_drop_ProcessUtility</span></a></li></ol></li></ol>
     </div>
 </div>
 
@@ -948,7 +948,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop-%E6%8F%92%E4%BB%B6%E7%9A%84%E7%9B%AE%E6%A0%87%E4%B8%8E%E5%8A%9F%E8%83%BD"><span class="nav-text">pg_safe_drop 插件的目标与功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD%EF%BC%9A"><span class="nav-text">实现的主要功能：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ProcessUtility-Hook%E4%BB%8B%E7%BB%8D"><span class="nav-text">ProcessUtility Hook介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hook%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="nav-text">Hook链式调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop%E7%9A%84Hook%E5%AE%9E%E7%8E%B0"><span class="nav-text">pg_safe_drop的Hook实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-text">扩展初始化过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pg-safe-drop-ProcessUtility"><span class="nav-text">pg_safe_drop_ProcessUtility</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop"><span class="nav-text">pg_safe_drop</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-text">主要功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ProcessUtility-Hook%E4%BB%8B%E7%BB%8D"><span class="nav-text">ProcessUtility Hook介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Hook%E9%93%BE%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="nav-text">Hook链式调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-drop%E7%9A%84Hook%E5%AE%9E%E7%8E%B0"><span class="nav-text">pg_safe_drop的Hook实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-text">扩展初始化过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pg-safe-drop-ProcessUtility"><span class="nav-text">pg_safe_drop_ProcessUtility</span></a></li></ol></li></ol>
     </div>
 </div>
 
