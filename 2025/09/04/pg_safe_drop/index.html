@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Sep 04 2025 15:01:32 GMT+0800">2025-09-04 15:01:32</span>
+                    <span class="datetime" data-updated="Thu Sep 04 2025 15:09:41 GMT+0800">2025-09-04 15:09:41</span>
                 </span>
             
         
@@ -479,12 +479,6 @@
 <li><strong>ALTER TABLE SET SCHEMA：</strong><br> 使用 ALTER TABLE … SET SCHEMA 将表从原 schema 移动到回收站 schema 中。</li>
 <li><strong>完成操作：</strong><br> 插件执行完表的迁移后，输出日志通知管理员操作已完成。</li>
 </ol>
-<p><img  
-                       lazyload
-                       alt="image"
-                       data-src="/../images/image-1.png"
-                        alt="alt text"
-                 >{: width&#x3D;”300” height&#x3D;”400”}</p>
 <h3 id="ProcessUtility-Hook介绍"><a href="#ProcessUtility-Hook介绍" class="headerlink" title="ProcessUtility Hook介绍"></a>ProcessUtility Hook介绍</h3><p><strong>Hook（钩子）</strong> 是一种编程模式，允许开发者在程序的特定点插入自定义逻辑或行为，而不需要修改原始代码的结构。它是操作系统、库、框架或者应用程序中用于扩展功能的一种机制。通过钩子，开发者可以“挂钩”到程序执行的关键位置，拦截事件或函数调用，并添加自定义的操作。</p>
 <p><strong>ProcessUtility Hook</strong> 是 PostgreSQL 中的一种钩子机制，它允许扩展在处理 DDL（数据定义语言）命令时插入自定义逻辑。ProcessUtility 函数本身是 PostgreSQL 用来解析和执行 DDL 命令（如 CREATE, DROP, ALTER 等）的一部分，而 ProcessUtility Hook 使得开发者可以在执行这些命令之前拦截并修改它们，或添加额外的行为。它定义在 <code>src/include/tcop/utility.h</code> 文件中，具体如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该函数指针会指向一个接收 PlannedStmt 和其他相关参数的函数。</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="title function_">void</span> <span class="params">(*ProcessUtility_hook_type)</span> <span class="params">(</span></span><br><span class="line"><span class="params">    PlannedStmt *pstmt,              <span class="comment">// 解析后的查询计划，表示要执行的 SQL 命令。</span></span></span><br><span class="line"><span class="params">    <span class="type">const</span> <span class="type">char</span> *queryString,         <span class="comment">// 原始的 SQL 查询字符串，用于调试或日志记录。</span></span></span><br><span class="line"><span class="params">    <span class="type">bool</span> readOnlyTree,               <span class="comment">// 如果是只读的树，则为 true，指示查询不会改变数据库的状态。</span></span></span><br><span class="line"><span class="params">    ProcessUtilityContext context,   <span class="comment">// 当前命令的上下文，指示命令类型或其他附加信息。</span></span></span><br><span class="line"><span class="params">    ParamListInfo params,           <span class="comment">// 包含查询中使用的参数的列表。</span></span></span><br><span class="line"><span class="params">    QueryEnvironment *queryEnv,      <span class="comment">// 查询执行环境，保存查询执行时的状态信息。</span></span></span><br><span class="line"><span class="params">    DestReceiver *dest,              <span class="comment">// 结果接收器，表示如何处理查询的结果（例如，输出到屏幕、写入文件等）。</span></span></span><br><span class="line"><span class="params">    QueryCompletion *qc              <span class="comment">// 保存查询完成后的状态信息，通常用于指示查询是否成功执行。</span></span></span><br><span class="line"><span class="params">)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明一个全局变量 ProcessUtility_hook，这是一个指向函数的指针。</span></span><br><span class="line"><span class="comment">// 该指针指向实现了上面定义的函数类型的钩子函数。</span></span><br><span class="line"><span class="comment">// 如果没有设置钩子函数，PostgreSQL 将使用默认的标准函数处理 DDL 命令。</span></span><br><span class="line"><span class="keyword">extern</span> PGDLLIMPORT ProcessUtility_hook_type ProcessUtility_hook;</span><br></pre></td></tr></table></figure>
