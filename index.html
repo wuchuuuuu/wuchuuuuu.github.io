@@ -381,7 +381,7 @@
 
                     <div class="home-post-content keep-markdown-body">
                         
-                            一、wal_log_hints参数作用（一）Hint bits机制概述在PostgreSQL中，Hint bits是一种用于优化性能的重要机制，它存储在元组（tuple）头部。具体而言，Hint bits位于元组的infomask里，仅占2个BIT位...
+                            wal_log_hints参数作用Hint bits机制概述在PostgreSQL中，Hint bits是一种用于优化性能的重要机制，它存储在元组（tuple）头部。具体而言，Hint bits位于元组的infomask里，仅占2个BIT位，主要用于...
                         
                     </div>
 
@@ -392,8 +392,8 @@
         
             <span class="meta-info-item border-box">
                 <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Tue Sep 16 2025 17:44:56 GMT+0800"
-                >2025-09-16 17:44:56</span>
+                                                                                data-updated="Tue Sep 16 2025 17:48:52 GMT+0800"
+                >2025-09-16 17:48:52</span>
             </span>
         
 
@@ -870,79 +870,6 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2025/08/21/Go%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%A0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
-                            Go协程的栈内存管理
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            Go 协程（Goroutine）的栈内存管理是 Go 语言设计中一个重要的优化点。它通过灵活的栈增长策略，确保 Goroutine 能够高效地使用内存，支持高并发。以下是 Go 协程栈内存管理的详细介绍：
-1.  栈的初始大小
-Goroutine 的...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Thu Aug 21 2025 20:30:50 GMT+0800"
-                >2025-08-21 20:30:50</span>
-            </span>
-        
-
-        
-
-        
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
-                    
-                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-            <span class="post-tag meta-info-item border-box">
-                <ul class="post-tag-ul">
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goroutine/">goroutine</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/go/">go</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/2025/08/21/Go%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%A0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
                         <a href="/2025/08/21/GPM%E8%B0%83%E5%BA%A6%E6%A8%A1%E5%9E%8B/">
                             GPM调度模型
                         </a>
@@ -1072,6 +999,79 @@ Goroutine 的...
 
     
         <a class="home-read-more" href="/2025/08/21/HTTP%20Client%E5%A4%A7%E9%87%8F%E9%95%BF%E8%BF%9E%E6%8E%A5%E4%BF%9D%E6%8C%81/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
+    
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-post-item">
+
+                
+
+                <div class="home-post-item-bottom border-box">
+                    
+                    <h3 class="home-post-title border-box">
+                        <a href="/2025/08/21/Go%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%A0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+                            Go协程的栈内存管理
+                        </a>
+                    </h3>
+
+                    <div class="home-post-content keep-markdown-body">
+                        
+                            Go 协程（Goroutine）的栈内存管理是 Go 语言设计中一个重要的优化点。它通过灵活的栈增长策略，确保 Goroutine 能够高效地使用内存，支持高并发。以下是 Go 协程栈内存管理的详细介绍：
+1.  栈的初始大小
+Goroutine 的...
+                        
+                    </div>
+
+                    
+
+<div class="post-meta-info-container border-box home">
+    <div class="post-meta-info border-box">
+        
+            <span class="meta-info-item border-box">
+                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Thu Aug 21 2025 20:30:50 GMT+0800"
+                >2025-08-21 20:30:50</span>
+            </span>
+        
+
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goroutine/">goroutine</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/go/">go</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+        <a class="home-read-more" href="/2025/08/21/Go%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%A0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
