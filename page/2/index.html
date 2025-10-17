@@ -374,6 +374,77 @@
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
+                        <a href="/2025/08/21/HTTP%20Client%E5%A4%A7%E9%87%8F%E9%95%BF%E8%BF%9E%E6%8E%A5%E4%BF%9D%E6%8C%81/">
+                            HTTP Client大量长连接保持
+                        </a>
+                    </h3>
+
+                    <div class="home-post-content keep-markdown-body">
+                        
+                            问题起因在生产环境中，server to server 的服务出现大量 TIME_WAIT 状态的连接。通过 netstat 发现，连接不断建立但无法保持。抓取 TCP 包后确认，request 和 response 中的 keepalive 已正确...
+                        
+                    </div>
+
+                    
+
+<div class="post-meta-info-container border-box home">
+    <div class="post-meta-info border-box">
+        
+            <span class="meta-info-item border-box">
+                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
+                                                                                data-updated="Thu Aug 21 2025 20:30:50 GMT+0800"
+                >2025-08-21 20:30:50</span>
+            </span>
+        
+
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/http/">http</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/maxidleconnsperhost/">maxidleconnsperhost</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+    </div>
+
+    
+        <a class="home-read-more" href="/2025/08/21/HTTP%20Client%E5%A4%A7%E9%87%8F%E9%95%BF%E8%BF%9E%E6%8E%A5%E4%BF%9D%E6%8C%81/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
+    
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-post-item">
+
+                
+
+                <div class="home-post-item-bottom border-box">
+                    
+                    <h3 class="home-post-title border-box">
                         <a href="/2025/08/21/Interface%E5%86%85%E9%83%A8%E5%AE%9E%E7%8E%B0%E7%9A%84%E7%90%86%E8%A7%A3/">
                             Interface内部实现的理解
                         </a>
@@ -879,77 +950,6 @@ Gin 路由树原理Gin 使用的路由树基于前缀树的思想...
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2025/08/21/gopark%E5%87%BD%E6%95%B0%E5%92%8Cgoready%E5%87%BD%E6%95%B0%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
-                            gopark函数和goready函数原理分析
-                        </a>
-                    </h3>
-
-                    <div class="home-post-content keep-markdown-body">
-                        
-                            在 Golang 的运行时系统中，gopark 和 goready 是两个关键的函数，它们在 Goroutine 的调度和状态管理中起着重要作用。这两个函数在 Go 的调度模型中用于管理 Goroutine 的挂起（park）和恢复（ready）操作...
-                        
-                    </div>
-
-                    
-
-<div class="post-meta-info-container border-box home">
-    <div class="post-meta-info border-box">
-        
-            <span class="meta-info-item border-box">
-                <i class="icon fa-solid fa-history"></i>&nbsp;<span class="home-post-history"
-                                                                                data-updated="Thu Aug 21 2025 20:30:50 GMT+0800"
-                >2025-08-21 20:30:50</span>
-            </span>
-        
-
-        
-
-        
-            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
-                <ul class="post-category-ul">
-                    
-                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-            <span class="post-tag meta-info-item border-box">
-                <ul class="post-tag-ul">
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goroutine/">goroutine</a></li>
-                        
-                    
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goready/">goready</a></li>
-                        
-                    
-                </ul>
-            </span>
-        
-
-        
-        
-        
-        
-    </div>
-
-    
-        <a class="home-read-more" href="/2025/08/21/gopark%E5%87%BD%E6%95%B0%E5%92%8Cgoready%E5%87%BD%E6%95%B0%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
-    
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-post-item">
-
-                
-
-                <div class="home-post-item-bottom border-box">
-                    
-                    <h3 class="home-post-title border-box">
                         <a href="/2025/08/21/goroutine%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E9%98%BB%E5%A1%9E/">
                             goroutine什么情况下会阻塞
                         </a>
@@ -1022,15 +1022,14 @@ Gin 路由树原理Gin 使用的路由树基于前缀树的思想...
                 <div class="home-post-item-bottom border-box">
                     
                     <h3 class="home-post-title border-box">
-                        <a href="/2025/08/21/mutex%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8%EF%BC%8C%E4%B9%90%E8%A7%82%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0/">
-                            mutex怎么使用，乐观和悲观锁的实现
+                        <a href="/2025/08/21/gopark%E5%87%BD%E6%95%B0%E5%92%8Cgoready%E5%87%BD%E6%95%B0%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">
+                            gopark函数和goready函数原理分析
                         </a>
                     </h3>
 
                     <div class="home-post-content keep-markdown-body">
                         
-                            Golang 中 sync.Mutex 的使用sync.Mutex 是 Go 中用来提供互斥锁（Mutual Exclusion）的结构体，它可以确保在同一时刻只有一个 Goroutine 访问共享资源。
-sync.Mutex 的基本用法：12345...
+                            在 Golang 的运行时系统中，gopark 和 goready 是两个关键的函数，它们在 Goroutine 的调度和状态管理中起着重要作用。这两个函数在 Go 的调度模型中用于管理 Goroutine 的挂起（park）和恢复（ready）操作...
                         
                     </div>
 
@@ -1063,10 +1062,10 @@ sync.Mutex 的基本用法：12345...
             <span class="post-tag meta-info-item border-box">
                 <ul class="post-tag-ul">
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/sync/">sync</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goroutine/">goroutine</a></li>
                         
                     
-                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/counter/">counter</a></li>
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goready/">goready</a></li>
                         
                     
                 </ul>
@@ -1080,7 +1079,7 @@ sync.Mutex 的基本用法：12345...
     </div>
 
     
-        <a class="home-read-more" href="/2025/08/21/mutex%E6%80%8E%E4%B9%88%E4%BD%BF%E7%94%A8%EF%BC%8C%E4%B9%90%E8%A7%82%E5%92%8C%E6%82%B2%E8%A7%82%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
+        <a class="home-read-more" href="/2025/08/21/gopark%E5%87%BD%E6%95%B0%E5%92%8Cgoready%E5%87%BD%E6%95%B0%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90/">阅读全文&nbsp;<i class="icon fas fa-angle-right"></i></a>
     
 </div>
 
