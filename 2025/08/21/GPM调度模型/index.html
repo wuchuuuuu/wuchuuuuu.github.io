@@ -9,7 +9,7 @@
     
     <title>
         
-            404 |
+            GPM调度模型 |
         
         DBA有话说
     </title>
@@ -356,15 +356,378 @@
             <div class="main-content border-box">
                 
 
-                    <div class="fade-in-down-animation">
-    <div class="error-404-container border-box">
-        <div class="text-1 border-box flex-center">404</div>
-        <div class="text-2 border-box flex-center">
-            页面找不到
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        GPM调度模型
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">元婴问道</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2025-08-21 20:08:41</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/">GO八股文</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/goroutine/">goroutine</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/gpm/">gpm</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <p>Go语言的GPM调度模型是Go运行时中用于处理并发的核心机制之一，它将Goroutine（轻量级线程）有效地映射到系统线程上，以最大化并发性能。GPM模型主要由三个部分组成：G（Goroutine）、P（Processor）、M（Machine）。让我们逐一详细介绍：</p>
+<h3 id="1-G（Goroutine）"><a href="#1-G（Goroutine）" class="headerlink" title="1.  G（Goroutine）"></a>1.  G（Goroutine）</h3><ul>
+<li>Goroutine  是Go语言中用于并发执行的轻量级线程，每个Goroutine都有自己的栈和上下文信息。</li>
+<li>Goroutine相对于操作系统的线程更加轻量级，可以在同一时间内运行成千上万的Goroutine。</li>
+</ul>
+<h3 id="2-P（Processor）"><a href="#2-P（Processor）" class="headerlink" title="2.  P（Processor）"></a>2.  P（Processor）</h3><ul>
+<li>P  是处理Goroutine的调度器的上下文，每个P包含一个本地运行队列（Local Run Queue），用于存储需要运行的Goroutine。</li>
+<li>P的数量由<code>GOMAXPROCS</code>设置决定，它决定了并行执行的最大线程数。</li>
+<li>P不仅管理Goroutine，还负责与M协作，将Goroutine分配给M执行。</li>
+</ul>
+<h3 id="3-M（Machine）"><a href="#3-M（Machine）" class="headerlink" title="3.  M（Machine）"></a>3.  M（Machine）</h3><ul>
+<li>M  代表操作系统的线程，负责执行Goroutine。一个M一次只能执行一个Goroutine。</li>
+<li>M是实际执行代码的工作单元，M与P绑定后才能执行Goroutine。</li>
+<li>M可以通过调度器从全局运行队列中拉取新的Goroutine，也可以与其他M协作完成工作。</li>
+</ul>
+<h3 id="4-GPM模型的调度过程"><a href="#4-GPM模型的调度过程" class="headerlink" title="4.  GPM模型的调度过程"></a>4.  GPM模型的调度过程</h3><ul>
+<li>调度器工作机制 ：Goroutine创建后会被放入P的本地队列，P会从该队列中选择Goroutine，并将其分配给M执行。如果本地队列为空，P可以从全局运行队列或其他P的队列中窃取任务。</li>
+<li>工作窃取机制 ：如果一个P的本地队列为空，而另一个P的本地队列中有多个Goroutine，前者可以从后者中窃取任务，从而保持系统的高效利用率。</li>
+<li>阻塞与调度 ：当M执行的Goroutine阻塞（例如I&#x2F;O操作）时，M会释放当前的P并等待P重新分配任务，从而避免资源浪费。</li>
+</ul>
+<h3 id="5-模型优点"><a href="#5-模型优点" class="headerlink" title="5.  模型优点"></a>5.  模型优点</h3><ul>
+<li>高效的并发调度 ：GPM模型使得Go语言可以高效地管理数百万个Goroutine的并发执行。</li>
+<li>可伸缩性 ：通过P与M的动态调度，GPM模型可以充分利用多核处理器的性能。</li>
+<li>轻量级 ：Goroutine非常轻量，创建和切换的成本比系统线程要低得多。</li>
+</ul>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                GPM调度模型
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2025/08/21/GPM调度模型/
+            </div>
         </div>
-        <div class="text-3 border-box flex-center">
-            <a class="go-home" href="/">前往首页</a>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2025-08-21 20:08</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
         </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/goroutine/">goroutine</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/gpm/">gpm</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2025/08/21/GC%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95/"
+                                   title="GC垃圾回收算法"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">GC垃圾回收算法</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2025/08/21/Go%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%A0%88%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/"
+                                   title="Go协程的栈内存管理"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">Go协程的栈内存管理</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-G%EF%BC%88Goroutine%EF%BC%89"><span class="nav-text">1.  G（Goroutine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-P%EF%BC%88Processor%EF%BC%89"><span class="nav-text">2.  P（Processor）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-M%EF%BC%88Machine%EF%BC%89"><span class="nav-text">3.  M（Machine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-GPM%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%B0%83%E5%BA%A6%E8%BF%87%E7%A8%8B"><span class="nav-text">4.  GPM模型的调度过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%A8%A1%E5%9E%8B%E4%BC%98%E7%82%B9"><span class="nav-text">5.  模型优点</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
     </div>
 </div>
 
@@ -421,6 +784,36 @@
 
     <!-- post tools -->
     
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
 
     <!-- side tools -->
     <div class="side-tools">
@@ -461,7 +854,15 @@
 
     <ul class="exposed-tools-list border-box">
         
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
 
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
         
 
         <li class="tools-item tool-toggle-show flex-center">
@@ -517,6 +918,17 @@
 
     <!-- tablet toc -->
     
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-G%EF%BC%88Goroutine%EF%BC%89"><span class="nav-text">1.  G（Goroutine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-P%EF%BC%88Processor%EF%BC%89"><span class="nav-text">2.  P（Processor）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-M%EF%BC%88Machine%EF%BC%89"><span class="nav-text">3.  M（Machine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-GPM%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%B0%83%E5%BA%A6%E8%BF%87%E7%A8%8B"><span class="nav-text">4.  GPM模型的调度过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%A8%A1%E5%9E%8B%E4%BC%98%E7%82%B9"><span class="nav-text">5.  模型优点</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
 </main>
 
 
@@ -559,6 +971,32 @@
     
 
     <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
     
 
     <!-- categories page -->

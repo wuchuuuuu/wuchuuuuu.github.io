@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            深入理解 PostgreSQL 中的内存上下文（MmeoryContext） |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        深入理解 PostgreSQL 中的内存上下文（MmeoryContext）
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">元婴问道</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2024-11-27 15:11:10</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Aug 21 2025 20:30:50 GMT+0800">2025-08-21 20:30:50</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/MmeoryContext/">MmeoryContext</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/">内存分析</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>在 PostgreSQL 的旧版本中，常常需要处理大量以指针传值的查询，因而存在着内存泄露的问题，直到查询结束时才能将内存收回。尤其是在处理 TOAST 数据时，需要使用大量的内存，因而使得内存泄露的问题更加明显。为此，PostgreSQL 在 7.1 版本开始实现了内存上下文管理机制。</p>
+</blockquote>
+<h3 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h3><p>内存上下文机制本质上就是 对内存进行分类和分层 。</p>
+<p>比如说我们需要为用户发来的命令，例如 <code>&quot;select * from t&quot;</code>，开辟一个内存空间并存储它，同时在对命令进行语法解析后生成的语法解析树也需要内存保存，因此 PostgreSQL 使用 <code>MessageContext</code> 来存储。</p>
+<p>对于不经常改变的 Catalog Relation（元数据） 可以放入缓存中，不必每次都从磁盘中读取，那么 Cache 所需的内存就可以由 <code>CacheMemoryContext</code> 进行管理。</p>
+<p>当执行一个事务时，一定会伴随着内存分配，比如元组的扫描、索引的扫描或者元组的排序等等，这些内存可能需要在事务结束后才释放，因此可由 <code>CurTransactionContext</code>、<code>ExecutorState</code>、<code>PortalHeapMemory</code> 等内存上下文来管理。å</p>
+<p>可以看到，在数据库运行过程中，会不断地申请各种各样的内存，PostgreSQL 将其分门别类整理好，在内存释放时就将更加从容和方便。即系统中的内存分配操作在 各种语义 的内存上下文中进行，所有在内存上下文中分配的内存空间都通过内存上下文进行记录。 因此可以很轻松地通过释放内存上下文来释放其中所有的内存，而不用费心地去释放其中的每一块内存。 </p>
+<p>PostgreSQL 中的每一个子进程都拥有多个私有的内存上下文，这些上下文将会组成一个树形结构，更准确地说，是一棵多叉树，根节点为 <code>TopMemoryContext</code>。因为对于数据库而言，一个查询处理是一个层层递进的过程，正如查询计划树一样。下图展示了最常用的几种内存上下文，<code>ErrorContext</code> 专门用于错误处理，因为我们的 Error Message 也需要保存在堆内存上，而后输出至文件中:</p>
+
+
+<h3 id="2-MemoryContextData"><a href="#2-MemoryContextData" class="headerlink" title="2. MemoryContextData"></a>2. MemoryContextData</h3><p><code>MemoryContextData</code> 是一个抽象类，包含了内存上下文之间的关联关系，以及对内存上下文进行操作的一系列函数，可以有多种实现，但目前只有 <code>AllocSetContext</code> 这一种实现。而在 C 语言中要想实现继承和多态，那么 <code>AllocSetContext</code> 的起始位置就必须是 <code>MemoryContextData</code>，这一点接下来我们就会看到。</p>
+<p>首先来看看 <code>MemoryContextData</code> 的具体内容:</p>
+
+
+<p>有几个字段需要进一步地解释和说明:</p>
+<p><code>isReset</code>: 表示 当前内存上下文从上一次重置到当前是否还没有内存分配 ，初始值为 <code>true</code>，即重置以来还没有进行内存分配。当进行了内存分配时，该值将会被更新为 <code>false</code>。那么最终在重置内存上下文时，如果发现该字段为 <code>true</code>，则表示该内存上下文还没有进行过内存分配，就可以不进行实际的重置工作，从而提高效率。</p>
+<p><code>methods</code>: 包含了子类必须实现的全部方法，包括内存分配、内存释放等:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">MemoryContextMethods</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">void</span>    *(*alloc) (MemoryContext context, Size size);                    <span class="comment">// 内存分配</span></span><br><span class="line">    <span class="built_in">void</span>     (*free_p) (MemoryContext context, <span class="type">void</span> *pointer);               <span class="comment">// 内存释放</span></span><br><span class="line">    <span class="type">void</span>    *(*realloc) (MemoryContext context, <span class="type">void</span> *pointer, Size size);   <span class="comment">// 内存重分配</span></span><br><span class="line">    <span class="built_in">void</span>     (*reset) (MemoryContext context);                               <span class="comment">// 内存重置</span></span><br><span class="line">    <span class="built_in">void</span>     (*delete_context) (MemoryContext context);                      <span class="comment">// 删除某个内存上下文</span></span><br><span class="line">    <span class="built_in">Size</span>     (*get_chunk_space) (MemoryContext context, <span class="type">void</span> *pointer);      <span class="comment">// 获取内存片大小</span></span><br><span class="line">    <span class="built_in">bool</span>     (*is_empty) (MemoryContext context);                            <span class="comment">// 判断内存上下文是否为空</span></span><br><span class="line">    <span class="built_in">void</span>     (*stats) (MemoryContext context,                                </span><br><span class="line">                          MemoryStatsPrintFunc printfunc, <span class="type">void</span> *passthru,</span><br><span class="line">                          MemoryContextCounters *totals, <span class="type">bool</span> print_to_stderr);</span><br><span class="line">&#125; MemoryContextMethods;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>前面已经提到了 <code>MemoryContextData</code> 目前只有 <code>AllocSetContext</code> 这一种实现方式，那么这些方法的实现就可以直接在 <code>src/backend/utils/mmgr/aset.c</code> 找到。</p>
+<p><code>parent</code>、<code>firstchild</code>、<code>prevchild</code> 和 <code>nextchild</code> 构成了内存上下文的树形结构，并且每一个节点都保存了其父指针和兄弟指针，也就是说，只要能拿到树中的任意一个节点即可对整棵树进行遍历:</p>
+
+
+<p>因此，<code>MemoryContextData</code> 最重要的作用便是管理各个内存上下文之间的关联关系，在清除一个内存上下文时，将会遍历该节点的所有子节点并对其进行释放。</p>
+<h3 id="3-AllocSetContext"><a href="#3-AllocSetContext" class="headerlink" title="3. AllocSetContext"></a>3. AllocSetContext</h3><p><code>AllocSetContext</code> 是 <code>MemoryContextData</code> 的具体实现， 其核心职责为内存的分配和释放 ，内存上下文之间的关联关系由 <code>MemoryContextData</code> 保存。</p>
+<h4 id="3-1-Region-Based-Memory-Management"><a href="#3-1-Region-Based-Memory-Management" class="headerlink" title="3.1 Region-Based Memory Management"></a>3.1 Region-Based Memory Management</h4><p>这里就有必要对 PostgreSQL 的内存管理进行进一步地说明。PostgreSQL 将内存分为内存块（Block）和内存片（Chunk），其中内存块是通过 <code>malloc()</code> 这一库函数调用取得的。而 一个内存块中将会有一个或者多个内存片，内存片才是 PostgreSQL 的最小存储单元 。简单的理解就是 PostgreSQL 首先向操作系统要一块比较大的内存（Block），然后在对这一块大内存进行切割（Chunk），把切割之后的内存返回给调用方。</p>
+<p>这么做的目的一方面是为了减少系统调用，在下一次的内存分配时即可直接返回给调用方，而无需进行系统调用。另一个作用就是减少额外的系统内存占用，因为 <code>malloc()</code> 所返回的内存必须要有 Header（或者叫 Cookie） 记录其内存总大小， 否则 <code>free()</code> 将无法正常工作。</p>
+<p>下图为 VC6 编译器在进行 <code>malloc</code> 调用时返回的结果的内存布局，其中 Debug Header 只有在 Debug 模式下才会出现，但是所分配内存区域的首、尾两端的 Cookie 却必不可少，因为它记录了一次 <code>malloc</code> 所分配的总内存，总计占用 8 Bytes。</p>
+
+
+<p>也就是说，我们每次使用 <code>malloc()</code> 申请 24 Bytes 的内存，系统最少消耗 32 Bytes 的内存，那么对于应用程序来说，内存的实际使用率为 24&#x2F;32 &#x3D; 0.75。如果我们有 100 万个 <code>malloc</code> 调用，那么将会有非常多的内存用于 Cookie 中，如此一来内存使用效率将会非常之低。</p>
+<p>因此，PostgreSQL 使用了一种名为 Region-Based Memory Management 的内存管理方式，原理其实非常简单: 使用 <code>malloc</code> 申请较大的内存块，然后将该内存块切割成一个一个的小的内存片，将内存片返回给调用方。当调用方使用完毕返还时，并不会直接返回给操作系统，而是添加至 Free List 这一空闲链表的指定区域内，以用于下一次的内存分配。</p>
+<h4 id="3-2-基本数据结构"><a href="#3-2-基本数据结构" class="headerlink" title="3.2 基本数据结构"></a>3.2 基本数据结构</h4><p>接下里就来揭开 <code>AllocSetContext</code> 的神秘面纱，其结构如下所示:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">AllocSetContext</span></span><br><span class="line">&#123;</span><br><span class="line">    MemoryContextData header;       <span class="comment">// header 信息，保存了内存上下文之间的关联关系</span></span><br><span class="line">    </span><br><span class="line">    AllocBlock	blocks;             <span class="comment">// 当前内存上下文中所有内存块所组成的双向链表</span></span><br><span class="line">    AllocChunk	freelist[ALLOCSET_NUM_FREELISTS];	<span class="comment">// 当前内存上下文中空闲内存片的数组</span></span><br><span class="line">    </span><br><span class="line">    Size        initBlockSize;	    <span class="comment">// 初始内存块的大小</span></span><br><span class="line">    Size        maxBlockSize;	    <span class="comment">// 允许申请的最大内存块大小</span></span><br><span class="line">    Size        nextBlockSize;	    <span class="comment">// 下一个要分配的内存块大小</span></span><br><span class="line">    Size        allocChunkLimit;    <span class="comment">// 分配内存片的尺寸阈值	</span></span><br><span class="line">    </span><br><span class="line">    AllocBlock	keeper;             <span class="comment">// 保留在 keeper 中的内存块在上下文重置时会保留，只做重置操作，而不进行删除</span></span><br><span class="line">                                    </span><br><span class="line">    <span class="type">int</span>         freeListIndex;      <span class="comment">// 在 context_freelists 中的顺序。</span></span><br><span class="line">                                    <span class="comment">// 0 表示默认 freeList，1 表示小内存 freeList，-1 表示不需要进入 freeList</span></span><br><span class="line">&#125; AllocSetContext;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>initBlockSize</code> 和 <code>maxBlockSize</code> 在创建内存上下文时即被初始化，并且在初始化时 <code>initBlockSize</code> 和 <code>maxBlockSize</code> 具有相同的值。<code>nextBlockSize</code> 表示下一次分配的内存块的大小，在进行内存分配时，如果需要一个新的 Block，那么该内存块的大小将采用 <code>nextBlockSize</code> 的值。通常来说，<code>nextBlockSize</code> 在每次分配新的 Block 时都会以 2 倍的幅度增长，但最大不能超过 <code>maxBlockSize</code>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set-&gt;nextBlockSize &lt;&lt;= <span class="number">1</span>;                       <span class="comment">// 设置为上一次的两倍</span></span><br><span class="line"><span class="keyword">if</span> (set-&gt;nextBlockSize &gt; set-&gt;maxBlockSize)</span><br><span class="line">    set-&gt;nextBlockSize = set-&gt;maxBlockSize;     <span class="comment">// 若超过阈值，则按阈值计算</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>AllocSetContext</code> 的整体概览如下图所示:</p>
+
+
+<p> <code>AllocBlockData</code> 就是我们上面所说的大的内存块，由 <code>malloc()</code> 调用申请。而 <code>AllocChunkData</code> 则是小的内存片，一个 Block 中将会有一个或者多个内存片，空闲内存片之间使用单向链表这一数据结构保存 。</p>
+<p>另外，在源码中我们可以看到 <code>AllocBlockData</code>、<code>AllocBlock</code> 以及 <code>AllocChunkData</code> 和 <code>AllocChunk</code>，后者其实是前者的指针类型，只不过是一个 <code>typedef</code> 而已:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">AllocBlockData</span> *AllocBlock;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">AllocChunkData</span> *AllocChunk;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>blocks</code> 中保存了指向 <code>AllocBlockData</code> 节点所组成的双向链表的 Header 节点:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">AllocBlockData</span></span><br><span class="line">&#123;</span><br><span class="line">    AllocSet	aset;           <span class="comment">// 该内存块所处的 AllocSetContext</span></span><br><span class="line">    AllocBlock	prev;		<span class="comment">// 前驱指针</span></span><br><span class="line">    AllocBlock	next;		<span class="comment">// 后继指针</span></span><br><span class="line">    <span class="type">char</span>       *freeptr;	<span class="comment">// 指向该内存块空闲区域的首地址</span></span><br><span class="line">    <span class="type">char</span>       *endptr;		<span class="comment">// 指向该内存块空闲区域的结束地址</span></span><br><span class="line">&#125; AllocBlockData;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>前面我们已经知道了一个内存块（Block）中会被切割成一个或者多个内存片（Chunk），那么当切割出去一部分内存片之后，就需要知道这一个内存块还有那些空闲区域可供切割，<code>freeptr</code> 和 <code>endptr</code> 这两个指针就组成了带有边界的空闲区域，那么下一次就知道从哪儿开始切割内存片了。</p>
+<p>每个内存片会包含一个头部信息，用于保存元信息，其结构如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">AllocChunkData</span></span><br><span class="line">&#123;</span><br><span class="line">    Size    size;           <span class="comment">// 内存片的实际大小，以 2 的幂为大小进行向上取整</span></span><br><span class="line">    Size    requested_size; <span class="comment">// debug 使用</span></span><br><span class="line">    </span><br><span class="line">    <span class="type">void</span>   *aset;           <span class="comment">// 该指针有两个作用，使用时指向 AllocSet，空闲时作为 next 指针链接其空闲链表</span></span><br><span class="line">&#125; AllocChunkData;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>其中由 <code>aset</code> 指针组成的空闲内存片链表（<code>freelist</code>）相当重要，这些空闲内存片将用于再分配，并且有着多种不同大小的内存片以供分配。</p>
+<p><code>freelist</code> 数组的大小默认为 11，能够保存 11 种不同大小的空闲内存片，对于数组的第 K 个元素，其保存的内存片大小为 <code>2^(K+2)</code> 字节。K 从 1 开始取值，也就是说，<code>freelist</code> 数组中最小的内存片大小为 8 Bytes，最大的内存片为 8192 bytes（默认情况下），相同大小的内存片由链表链接:</p>
+
+
+<p>值得注意的是，所有 <code>freelist</code> 中的内存片的大小都为 2 的指数。当需要一个大小为 size 的内存时，将会根据向上取整的规则取出 <code>freelist</code> 中的空闲内存片。如果所申请的内存大小超过了 <code>allocChunkLimit</code> 字段的值，那么此次内存分配将会申请一个新的独立的内存块，并且在该内存块中只存放这一个内存片。当内存片被释放时，将整个内存块一并释放，不再追加至 <code>freelist</code> 空闲链表中。</p>
+<h3 id="4-内存分配的实现细节"><a href="#4-内存分配的实现细节" class="headerlink" title="4. 内存分配的实现细节"></a>4. 内存分配的实现细节</h3><p>在 PostgreSQL 中，所有内存的申请、释放和重置都是在内存上下文中进行的，因此不会直接使用 <code>malloc()</code>、<code>realloc()</code> 和 <code>free()</code> 系统调用函数，而是使用 <code>palloc()</code>、<code>repalloc()</code> 和 <code>pfree()</code> 来实现内存的分配、重分配和释放。</p>
+<h4 id="4-1-内存的分配"><a href="#4-1-内存的分配" class="headerlink" title="4.1 内存的分配"></a>4.1 内存的分配</h4><p>内存的分配由 <code>AllocSetContext</code> 中的 <code>AllocSetAlloc()</code> 函数实现，即在 <code>palloc()</code> 方法中，实际上会调用 <code>AllocSetAlloc()</code> 方法:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> * <span class="title">palloc</span><span class="params">(Size size)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="type">void</span>	   *ret;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 在当前内存上下文中进行内存分配</span></span><br><span class="line">	MemoryContext context = CurrentMemoryContext;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将 isReset 标志位设置为 false，那么在释放内存上下文时就需要清理其内存</span></span><br><span class="line">	context-&gt;isReset = <span class="literal">false</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 此处为多态实现，目前只有 AllocSetAlloc() 这一个实现</span></span><br><span class="line">	ret = context-&gt;methods-&gt;<span class="built_in">alloc</span>(context, size);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">unlikely</span>(ret == <span class="literal">NULL</span>))</span><br><span class="line">	&#123;</span><br><span class="line">	    <span class="comment">// 此处将打印 OOM 错误信息</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>而在 <code>AllocSetAlloc()</code> 方法中，则会首先判断所申请的内存大小 <code>size</code> 是否大于 <code>allocChunkLimit</code>，若大于该值，则无法从 <code>freelist</code> 空闲内存片链表中取出空闲内存片，必须调用 <code>malloc()</code> 重新分配新的内存块。当然，即使 <code>size</code> 小于等于 CHUNK_LIMIT 阈值，如果 <code>freelist</code> 没有多余的空闲内存片的话，依然需要向 OS 申请内存:</p>
+<h5 id="4-1-1-当申请的内存大小超过了allocChunkLimit阈值"><a href="#4-1-1-当申请的内存大小超过了allocChunkLimit阈值" class="headerlink" title="4.1.1 当申请的内存大小超过了allocChunkLimit阈值"></a>4.1.1 当申请的内存大小超过了allocChunkLimit阈值</h5><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 若 size 大于 allocChunkLimit 阈值，则需申请新的内存块</span></span><br><span class="line"><span class="keyword">if</span> (size &gt; set-&gt;allocChunkLimit)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 字节对齐</span></span><br><span class="line">	chunk_size = <span class="built_in">MAXALIGN</span>(size);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 除开申请的内存片以外，还需要为 AllocBlockData 和 AllocChunkData 预留空间</span></span><br><span class="line">	blksize = chunk_size + ALLOC_BLOCKHDRSZ + ALLOC_CHUNKHDRSZ;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 向 OS 申请内存，这里使用的是 malloc</span></span><br><span class="line">	block = (AllocBlock) <span class="built_in">malloc</span>(blksize);</span><br><span class="line">	<span class="keyword">if</span> (block == <span class="literal">NULL</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 更新计数器</span></span><br><span class="line">	context-&gt;mem_allocated += blksize;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置内存块信息</span></span><br><span class="line">	block-&gt;aset = set;</span><br><span class="line">	<span class="comment">// 此时将不会有空闲空间用于切割更多的 Chunk 了，因此 freeptr 和 endptr 将指向末尾</span></span><br><span class="line">	block-&gt;freeptr = block-&gt;endptr = ((<span class="type">char</span> *) block) + blksize;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置内存片信息</span></span><br><span class="line">	chunk = (AllocChunk) (((<span class="type">char</span> *) block) + ALLOC_BLOCKHDRSZ);</span><br><span class="line">	chunk-&gt;aset = set;</span><br><span class="line">	chunk-&gt;size = chunk_size;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 需要将该内存块添加至上下文的 blocks 双向链表中，以便后续的释放</span></span><br><span class="line">	<span class="keyword">if</span> (set-&gt;blocks != <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 链表头不为空，则将该 Block 插入至双向链表的第二个位置。</span></span><br><span class="line">		<span class="comment">// 这是因为链表的第一个 Block 通常用于切割 Chunk，而该 Block 显然没有能力再切割</span></span><br><span class="line">		block-&gt;prev = set-&gt;blocks;</span><br><span class="line">		block-&gt;next = set-&gt;blocks-&gt;next;</span><br><span class="line">		<span class="keyword">if</span> (block-&gt;next)</span><br><span class="line">			block-&gt;next-&gt;prev = block;</span><br><span class="line">		set-&gt;blocks-&gt;next = block;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 链表头为空，则将其插入至链表头</span></span><br><span class="line">		block-&gt;prev = <span class="literal">NULL</span>;</span><br><span class="line">		block-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">		set-&gt;blocks = block;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">AllocChunkGetPointer</span>(chunk);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="4-1-2-当申请的内存大小未超过allocChunkLimit阈值，且freelist-有空闲内存片"><a href="#4-1-2-当申请的内存大小未超过allocChunkLimit阈值，且freelist-有空闲内存片" class="headerlink" title="4.1.2 当申请的内存大小未超过allocChunkLimit阈值，且freelist 有空闲内存片"></a>4.1.2 当申请的内存大小未超过allocChunkLimit阈值，且freelist 有空闲内存片</h5><p>紧接着我们来讨论最简单的情况，即 <code>size &lt;= allocChunkLimit</code> 并且 <code>freelist</code> 中存在空闲内存片，此时只需要从 <code>freelist</code> 中计算出对应的 slot，然后从链表摘下一个内存片返回给调用方即可:</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// size &lt;= allocChunkLimit</span><br><span class="line"></span><br><span class="line">// 计算 size 所对应的 freelist index</span><br><span class="line">fidx = AllocSetFreeIndex(size);</span><br><span class="line">// 获取 index 所对应的内存片链表</span><br><span class="line">chunk = set-&gt;freelist[fidx];</span><br><span class="line">if (chunk != NULL)</span><br><span class="line">&#123;</span><br><span class="line">	Assert(chunk-&gt;size &gt;= size);</span><br><span class="line">	</span><br><span class="line">	// 使 header 指向下一个链表元素</span><br><span class="line">	set-&gt;freelist[fidx] = (AllocChunk) chunk-&gt;aset;</span><br><span class="line">	</span><br><span class="line">	// 设置内存上下文信息</span><br><span class="line">	chunk-&gt;aset = (void *) set;</span><br><span class="line"></span><br><span class="line">	return AllocChunkGetPointer(chunk);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="4-1-3-当前内存上下文所保存的blocks不为空，但没有足够空间"><a href="#4-1-3-当前内存上下文所保存的blocks不为空，但没有足够空间" class="headerlink" title="4.1.3 当前内存上下文所保存的blocks不为空，但没有足够空间"></a>4.1.3 当前内存上下文所保存的blocks不为空，但没有足够空间</h5><p>若当前内存上下文的 Block 中没有足够的内存空间来分配此次内存时，按照基本逻辑应该重新创建一个 Block，然后切割出对应的 Chunk 给用户。但是在这之前，当前 Block 中可能仍然有空闲空间，我们可以把这部分的空间切割成 Free Chunk 扔到 <code>freelist</code> 中，做到物尽其用，这部分代码不太核心，故不再此处详细分析。</p>
+<h5 id="4-1-4-当前内存上下文所保存的blocks为空"><a href="#4-1-4-当前内存上下文所保存的blocks为空" class="headerlink" title="4.1.4 当前内存上下文所保存的blocks为空"></a>4.1.4 当前内存上下文所保存的blocks为空</h5><p>若当前内存上下文所保存的 <code>blocks</code> 为空，或者是经过了 4.1.3 步骤将旧的 Block 切割完毕，此时我们就需要创建一个新的 Block，新的 Block 通常为上一次分配的 Block 大小的 2 倍，但又不会超过 <code>maxBlockSize</code>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 此时需要创建一个新的内存块</span></span><br><span class="line"><span class="keyword">if</span> (block == <span class="literal">NULL</span>)</span><br><span class="line">&#123;</span><br><span class="line">	Size		required_size;</span><br><span class="line"></span><br><span class="line">	blksize = set-&gt;nextBlockSize;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置下一次要分配的 Block 大小为当前的 2 倍</span></span><br><span class="line">	set-&gt;nextBlockSize &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// 若超过了阈值，则按阈值取值</span></span><br><span class="line">	<span class="keyword">if</span> (set-&gt;nextBlockSize &gt; set-&gt;maxBlockSize)</span><br><span class="line">		set-&gt;nextBlockSize = set-&gt;maxBlockSize;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// corner case: 若 blksize 小于预设的 Block 大小，则需要继续扩大 Block 大小</span></span><br><span class="line">	required_size = chunk_size + ALLOC_BLOCKHDRSZ + ALLOC_CHUNKHDRSZ;</span><br><span class="line">	<span class="keyword">while</span> (blksize &lt; required_size)</span><br><span class="line">		blksize &lt;&lt;= <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Try to allocate it */</span></span><br><span class="line">	block = (AllocBlock) <span class="built_in">malloc</span>(blksize);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 申请失败时使用更小的 blksize 进行重试</span></span><br><span class="line">	<span class="keyword">while</span> (block == <span class="literal">NULL</span> &amp;&amp; blksize &gt; <span class="number">1024</span> * <span class="number">1024</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		blksize &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">		<span class="keyword">if</span> (blksize &lt; required_size)</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		block = (AllocBlock) <span class="built_in">malloc</span>(blksize);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (block == <span class="literal">NULL</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 更新计数器</span></span><br><span class="line">	context-&gt;mem_allocated += blksize;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置内存块信息</span></span><br><span class="line">	block-&gt;aset = set;</span><br><span class="line">	block-&gt;freeptr = ((<span class="type">char</span> *) block) + ALLOC_BLOCKHDRSZ;</span><br><span class="line">	block-&gt;endptr = ((<span class="type">char</span> *) block) + blksize;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Mark unallocated space NOACCESS. */</span></span><br><span class="line">	<span class="built_in">VALGRIND_MAKE_MEM_NOACCESS</span>(block-&gt;freeptr,</span><br><span class="line">							   blksize - ALLOC_BLOCKHDRSZ);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 将该 block 插入至 blocks 链表的头部，而非第二个位置，因为下次 Chunk 切割需要从此 Block 开始</span></span><br><span class="line">	block-&gt;prev = <span class="literal">NULL</span>;</span><br><span class="line">	block-&gt;next = set-&gt;blocks;</span><br><span class="line">	<span class="keyword">if</span> (block-&gt;next)</span><br><span class="line">		block-&gt;next-&gt;prev = block;</span><br><span class="line">	set-&gt;blocks = block;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="4-1-5-最后，在有充足空闲空间的Block中切割Chunk"><a href="#4-1-5-最后，在有充足空闲空间的Block中切割Chunk" class="headerlink" title="4.1.5 最后，在有充足空闲空间的Block中切割Chunk"></a>4.1.5 最后，在有充足空闲空间的Block中切割Chunk</h5><p>当前置准备工作都做完之后，我们就可以在内存块中切割出所需要的 Chunk 了:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从 freeptr 开始切割出一个 Chunk</span></span><br><span class="line">chunk = (AllocChunk) (block-&gt;freeptr);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 更新 freeptr 指针指向</span></span><br><span class="line">block-&gt;freeptr += (chunk_size + ALLOC_CHUNKHDRSZ);</span><br><span class="line"><span class="built_in">Assert</span>(block-&gt;freeptr &lt;= block-&gt;endptr);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置内存片信息</span></span><br><span class="line">chunk-&gt;aset = (<span class="type">void</span> *) set;</span><br><span class="line">chunk-&gt;size = chunk_size;</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> <span class="built_in">AllocChunkGetPointer</span>(chunk);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>最后，我们用一张简单的流程图来描述内存分配的大致过程:</p>
+
+
+<h4 id="4-2-内存的释放"><a href="#4-2-内存的释放" class="headerlink" title="4.2 内存的释放"></a>4.2 内存的释放</h4><p>上下文内存的释放要比内存分配简单许多，只需要讨论如下两种情况即可:</p>
+<ul>
+<li>ChunkSize &gt; allocChunkLimit: 直接调用 <code>free()</code> 进行释放</li>
+<li>ChunkSize &lt;&#x3D; allocChunkLimit: 将 Chunk 直接添加至 <code>freelist</code> 空闲链表中即可</li>
+</ul>
+<h3 id="5-关于内存上下文的切换"><a href="#5-关于内存上下文的切换" class="headerlink" title="5. 关于内存上下文的切换"></a>5. 关于内存上下文的切换</h3><p>我们能够在源码中经常看到 <code>MemoryContextSwitchTo()</code> 这个函数的调用，其作用就是将当前内存上下文切换至指定的内存上下文之中。</p>
+<p>一个简单的例子就是系统表的缓存内存申请。当我们执行一个 Query 并且需要使用 System Catalog 时，通常会将读取到的 Catalog 缓存到内存中，以便下次更快地读取。那么这部分的内存就肯定需要在 <code>CacheMemoryContext</code> 这一内存上下文中申请，而不能在 <code>MessageContext</code> 或者是 <code>CurTransactionContext</code> 等内存上下文中申请。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> MemoryContext</span></span><br><span class="line"><span class="function"><span class="title">MemoryContextSwitchTo</span><span class="params">(MemoryContext context)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	MemoryContext old = CurrentMemoryContext;</span><br><span class="line">	CurrentMemoryContext = context;</span><br><span class="line">	<span class="keyword">return</span> old;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>由于该函数本身比较短小并且经常使用，因此在定义时添加了 <code>inline</code> 关键字，在编译阶段直接展开。</p>
+<p>这里以我曾经在 Greenplum 中遇到的一个关于内存未在正确的内上下文中被申请而导致出现 SEGSEGV 的例子来说明切换至正确上下文的必要性。</p>
+<p>Greenplum 是一个 MPP 架构数据库，也就是说一个 table 中的数据可以根据某种算法存储在不同的 segment 节点之上。最常用的分布策略就是哈希分布，Greenplum 使用 Jump Consistent Hash 算法根据用户指定的分布键尽可能均匀地将数据分布在不同的节点之上。其次还有不常用的 Randomly 随机分布，以及 Replicated 复制分布。</p>
+<p>Greenplum 使用 <code>GpPolicy</code> 这一结构体来保存一个 table 的分布策略，同时也会被写入 <code>RelationData</code> 这一结构体中。在 <a class="link"   target="_blank" rel="noopener" href="https://github.com/greenplum-db/gpdb/commit/a45be43489294386c23c5fa068ce071ec068d0d8" >Expand partition table leaves in parallel.<i class="fas fa-external-link-alt"></i></a> 这个 commit 的 <code>ATExecExpandPartitionTablePrepare()</code> 函数中修改了 table 的分布策略，代码本身也非常容易理解:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据现有分布策略复制一个出来</span></span><br><span class="line">GpPolicy *root_dist = <span class="built_in">GpPolicyCopy</span>(rel_dist);</span><br><span class="line"><span class="comment">// 修改分布策略的 segments 数量</span></span><br><span class="line">root_dist-&gt;numsegments = new_numsegments;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将 relation 的分布策略替换成 root_dist</span></span><br><span class="line"><span class="built_in">GpPolicyReplace</span>(relid, root_dist);</span><br><span class="line"><span class="comment">// 更新 relation 的 rd_cdbpolicy 指针</span></span><br><span class="line">rel-&gt;rd_cdbpolicy = root_dist;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>但是这一段代码会导致数据库在后续的运行中产生空指针访问，从而触发 Segment Fault 错误。其根本原因就在于 <code>GpPolicyCopy</code> 会在当前内存上下文中申请内存，而对于一个 <code>ALTER TABLE</code> 语句而言，执行语句的内存上下文通常为 <code>PortalHeapMemory</code>，Portal 结束后内存即会被释放。 也就是说，<code>rd_cdbpolicy</code> 其实当前语句结束后因为内存上下文的释放而被设置为 NULL，那么如果下一条语句访问了 <code>rd_cdbpolicy</code> 的话，就会因为引用空指针而 PANIC。 </p>
+<p>因此，我们必须保证 <code>rd_cdbpolicy</code> 和 <code>rel</code> 具有相同的生命周期，做法就是将当前上下文切换至 <code>rel</code> 所在的内存上下文中，然后再为 <code>GpPolicy</code> 申请内存:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过 GetMemoryChunkContext 方法获取到 rel 所在内存上下文</span></span><br><span class="line">oldcontext = <span class="built_in">MemoryContextSwitchTo</span>(<span class="built_in">GetMemoryChunkContext</span>(rel));</span><br><span class="line"><span class="comment">// 在 rel 所在内存上下文中复制出一个 GpPolicy 出来</span></span><br><span class="line">new_policy = <span class="built_in">GpPolicyCopy</span>(rel-&gt;rd_cdbpolicy); </span><br><span class="line">new_policy-&gt;numsegments = new_numsegments;</span><br><span class="line"><span class="comment">// 切换至原有内存上下文，此处为 PortalHeapMemory</span></span><br><span class="line"><span class="built_in">MemoryContextSwitchTo</span>(oldcontext);</span><br><span class="line"></span><br><span class="line"><span class="built_in">GpPolicyReplace</span>(relid, new_policy);</span><br><span class="line">rel-&gt;rd_cdbpolicy = new_policy;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>更多的细节可参考 Pull Request: <a class="link"   target="_blank" rel="noopener" href="https://github.com/greenplum-db/gpdb/pull/12935" >Fix PANIC error in ALTER TABLE xxx EXPAND PARTITION PREPARE<i class="fas fa-external-link-alt"></i></a> 以及 <a class="link"   target="_blank" rel="noopener" href="https://github.com/greenplum-db/gpdb/commit/465ad4cf487160ebcb8c329c5f4f5f4a37292aae" >Avoid changing rd_cdbpolicy at relcache invalidation.<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="6-Reference"><a href="#6-Reference" class="headerlink" title="6. Reference"></a>6. Reference</h3><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://book.douban.com/subject/6971366/" >《PostgreSQL 数据库内核分析》<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/350049053" >图解PostgreSQL–MemoryContext(1)<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://github.com/postgres/postgres/tree/master/src/backend/utils/mmgr" >Memory Context System Design Overview<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<blockquote>
+<p>本文来源于：<a class="link"   target="_blank" rel="noopener" href="https://smartkeyerror.com/PostgreSQL-MemoryContext" >https://smartkeyerror.com/PostgreSQL-MemoryContext<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                深入理解 PostgreSQL 中的内存上下文（MmeoryContext）
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2024/11/27/mmeoryContext/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2024-11-27 15:11</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/MmeoryContext/">MmeoryContext</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/">内存分析</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2025/07/07/sql_join/"
+                                   title="PostgreSQL的连接查询"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PostgreSQL的连接查询</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2024/11/27/%E5%B8%B8%E7%94%A8%E5%8C%85/"
+                                   title="GO中常用包"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">GO中常用包</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-MemoryContextData"><span class="nav-text">2. MemoryContextData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-AllocSetContext"><span class="nav-text">3. AllocSetContext</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Region-Based-Memory-Management"><span class="nav-text">3.1 Region-Based Memory Management</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">3.2 基本数据结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-text">4. 内存分配的实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D"><span class="nav-text">4.1 内存的分配</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-1-%E5%BD%93%E7%94%B3%E8%AF%B7%E7%9A%84%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E8%B6%85%E8%BF%87%E4%BA%86allocChunkLimit%E9%98%88%E5%80%BC"><span class="nav-text">4.1.1 当申请的内存大小超过了allocChunkLimit阈值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-2-%E5%BD%93%E7%94%B3%E8%AF%B7%E7%9A%84%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E6%9C%AA%E8%B6%85%E8%BF%87allocChunkLimit%E9%98%88%E5%80%BC%EF%BC%8C%E4%B8%94freelist-%E6%9C%89%E7%A9%BA%E9%97%B2%E5%86%85%E5%AD%98%E7%89%87"><span class="nav-text">4.1.2 当申请的内存大小未超过allocChunkLimit阈值，且freelist 有空闲内存片</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-3-%E5%BD%93%E5%89%8D%E5%86%85%E5%AD%98%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%80%E4%BF%9D%E5%AD%98%E7%9A%84blocks%E4%B8%8D%E4%B8%BA%E7%A9%BA%EF%BC%8C%E4%BD%86%E6%B2%A1%E6%9C%89%E8%B6%B3%E5%A4%9F%E7%A9%BA%E9%97%B4"><span class="nav-text">4.1.3 当前内存上下文所保存的blocks不为空，但没有足够空间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-4-%E5%BD%93%E5%89%8D%E5%86%85%E5%AD%98%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%80%E4%BF%9D%E5%AD%98%E7%9A%84blocks%E4%B8%BA%E7%A9%BA"><span class="nav-text">4.1.4 当前内存上下文所保存的blocks为空</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-5-%E6%9C%80%E5%90%8E%EF%BC%8C%E5%9C%A8%E6%9C%89%E5%85%85%E8%B6%B3%E7%A9%BA%E9%97%B2%E7%A9%BA%E9%97%B4%E7%9A%84Block%E4%B8%AD%E5%88%87%E5%89%B2Chunk"><span class="nav-text">4.1.5 最后，在有充足空闲空间的Block中切割Chunk</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%86%85%E5%AD%98%E7%9A%84%E9%87%8A%E6%94%BE"><span class="nav-text">4.2 内存的释放</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%85%B3%E4%BA%8E%E5%86%85%E5%AD%98%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E5%88%87%E6%8D%A2"><span class="nav-text">5. 关于内存上下文的切换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Reference"><span class="nav-text">6. Reference</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-MemoryContextData"><span class="nav-text">2. MemoryContextData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-AllocSetContext"><span class="nav-text">3. AllocSetContext</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-Region-Based-Memory-Management"><span class="nav-text">3.1 Region-Based Memory Management</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">3.2 基本数据结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-text">4. 内存分配的实现细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D"><span class="nav-text">4.1 内存的分配</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-1-%E5%BD%93%E7%94%B3%E8%AF%B7%E7%9A%84%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E8%B6%85%E8%BF%87%E4%BA%86allocChunkLimit%E9%98%88%E5%80%BC"><span class="nav-text">4.1.1 当申请的内存大小超过了allocChunkLimit阈值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-2-%E5%BD%93%E7%94%B3%E8%AF%B7%E7%9A%84%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E6%9C%AA%E8%B6%85%E8%BF%87allocChunkLimit%E9%98%88%E5%80%BC%EF%BC%8C%E4%B8%94freelist-%E6%9C%89%E7%A9%BA%E9%97%B2%E5%86%85%E5%AD%98%E7%89%87"><span class="nav-text">4.1.2 当申请的内存大小未超过allocChunkLimit阈值，且freelist 有空闲内存片</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-3-%E5%BD%93%E5%89%8D%E5%86%85%E5%AD%98%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%80%E4%BF%9D%E5%AD%98%E7%9A%84blocks%E4%B8%8D%E4%B8%BA%E7%A9%BA%EF%BC%8C%E4%BD%86%E6%B2%A1%E6%9C%89%E8%B6%B3%E5%A4%9F%E7%A9%BA%E9%97%B4"><span class="nav-text">4.1.3 当前内存上下文所保存的blocks不为空，但没有足够空间</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-4-%E5%BD%93%E5%89%8D%E5%86%85%E5%AD%98%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%80%E4%BF%9D%E5%AD%98%E7%9A%84blocks%E4%B8%BA%E7%A9%BA"><span class="nav-text">4.1.4 当前内存上下文所保存的blocks为空</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-1-5-%E6%9C%80%E5%90%8E%EF%BC%8C%E5%9C%A8%E6%9C%89%E5%85%85%E8%B6%B3%E7%A9%BA%E9%97%B2%E7%A9%BA%E9%97%B4%E7%9A%84Block%E4%B8%AD%E5%88%87%E5%89%B2Chunk"><span class="nav-text">4.1.5 最后，在有充足空闲空间的Block中切割Chunk</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E5%86%85%E5%AD%98%E7%9A%84%E9%87%8A%E6%94%BE"><span class="nav-text">4.2 内存的释放</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%85%B3%E4%BA%8E%E5%86%85%E5%AD%98%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E5%88%87%E6%8D%A2"><span class="nav-text">5. 关于内存上下文的切换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-Reference"><span class="nav-text">6. Reference</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>

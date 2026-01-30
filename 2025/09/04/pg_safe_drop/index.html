@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            PostgreSQL安全删除表插件：pg_safe_drop |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PostgreSQL安全删除表插件：pg_safe_drop
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">元婴问道</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2025-09-04 12:06:04</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Fri Sep 05 2025 12:37:08 GMT+0800">2025-09-05 12:37:08</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/ProcessUtility-Hook/">ProcessUtility Hook</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>在 PostgreSQL 数据库的管理中，删除表（DROP&#x2F;TRUNCATE TABLE）操作通常是一个不可逆的过程。当用户执行删除操作时，相关数据会被永久丢弃，除非事先做好备份。然而，在实际生产环境中，删除表有时可能是一个错误操作，或者是需要暂时“隐藏”某些表而非完全删除。为了防止误删重要数据，提出了一个“安全删除”功能：即在执行 DROP TABLE 时，表不会被删除，而是被移动到一个名为“回收站”（trashcan）的 schema 中。</p>
+</blockquote>
+<h3 id="pg-safe-recycle"><a href="#pg-safe-recycle" class="headerlink" title="pg_safe_recycle"></a>pg_safe_recycle</h3><p>pg_safe_recycle 插件通过拦截 PostgreSQL 的 DROP&#x2F;TRUNCATE TABLE 命令，将待删除的表移动到指定的回收站 schema 中，而不是完全删除。这种方式可以有效避免误操作，同时在不需要时可以通过恢复的方式找回表和数据。</p>
+<h4 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h4><ol>
+<li><strong>拦截 DROP&#x2F;TRUNCATE TABLE 操作：</strong> 通过定制的 ProcessUtility hook，拦截用户执行的 DROP&#x2F;TRUNCATE TABLE 命令，避免直接删除表。</li>
+<li><strong>将表移入回收站 schema：</strong> 在执行删除命令时，将表移动到指定的回收站 schema 中，表结构和数据保持不变。</li>
+<li><strong>处理多个表删除：</strong> 支持一次性删除多个表，并将它们一并移动到回收站 schema。</li>
+<li><strong>跳过特殊表：</strong> 跳过系统表（如 pg_catalog）、临时表（pg_temp）、TOAST 表等不需要被移动的表。</li>
+<li><strong>避免重复表名：</strong> 如果回收站中已有同名表，会通过时间戳重命名，以避免冲突。</li>
+<li><strong>可配置性：</strong> 插件支持通过 GUC（Grand Unified Configuration）参数进行配置，可以自定义回收站 schema 的名称以及是否启用安全删除功能。</li>
+<li><strong>表的 schema 迁移：</strong> 插件使用 ALTER TABLE … SET SCHEMA 命令将表迁移到回收站 schema 中，而不是直接删除表。</li>
+</ol>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><p>pg_safe_recycle的核心是通过钩子（hook）机制拦截 PostgreSQL 内部的 SQL 命令流。具体来说，插件通过 ProcessUtility hook 函数，在每次执行 SQL 语句时被触发，检查语句是否为 DROP&#x2F;TRUNCATE TABLE，如果是，则执行相应的逻辑。</p>
+<ul>
+<li><strong>模块初始化：</strong><ul>
+<li>在 pg_safe_recycle 插件加载时，首先通过 _PG_init() 函数定义了两个 GUC 参数：<code>pg_safe_recycle.recycle_schema</code>（指定回收站 schema 的名称）和 <code>pg_safe_recycle.enable_recycling</code>（控制插件是否启用）。插件会尝试创建指定的回收站 schema（如果不存在的话）。</li>
+</ul>
+</li>
+<li><strong>拦截 DROP&#x2F;TRUNCATE TABLE 命令：</strong><ul>
+<li>pg_safe_recycle_ProcessUtility 函数是插件的核心。当系统执行 DROP&#x2F;TRUNCATE TABLE 时，插件会首先检查命令的类型：</li>
+<li>如果是 DROP&#x2F;TRUNCATE TABLE，则会执行表的迁移操作，而非删除。</li>
+<li>如果命令中包含多个表，插件会依次处理每个表。</li>
+</ul>
+</li>
+<li><strong>回收站 schema 的创建：</strong><ul>
+<li>如果指定的回收站 schema 尚不存在，插件会创建一个新的 schema，并确保它对当前数据库用户可见。</li>
+</ul>
+</li>
+<li><strong>表的移动：</strong><ul>
+<li><strong>检查表是否存在：</strong> 插件会检查每个表是否存在于当前数据库中，并跳过不存在的表。</li>
+<li><strong>跳过系统表、临时表、TOAST 表：</strong> 插件会过滤掉系统表、临时表和 TOAST 表，避免误操作。</li>
+<li><strong>处理同名冲突：</strong> 如果回收站 schema 中已存在同名表，插件会自动给新表添加时间戳后缀，以确保名称唯一性。</li>
+</ul>
+</li>
+<li><strong>ALTER TABLE SET SCHEMA：</strong><ul>
+<li>使用 ALTER TABLE … SET SCHEMA 将表从原 schema 移动到回收站 schema 中。</li>
+</ul>
+</li>
+<li><strong>保留原表结构</strong><ul>
+<li>如果是TRUNCATE，还会在原schema中创建一个空表。</li>
+</ul>
+</li>
+<li><strong>完成操作：</strong><ul>
+<li>插件执行完表的迁移后，输出日志通知管理员操作已完成。</li>
+</ul>
+</li>
+</ul>
+<h3 id="ProcessUtility-Hook介绍"><a href="#ProcessUtility-Hook介绍" class="headerlink" title="ProcessUtility Hook介绍"></a>ProcessUtility Hook介绍</h3><p><strong>Hook（钩子）</strong> 是一种编程模式，允许开发者在程序的特定点插入自定义逻辑或行为，而不需要修改原始代码的结构。它是操作系统、库、框架或者应用程序中用于扩展功能的一种机制。通过钩子，开发者可以“挂钩”到程序执行的关键位置，拦截事件或函数调用，并添加自定义的操作。</p>
+<p><strong>ProcessUtility Hook</strong> 是 PostgreSQL 中的一种钩子机制，它允许扩展在处理 DDL（数据定义语言）命令时插入自定义逻辑。ProcessUtility 函数本身是 PostgreSQL 用来解析和执行 DDL 命令（如 CREATE, DROP, ALTER 等）的一部分，而 ProcessUtility Hook 使得开发者可以在执行这些命令之前拦截并修改它们，或添加额外的行为。它定义在 <code>src/include/tcop/utility.h</code> 文件中，具体如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该函数指针会指向一个接收 PlannedStmt 和其他相关参数的函数。</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="title function_">void</span> <span class="params">(*ProcessUtility_hook_type)</span> <span class="params">(</span></span><br><span class="line"><span class="params">    PlannedStmt *pstmt,              <span class="comment">// 解析后的查询计划，表示要执行的 SQL 命令。</span></span></span><br><span class="line"><span class="params">    <span class="type">const</span> <span class="type">char</span> *queryString,         <span class="comment">// 原始的 SQL 查询字符串，用于调试或日志记录。</span></span></span><br><span class="line"><span class="params">    <span class="type">bool</span> readOnlyTree,               <span class="comment">// 如果是只读的树，则为 true，指示查询不会改变数据库的状态。</span></span></span><br><span class="line"><span class="params">    ProcessUtilityContext context,   <span class="comment">// 当前命令的上下文，指示命令类型或其他附加信息。</span></span></span><br><span class="line"><span class="params">    ParamListInfo params,           <span class="comment">// 包含查询中使用的参数的列表。</span></span></span><br><span class="line"><span class="params">    QueryEnvironment *queryEnv,      <span class="comment">// 查询执行环境，保存查询执行时的状态信息。</span></span></span><br><span class="line"><span class="params">    DestReceiver *dest,              <span class="comment">// 结果接收器，表示如何处理查询的结果（例如，输出到屏幕、写入文件等）。</span></span></span><br><span class="line"><span class="params">    QueryCompletion *qc              <span class="comment">// 保存查询完成后的状态信息，通常用于指示查询是否成功执行。</span></span></span><br><span class="line"><span class="params">)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明一个全局变量 ProcessUtility_hook，这是一个指向函数的指针。</span></span><br><span class="line"><span class="comment">// 该指针指向实现了上面定义的函数类型的钩子函数。</span></span><br><span class="line"><span class="comment">// 如果没有设置钩子函数，PostgreSQL 将使用默认的标准函数处理 DDL 命令。</span></span><br><span class="line"><span class="keyword">extern</span> PGDLLIMPORT ProcessUtility_hook_type ProcessUtility_hook;</span><br></pre></td></tr></table></figure>
+
+<p>这个hook允许扩展在所有utility命令（DDL命令）执行前获得控制权。ProcessUtility 函数结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">ProcessUtility</span><span class="params">(PlannedStmt *pstmt,</span></span><br><span class="line"><span class="params">                    <span class="type">const</span> <span class="type">char</span> *queryString,</span></span><br><span class="line"><span class="params">                    <span class="type">bool</span> readOnlyTree,</span></span><br><span class="line"><span class="params">                    ProcessUtilityContext context,</span></span><br><span class="line"><span class="params">                    ParamListInfo params,</span></span><br><span class="line"><span class="params">                    QueryEnvironment *queryEnv,</span></span><br><span class="line"><span class="params">                    DestReceiver *dest,</span></span><br><span class="line"><span class="params">                    QueryCompletion *qc)</span></span><br><span class="line">&#123;</span><br><span class="line">    Assert(IsA(pstmt, PlannedStmt));  <span class="comment">// 检查pstmt是否是PlannedStmt类型。</span></span><br><span class="line">    Assert(pstmt-&gt;commandType == CMD_UTILITY);  <span class="comment">// 确保命令类型是CMD_UTILITY，表示这是一个DDL命令。</span></span><br><span class="line">    Assert(queryString != <span class="literal">NULL</span>);  <span class="comment">// 确保查询字符串不为空。</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ProcessUtility_hook)  <span class="comment">// 如果ProcessUtility_hook被设置（即存在自定义的处理函数）</span></span><br><span class="line">        (*ProcessUtility_hook) (pstmt, queryString, readOnlyTree,  <span class="comment">// 调用自定义的钩子函数。</span></span><br><span class="line">                                context, params, queryEnv, dest, qc);</span><br><span class="line">    <span class="keyword">else</span>  <span class="comment">// 如果没有设置钩子函数，则调用标准的处理函数。</span></span><br><span class="line">        standard_ProcessUtility(pstmt, queryString, readOnlyTree, context, params, queryEnv, dest, qc);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="pg-safe-recycle的Hook实现"><a href="#pg-safe-recycle的Hook实现" class="headerlink" title="pg_safe_recycle的Hook实现"></a>pg_safe_recycle的Hook实现</h3><h4 id="PG-init"><a href="#PG-init" class="headerlink" title="_PG_init"></a>_PG_init</h4><p><code>_PG_init</code>是PostgreSQL扩展的模块初始化函数和入口点，必须是非静态函数且不能更改函数名。它在扩展首次加载时被调用，负责完成所有必要的初始化工作，包括GUC参数定义、hook注册、数据结构初始化等。</p>
+<p>在pg_safe_recycle里面，<code>_PG_init</code>按以下步骤初始化：</p>
+<ul>
+<li><strong>定义GUC参数</strong>：注册配置参数控制扩展行为</li>
+<li><strong>保存原hook</strong>：<code>prev_ProcessUtility = ProcessUtility_hook</code></li>
+<li><strong>安装新hook</strong>：<code>ProcessUtility_hook = pg_safe_recycle_ProcessUtility</code></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Module initialization: define GUCs and install hook */</span>  </span><br><span class="line"><span class="type">void</span>  </span><br><span class="line">_PG_init(<span class="type">void</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="comment">/* Recycle schema name, default &quot;recycled_tables&quot; */</span>  </span><br><span class="line">    DefineCustomStringVariable(<span class="string">&quot;pg_safe_recycle.recycle_schema&quot;</span>,  </span><br><span class="line">                               <span class="string">&quot;Schema name for storing recycled tables&quot;</span>,  </span><br><span class="line">                               <span class="literal">NULL</span>,  </span><br><span class="line">                               &amp;recycle_schema_name,  </span><br><span class="line">                               <span class="string">&quot;recycled_tables&quot;</span>,  </span><br><span class="line">                               PGC_SUSET, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* Enable/disable the table recycling feature */</span>  </span><br><span class="line">    DefineCustomBoolVariable(<span class="string">&quot;pg_safe_recycle.enable_recycling&quot;</span>,  </span><br><span class="line">                             <span class="string">&quot;Enable table recycling for DROP and TRUNCATE operations&quot;</span>,  </span><br><span class="line">                             <span class="literal">NULL</span>,  </span><br><span class="line">                             &amp;enable_table_recycling,  </span><br><span class="line">                             <span class="literal">true</span>,  </span><br><span class="line">                             PGC_SUSET, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* Save previous hook and set our hook */</span>  </span><br><span class="line">    prev_ProcessUtility = ProcessUtility_hook;  </span><br><span class="line">    ProcessUtility_hook = pg_safe_recycle_ProcessUtility;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="pg-safe-recycle-ProcessUtility"><a href="#pg-safe-recycle-ProcessUtility" class="headerlink" title="pg_safe_recycle_ProcessUtility"></a>pg_safe_recycle_ProcessUtility</h4><ol>
+<li><strong>解析表名</strong>：使用<code>makeRangeVarFromNameList</code>将对象名列表转换为<code>RangeVar</code>结构</li>
+<li><strong>验证表存在性</strong>：通过<code>get_relname_relid</code>检查表是否存在</li>
+<li><strong>跳过保护表</strong>：过滤系统表、临时表和TOAST表</li>
+<li><strong>处理重名冲突</strong>：如果回收站中存在同名表，先重命名</li>
+<li><strong>执行schema移动</strong>：构造<code>AlterObjectSchemaStmt</code>并调用<code>standard_ProcessUtility</code></li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Core hook function to intercept DROP TABLE and TRUNCATE */</span>  </span><br><span class="line"><span class="type">static</span> <span class="type">void</span>  </span><br><span class="line"><span class="title function_">pg_safe_recycle_ProcessUtility</span><span class="params">(PlannedStmt *pstmt,  </span></span><br><span class="line"><span class="params">                               <span class="type">const</span> <span class="type">char</span> *queryString,  </span></span><br><span class="line"><span class="params">                               <span class="type">bool</span> readOnlyTree,  </span></span><br><span class="line"><span class="params">                               ProcessUtilityContext context,  </span></span><br><span class="line"><span class="params">                               ParamListInfo params,  </span></span><br><span class="line"><span class="params">                               QueryEnvironment *queryEnv,  </span></span><br><span class="line"><span class="params">                               DestReceiver *dest,  </span></span><br><span class="line"><span class="params">                               QueryCompletion *qc)</span>  </span><br><span class="line">&#123;  </span><br><span class="line">    Node *parsetree;  </span><br><span class="line">    ListCell *lc;  </span><br><span class="line">    DropStmt *drop_stmt;  </span><br><span class="line">    TruncateStmt *truncate_stmt;  </span><br><span class="line">    Oid recycle_schema_oid;  </span><br><span class="line">    List *objname;  </span><br><span class="line">    RangeVar *relation;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* If feature disabled, call previous hook or standard handler */</span>  </span><br><span class="line">    <span class="keyword">if</span> (!enable_table_recycling)  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="keyword">if</span> (prev_ProcessUtility)  </span><br><span class="line">            prev_ProcessUtility(pstmt, queryString, readOnlyTree,  </span><br><span class="line">                                context, params, queryEnv, dest, qc);  </span><br><span class="line">        <span class="keyword">else</span>  </span><br><span class="line">            standard_ProcessUtility(pstmt, queryString, readOnlyTree,  </span><br><span class="line">                                    context, params, queryEnv, dest, qc);  </span><br><span class="line">        <span class="keyword">return</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* If no parse tree, pass through */</span>  </span><br><span class="line">    <span class="keyword">if</span> (!pstmt || !pstmt-&gt;utilityStmt)  </span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="keyword">if</span> (prev_ProcessUtility)  </span><br><span class="line">            prev_ProcessUtility(pstmt, queryString, readOnlyTree,  </span><br><span class="line">                                context, params, queryEnv, dest, qc);  </span><br><span class="line">        <span class="keyword">else</span>  </span><br><span class="line">            standard_ProcessUtility(pstmt, queryString, readOnlyTree,  </span><br><span class="line">                                    context, params, queryEnv, dest, qc);  </span><br><span class="line">        <span class="keyword">return</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    parsetree = pstmt-&gt;utilityStmt;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* Intercept DROP TABLE */</span>  </span><br><span class="line">    <span class="keyword">if</span> (nodeTag(parsetree) == T_DropStmt)  </span><br><span class="line">    &#123;  </span><br><span class="line">        drop_stmt = (DropStmt *) parsetree;  </span><br><span class="line">  </span><br><span class="line">        <span class="keyword">if</span> (drop_stmt-&gt;removeType == OBJECT_TABLE)  </span><br><span class="line">        &#123;  </span><br><span class="line">            <span class="comment">/* Reject DROP CASCADE to prevent deleting dependent objects */</span>  </span><br><span class="line">            <span class="keyword">if</span> (drop_stmt-&gt;behavior != DROP_RESTRICT)  </span><br><span class="line">                ereport(ERROR,  </span><br><span class="line">                        (errcode(ERRCODE_FEATURE_NOT_SUPPORTED),  </span><br><span class="line">                         errmsg(<span class="string">&quot;pg_safe_recycle: DROP CASCADE not supported&quot;</span>)));  </span><br><span class="line">  </span><br><span class="line">            <span class="comment">/* Ensure recycle schema exists */</span>  </span><br><span class="line">            ensure_recycle_schema_exists();  </span><br><span class="line">            recycle_schema_oid = get_namespace_oid(recycle_schema_name, <span class="literal">true</span>);  </span><br><span class="line">  </span><br><span class="line">            <span class="comment">/* Process each table in DROP command */</span>  </span><br><span class="line">            foreach(lc, drop_stmt-&gt;objects)  </span><br><span class="line">            &#123;  </span><br><span class="line">                objname = (List *) lfirst(lc);  </span><br><span class="line">                relation = makeRangeVarFromNameList(objname);  </span><br><span class="line">                handle_drop_table(relation, recycle_schema_oid,  </span><br><span class="line">                                 queryString, readOnlyTree, context,  </span><br><span class="line">                                 params, queryEnv, dest, qc);  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">return</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Intercept TRUNCATE TABLE */</span>  </span><br><span class="line">    <span class="keyword">if</span> (nodeTag(parsetree) == T_TruncateStmt)  </span><br><span class="line">    &#123;  </span><br><span class="line">        truncate_stmt = (TruncateStmt *) parsetree;  </span><br><span class="line">          </span><br><span class="line">        <span class="comment">/* Ensure recycle schema exists */</span>  </span><br><span class="line">        ensure_recycle_schema_exists();  </span><br><span class="line">        recycle_schema_oid = get_namespace_oid(recycle_schema_name, <span class="literal">true</span>);  </span><br><span class="line">          </span><br><span class="line">        <span class="comment">/* Process each table in TRUNCATE command */</span>  </span><br><span class="line">        foreach(lc, truncate_stmt-&gt;relations)  </span><br><span class="line">        &#123;  </span><br><span class="line">            relation = (RangeVar *) lfirst(lc);  </span><br><span class="line">            handle_truncate_table(relation, recycle_schema_oid,  </span><br><span class="line">                                 queryString, readOnlyTree, context,  </span><br><span class="line">                                 params, queryEnv, dest, qc);  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* Default: call previous hook or standard ProcessUtility */</span>  </span><br><span class="line">    <span class="keyword">if</span> (prev_ProcessUtility)  </span><br><span class="line">        prev_ProcessUtility(pstmt, queryString, readOnlyTree,  </span><br><span class="line">                            context, params, queryEnv, dest, qc);  </span><br><span class="line">    <span class="keyword">else</span>  </span><br><span class="line">        standard_ProcessUtility(pstmt, queryString, readOnlyTree,  </span><br><span class="line">                                context, params, queryEnv, dest, qc);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ensure-recycle-schema-exists"><a href="#ensure-recycle-schema-exists" class="headerlink" title="ensure_recycle_schema_exists"></a>ensure_recycle_schema_exists</h4><p>检查回收站存不存在</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Ensure the recycle schema exists */</span>  </span><br><span class="line"><span class="type">static</span> <span class="type">void</span>  </span><br><span class="line"><span class="title function_">ensure_recycle_schema_exists</span><span class="params">(<span class="type">void</span>)</span>  </span><br><span class="line">&#123;  </span><br><span class="line">    HeapTuple tuple;  </span><br><span class="line">    Oid datdba;  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (SearchSysCacheExists1(NAMESPACENAME, PointerGetDatum(recycle_schema_name)))  </span><br><span class="line">        <span class="keyword">return</span>;  </span><br><span class="line">  </span><br><span class="line">    tuple = SearchSysCache1(DATABASEOID, ObjectIdGetDatum(MyDatabaseId));  </span><br><span class="line">    <span class="keyword">if</span> (!HeapTupleIsValid(tuple))  </span><br><span class="line">        ereport(ERROR,  </span><br><span class="line">                (errcode(ERRCODE_UNDEFINED_DATABASE),  </span><br><span class="line">                 errmsg(<span class="string">&quot;database with OID %u not found&quot;</span>, MyDatabaseId)));  </span><br><span class="line">  </span><br><span class="line">    datdba = ((Form_pg_database) GETSTRUCT(tuple))-&gt;datdba;  </span><br><span class="line">    ReleaseSysCache(tuple);  </span><br><span class="line">  </span><br><span class="line">    NamespaceCreate(recycle_schema_name, datdba, <span class="literal">false</span>);  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">/* Make the schema visible in the current transaction */</span>  </span><br><span class="line">    CommandCounterIncrement();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="handle-drop-table"><a href="#handle-drop-table" class="headerlink" title="handle_drop_table"></a>handle_drop_table</h4><p>拦截DROP，进行逻辑处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Handle DROP TABLE - move entire table to recycle schema */</span>  </span><br><span class="line"><span class="type">static</span> <span class="type">void</span>    </span><br><span class="line"><span class="title function_">handle_drop_table</span><span class="params">(RangeVar *relation, Oid recycle_schema_oid,    </span></span><br><span class="line"><span class="params">                 <span class="type">const</span> <span class="type">char</span> *queryString, <span class="type">bool</span> readOnlyTree,    </span></span><br><span class="line"><span class="params">                 ProcessUtilityContext context, ParamListInfo params,    </span></span><br><span class="line"><span class="params">                 QueryEnvironment *queryEnv, DestReceiver *dest,    </span></span><br><span class="line"><span class="params">                 QueryCompletion *qc)</span>    </span><br><span class="line">&#123;    </span><br><span class="line">    <span class="type">char</span> *original_table_name;    </span><br><span class="line">    <span class="type">char</span> *original_schema_name;    </span><br><span class="line">    Oid table_oid;    </span><br><span class="line">    <span class="type">char</span> *unique_table_name;  </span><br><span class="line">    RenameStmt *rename_stmt;    </span><br><span class="line">    PlannedStmt stmt_wrapper;    </span><br><span class="line">    AlterObjectSchemaStmt *alter_stmt;    </span><br><span class="line">        </span><br><span class="line">    original_table_name = relation-&gt;relname;    </span><br><span class="line">    original_schema_name = relation-&gt;schemaname ? relation-&gt;schemaname : <span class="string">&quot;public&quot;</span>;    </span><br><span class="line">        </span><br><span class="line">    <span class="comment">/* Check if table exists */</span>    </span><br><span class="line">    table_oid = get_relname_relid(relation-&gt;relname,     </span><br><span class="line">                                 get_namespace_oid(original_schema_name, <span class="literal">true</span>));    </span><br><span class="line">    <span class="keyword">if</span> (!OidIsValid(table_oid))    </span><br><span class="line">    &#123;    </span><br><span class="line">        elog(WARNING, <span class="string">&quot;pg_safe_recycle: table %s.%s does not exist&quot;</span>,     </span><br><span class="line">             original_schema_name, relation-&gt;relname);    </span><br><span class="line">        <span class="keyword">return</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">        </span><br><span class="line">    <span class="comment">/* Skip system, temp, TOAST tables */</span>    </span><br><span class="line">    <span class="keyword">if</span> (relation-&gt;schemaname &amp;&amp;    </span><br><span class="line">        (<span class="built_in">strcmp</span>(relation-&gt;schemaname, <span class="string">&quot;pg_catalog&quot;</span>) == <span class="number">0</span> ||    </span><br><span class="line">         <span class="built_in">strncmp</span>(relation-&gt;schemaname, <span class="string">&quot;pg_temp&quot;</span>, <span class="number">7</span>) == <span class="number">0</span> ||    </span><br><span class="line">         <span class="built_in">strncmp</span>(relation-&gt;relname, <span class="string">&quot;pg_toast&quot;</span>, <span class="number">8</span>) == <span class="number">0</span>))    </span><br><span class="line">    &#123;    </span><br><span class="line">        elog(WARNING, <span class="string">&quot;pg_safe_recycle: skipping protected table %s.%s&quot;</span>,    </span><br><span class="line">             relation-&gt;schemaname, relation-&gt;relname);    </span><br><span class="line">        <span class="keyword">return</span>;    </span><br><span class="line">    &#125;    </span><br><span class="line">        </span><br><span class="line">    <span class="comment">/* Always generate unique name with timestamp */</span>  </span><br><span class="line">    unique_table_name = generate_unique_table_name(relation-&gt;relname, <span class="string">&quot;drop&quot;</span>);  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Rename the table first */</span>    </span><br><span class="line">    rename_stmt = makeNode(RenameStmt);    </span><br><span class="line">    rename_stmt-&gt;renameType = OBJECT_TABLE;    </span><br><span class="line">    rename_stmt-&gt;relation = relation;    </span><br><span class="line">    rename_stmt-&gt;subname = relation-&gt;relname;    </span><br><span class="line">    rename_stmt-&gt;newname = unique_table_name;    </span><br><span class="line">    rename_stmt-&gt;missing_ok = <span class="literal">false</span>;    </span><br><span class="line">        </span><br><span class="line">    MemSet(&amp;stmt_wrapper, <span class="number">0</span>, <span class="keyword">sizeof</span>(stmt_wrapper));    </span><br><span class="line">    stmt_wrapper.commandType = CMD_UTILITY;    </span><br><span class="line">    stmt_wrapper.utilityStmt = (Node *) rename_stmt;    </span><br><span class="line">        </span><br><span class="line">    standard_ProcessUtility(&amp;stmt_wrapper, queryString, readOnlyTree,    </span><br><span class="line">                           PROCESS_UTILITY_SUBCOMMAND, params, queryEnv,     </span><br><span class="line">                           dest, qc);    </span><br><span class="line">        </span><br><span class="line">    relation-&gt;relname = pstrdup(unique_table_name);  </span><br><span class="line">        </span><br><span class="line">    <span class="comment">/* Move table to recycle schema */</span>    </span><br><span class="line">    alter_stmt = makeNode(AlterObjectSchemaStmt);    </span><br><span class="line">    alter_stmt-&gt;objectType = OBJECT_TABLE;    </span><br><span class="line">    alter_stmt-&gt;relation = relation;    </span><br><span class="line">    alter_stmt-&gt;newschema = pstrdup(recycle_schema_name);    </span><br><span class="line">    alter_stmt-&gt;missing_ok = <span class="literal">false</span>;    </span><br><span class="line">        </span><br><span class="line">    MemSet(&amp;stmt_wrapper, <span class="number">0</span>, <span class="keyword">sizeof</span>(stmt_wrapper));    </span><br><span class="line">    stmt_wrapper.commandType = CMD_UTILITY;    </span><br><span class="line">    stmt_wrapper.utilityStmt = (Node *) alter_stmt;    </span><br><span class="line">        </span><br><span class="line">    standard_ProcessUtility(&amp;stmt_wrapper, queryString, readOnlyTree,    </span><br><span class="line">                           PROCESS_UTILITY_SUBCOMMAND, params, queryEnv,    </span><br><span class="line">                           dest, qc);    </span><br><span class="line">        </span><br><span class="line">    elog(NOTICE, <span class="string">&quot;pg_safe_recycle: table %s.%s moved to %s.%s (DROP operation)&quot;</span>,    </span><br><span class="line">         original_schema_name, original_table_name,     </span><br><span class="line">         recycle_schema_name, relation-&gt;relname);    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="handle-truncate-table"><a href="#handle-truncate-table" class="headerlink" title="handle_truncate_table"></a>handle_truncate_table</h4><p>拦截TRUNCATE，进行逻辑处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Handle TRUNCATE TABLE - move table to recycle schema and create empty table in original location */</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span>  </span><br><span class="line"><span class="title function_">handle_truncate_table</span><span class="params">(RangeVar *relation, Oid recycle_schema_oid,  </span></span><br><span class="line"><span class="params">                     <span class="type">const</span> <span class="type">char</span> *queryString, <span class="type">bool</span> readOnlyTree,  </span></span><br><span class="line"><span class="params">                     ProcessUtilityContext context, ParamListInfo params,  </span></span><br><span class="line"><span class="params">                     QueryEnvironment *queryEnv, DestReceiver *dest,  </span></span><br><span class="line"><span class="params">                     QueryCompletion *qc)</span>  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="type">char</span> *original_table_name;  </span><br><span class="line">    <span class="type">char</span> *original_schema_name;  </span><br><span class="line">    <span class="type">char</span> *backup_table_name;  </span><br><span class="line">    Oid table_oid;  </span><br><span class="line">    RenameStmt *rename_stmt;  </span><br><span class="line">    PlannedStmt stmt_wrapper;  </span><br><span class="line">    AlterObjectSchemaStmt *alter_stmt;  </span><br><span class="line">      </span><br><span class="line">    original_table_name = relation-&gt;relname;  </span><br><span class="line">    original_schema_name = relation-&gt;schemaname ? relation-&gt;schemaname : <span class="string">&quot;public&quot;</span>;  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Check if table exists */</span>  </span><br><span class="line">    table_oid = get_relname_relid(relation-&gt;relname,   </span><br><span class="line">                                 get_namespace_oid(original_schema_name, <span class="literal">true</span>));  </span><br><span class="line">    <span class="keyword">if</span> (!OidIsValid(table_oid))  </span><br><span class="line">    &#123;  </span><br><span class="line">        elog(WARNING, <span class="string">&quot;pg_safe_recycle: table %s.%s does not exist&quot;</span>,   </span><br><span class="line">             original_schema_name, relation-&gt;relname);  </span><br><span class="line">        <span class="keyword">return</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Skip system, temp, TOAST tables */</span>  </span><br><span class="line">    <span class="keyword">if</span> (relation-&gt;schemaname &amp;&amp;  </span><br><span class="line">        (<span class="built_in">strcmp</span>(relation-&gt;schemaname, <span class="string">&quot;pg_catalog&quot;</span>) == <span class="number">0</span> ||  </span><br><span class="line">         <span class="built_in">strncmp</span>(relation-&gt;schemaname, <span class="string">&quot;pg_temp&quot;</span>, <span class="number">7</span>) == <span class="number">0</span> ||  </span><br><span class="line">         <span class="built_in">strncmp</span>(relation-&gt;relname, <span class="string">&quot;pg_toast&quot;</span>, <span class="number">8</span>) == <span class="number">0</span>))  </span><br><span class="line">    &#123;  </span><br><span class="line">        elog(WARNING, <span class="string">&quot;pg_safe_recycle: skipping protected table %s.%s&quot;</span>,  </span><br><span class="line">             relation-&gt;schemaname, relation-&gt;relname);  </span><br><span class="line">        <span class="keyword">return</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Generate backup table name with truncate prefix */</span>  </span><br><span class="line">    backup_table_name = generate_unique_table_name(relation-&gt;relname, <span class="string">&quot;truncate&quot;</span>);  </span><br><span class="line">  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* 1. Rename original table to backup name */</span>  </span><br><span class="line">    rename_stmt = makeNode(RenameStmt);  </span><br><span class="line">    rename_stmt-&gt;renameType = OBJECT_TABLE;  </span><br><span class="line">    rename_stmt-&gt;relation = relation;  </span><br><span class="line">    rename_stmt-&gt;subname = relation-&gt;relname;  </span><br><span class="line">    rename_stmt-&gt;newname = backup_table_name;  </span><br><span class="line">    rename_stmt-&gt;missing_ok = <span class="literal">false</span>;  </span><br><span class="line">      </span><br><span class="line">    MemSet(&amp;stmt_wrapper, <span class="number">0</span>, <span class="keyword">sizeof</span>(stmt_wrapper));  </span><br><span class="line">    stmt_wrapper.commandType = CMD_UTILITY;  </span><br><span class="line">    stmt_wrapper.utilityStmt = (Node *) rename_stmt;  </span><br><span class="line">      </span><br><span class="line">    standard_ProcessUtility(&amp;stmt_wrapper, queryString, readOnlyTree,  </span><br><span class="line">                           PROCESS_UTILITY_SUBCOMMAND, params, queryEnv,   </span><br><span class="line">                           dest, qc);  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* 2. Move renamed table to recycle schema */</span>  </span><br><span class="line">    relation-&gt;relname = pstrdup(backup_table_name);  </span><br><span class="line">      </span><br><span class="line">    alter_stmt = makeNode(AlterObjectSchemaStmt);  </span><br><span class="line">    alter_stmt-&gt;objectType = OBJECT_TABLE;  </span><br><span class="line">    alter_stmt-&gt;relation = relation;  </span><br><span class="line">    alter_stmt-&gt;newschema = pstrdup(recycle_schema_name);  </span><br><span class="line">    alter_stmt-&gt;missing_ok = <span class="literal">false</span>;  </span><br><span class="line">      </span><br><span class="line">    MemSet(&amp;stmt_wrapper, <span class="number">0</span>, <span class="keyword">sizeof</span>(stmt_wrapper));  </span><br><span class="line">    stmt_wrapper.commandType = CMD_UTILITY;  </span><br><span class="line">    stmt_wrapper.utilityStmt = (Node *) alter_stmt;  </span><br><span class="line">      </span><br><span class="line">    standard_ProcessUtility(&amp;stmt_wrapper, queryString, readOnlyTree,  </span><br><span class="line">                           PROCESS_UTILITY_SUBCOMMAND, params, queryEnv,  </span><br><span class="line">                           dest, qc);  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* 3. Create empty table with same structure in original location */</span>  </span><br><span class="line">    create_empty_table_like_original(original_schema_name, original_table_name,  </span><br><span class="line">                                    recycle_schema_name, backup_table_name,  </span><br><span class="line">                                    queryString, readOnlyTree, context,  </span><br><span class="line">                                    params, queryEnv, dest, qc);  </span><br><span class="line">      </span><br><span class="line">    elog(NOTICE, <span class="string">&quot;pg_safe_recycle: table %s.%s moved to %s.%s and recreated empty (TRUNCATE operation)&quot;</span>,  </span><br><span class="line">         original_schema_name, original_table_name,   </span><br><span class="line">         recycle_schema_name, backup_table_name);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="generate-unique-table-name"><a href="#generate-unique-table-name" class="headerlink" title="generate_unique_table_name"></a>generate_unique_table_name</h4><p>生成一个唯一的名称</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Generate unique table name using timestamp */</span>  </span><br><span class="line"><span class="type">static</span> <span class="type">char</span> *  </span><br><span class="line"><span class="title function_">generate_unique_table_name</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *basename, <span class="type">const</span> <span class="type">char</span> *type)</span>  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="type">char</span> *newname;  </span><br><span class="line">    <span class="type">time_t</span> t;  </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">tm</span> <span class="title">tm</span>;</span>  </span><br><span class="line">  </span><br><span class="line">    t = time(<span class="literal">NULL</span>);  </span><br><span class="line">  </span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> HAVE_LOCALTIME_R  </span></span><br><span class="line">    localtime_r(&amp;t, &amp;tm);  </span><br><span class="line"><span class="meta">#<span class="keyword">else</span>  </span></span><br><span class="line">    &#123;  </span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">tm</span> *<span class="title">tmp</span> =</span> localtime(&amp;t);  </span><br><span class="line">        <span class="keyword">if</span> (!tmp)  </span><br><span class="line">            elog(ERROR, <span class="string">&quot;localtime failed&quot;</span>);  </span><br><span class="line">        tm = *tmp;  </span><br><span class="line">    &#125;  </span><br><span class="line"><span class="meta">#<span class="keyword">endif</span>  </span></span><br><span class="line">  </span><br><span class="line">    newname = psprintf(<span class="string">&quot;%s_%s_%04d%02d%02d_%02d%02d%02d&quot;</span>,  </span><br><span class="line">                       basename, </span><br><span class="line">                       type, </span><br><span class="line">                       tm.tm_year + <span class="number">1900</span>,  </span><br><span class="line">                       tm.tm_mon + <span class="number">1</span>,  </span><br><span class="line">                       tm.tm_mday,  </span><br><span class="line">                       tm.tm_hour,  </span><br><span class="line">                       tm.tm_min,  </span><br><span class="line">                       tm.tm_sec);  </span><br><span class="line">    <span class="keyword">return</span> newname;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="create-empty-table-like-original"><a href="#create-empty-table-like-original" class="headerlink" title="create_empty_table_like_original"></a>create_empty_table_like_original</h4><p>在原schema里面创建一个空表</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Create empty table with same structure as original */</span>  </span><br><span class="line"><span class="type">static</span> <span class="type">void</span>  </span><br><span class="line"><span class="title function_">create_empty_table_like_original</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *target_schema, <span class="type">const</span> <span class="type">char</span> *target_table,  </span></span><br><span class="line"><span class="params">                                <span class="type">const</span> <span class="type">char</span> *source_schema, <span class="type">const</span> <span class="type">char</span> *source_table,  </span></span><br><span class="line"><span class="params">                                <span class="type">const</span> <span class="type">char</span> *queryString, <span class="type">bool</span> readOnlyTree,  </span></span><br><span class="line"><span class="params">                                ProcessUtilityContext context, ParamListInfo params,  </span></span><br><span class="line"><span class="params">                                QueryEnvironment *queryEnv, DestReceiver *dest,  </span></span><br><span class="line"><span class="params">                                QueryCompletion *qc)</span>  </span><br><span class="line">&#123;  </span><br><span class="line">    StringInfoData sql;  </span><br><span class="line">    List *raw_parsetree_list;  </span><br><span class="line">    RawStmt *raw_stmt;  </span><br><span class="line">    PlannedStmt stmt_wrapper;  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Build CREATE TABLE LIKE statement */</span>  </span><br><span class="line">    initStringInfo(&amp;sql);  </span><br><span class="line">    appendStringInfo(&amp;sql, <span class="string">&quot;CREATE TABLE %s.%s (LIKE %s.%s INCLUDING ALL)&quot;</span>,  </span><br><span class="line">                    target_schema, target_table, source_schema, source_table);  </span><br><span class="line">      </span><br><span class="line">    <span class="comment">/* Parse and execute the SQL */</span>  </span><br><span class="line">    raw_parsetree_list = pg_parse_query(sql.data);  </span><br><span class="line">    raw_stmt = linitial_node(RawStmt, raw_parsetree_list);  </span><br><span class="line">     MemSet(&amp;stmt_wrapper, <span class="number">0</span>, <span class="keyword">sizeof</span>(stmt_wrapper));  </span><br><span class="line">    stmt_wrapper.commandType = CMD_UTILITY;  </span><br><span class="line">    stmt_wrapper.utilityStmt = raw_stmt-&gt;stmt;  </span><br><span class="line">    stmt_wrapper.stmt_location = raw_stmt-&gt;stmt_location;  </span><br><span class="line">    stmt_wrapper.stmt_len = raw_stmt-&gt;stmt_len;  </span><br><span class="line">      </span><br><span class="line">    standard_ProcessUtility(&amp;stmt_wrapper, sql.data, readOnlyTree,  </span><br><span class="line">                           PROCESS_UTILITY_SUBCOMMAND, params, queryEnv,  </span><br><span class="line">                           dest, qc);  </span><br><span class="line">      </span><br><span class="line">    pfree(sql.data);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h3><h4 id="😄安装插件"><a href="#😄安装插件" class="headerlink" title="😄安装插件"></a>😄安装插件</h4><ol>
+<li>编译插件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在 postgresql.conf 或 shared_preload_libraries 中启用：</li>
+</ol>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">shared_preload_libraries</span> = <span class="string">&#x27;pg_safe_recycle&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>重启数据库：</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_ctl restart -D <span class="variable">$PGDATA</span></span><br></pre></td></tr></table></figure>
+<h4 id="⚙️-配置参数"><a href="#⚙️-配置参数" class="headerlink" title="⚙️ 配置参数"></a>⚙️ 配置参数</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>pg_safe_recycle.enable_recycling</code></td>
+<td><code>on</code></td>
+<td>是否启用插件</td>
+</tr>
+<tr>
+<td><code>pg_safe_recycle.recycle_schema</code></td>
+<td><code>recycled_tables</code></td>
+<td>指定回收站 schema 名称</td>
+</tr>
+</tbody></table>
+<p>示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> pg_safe_recycle.enable_recycling <span class="operator">=</span> off; <span class="operator">/</span><span class="operator">/</span>关闭回收站功能</span><br><span class="line"><span class="keyword">SET</span> pg_safe_recycle.recycle_schema <span class="operator">=</span> <span class="string">&#x27;recycled_tables&#x27;</span>; <span class="operator">/</span><span class="operator">/</span> 将回收站的schema设置为recycled_tables</span><br></pre></td></tr></table></figure>
+<h4 id="🖥️-使用示例"><a href="#🖥️-使用示例" class="headerlink" title="🖥️ 使用示例"></a>🖥️ 使用示例</h4><p>TRUNCATE案例</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">create</span> extension pg_safe_recycle;</span><br><span class="line"><span class="keyword">CREATE</span> EXTENSION</span><br><span class="line"><span class="type">Time</span>: <span class="number">2.921</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># \dn</span><br><span class="line">      List <span class="keyword">of</span> schemas</span><br><span class="line">  Name  <span class="operator">|</span>       Owner       </span><br><span class="line"><span class="comment">--------+-------------------</span></span><br><span class="line"> public <span class="operator">|</span> pg_database_owner</span><br><span class="line">(<span class="number">1</span> <span class="type">row</span>)</span><br><span class="line"></span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># \d</span><br><span class="line">                 List <span class="keyword">of</span> relations</span><br><span class="line"> Schema <span class="operator">|</span>          Name           <span class="operator">|</span> Type <span class="operator">|</span>  Owner   </span><br><span class="line"><span class="comment">--------+-------------------------+------+----------</span></span><br><span class="line"> public <span class="operator">|</span> pg_stat_statements      <span class="operator">|</span> <span class="keyword">view</span> <span class="operator">|</span> postgres</span><br><span class="line"> public <span class="operator">|</span> pg_stat_statements_info <span class="operator">|</span> <span class="keyword">view</span> <span class="operator">|</span> postgres</span><br><span class="line">(<span class="number">2</span> <span class="keyword">rows</span>)</span><br><span class="line"></span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">create table</span> test(id <span class="type">int</span>);</span><br><span class="line"><span class="keyword">CREATE TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">2.086</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">insert into</span> test <span class="keyword">values</span> (<span class="number">1</span>),(<span class="number">2</span>),(<span class="number">3</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="number">0</span> <span class="number">3</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">0.950</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">truncate</span> <span class="keyword">table</span> test;</span><br><span class="line">NOTICE:  pg_safe_recycle: <span class="keyword">table</span> public.test moved <span class="keyword">to</span> recycled_tables.test_truncate_20250905_120240 <span class="keyword">and</span> recreated <span class="keyword">empty</span> (<span class="keyword">TRUNCATE</span> operation)</span><br><span class="line"><span class="keyword">TRUNCATE</span> <span class="keyword">TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">1.592</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># \dt recycled_tables.<span class="operator">*</span></span><br><span class="line">                         List <span class="keyword">of</span> relations</span><br><span class="line">     Schema      <span class="operator">|</span>             Name              <span class="operator">|</span> Type  <span class="operator">|</span>  Owner   </span><br><span class="line"><span class="comment">-----------------+-------------------------------+-------+----------</span></span><br><span class="line"> recycled_tables <span class="operator">|</span> test_truncate_20250905_120240 <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line">(<span class="number">1</span> <span class="type">row</span>)</span><br><span class="line"></span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> recycled_tables.test_truncate_20250905_120240;</span><br><span class="line"> id </span><br><span class="line"><span class="comment">----</span></span><br><span class="line">  <span class="number">1</span></span><br><span class="line">  <span class="number">2</span></span><br><span class="line">  <span class="number">3</span></span><br><span class="line">(<span class="number">3</span> <span class="keyword">rows</span>)</span><br><span class="line"></span><br><span class="line"><span class="type">Time</span>: <span class="number">0.288</span> ms</span><br></pre></td></tr></table></figure>
+<p>DROP案例</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">create table</span> test1(id <span class="type">int</span>);</span><br><span class="line"><span class="keyword">CREATE TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">1.219</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">insert into</span> test1 <span class="keyword">values</span> (<span class="number">1</span>),(<span class="number">2</span>),(<span class="number">3</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="number">0</span> <span class="number">3</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">0.921</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">drop</span> <span class="keyword">table</span> test1;</span><br><span class="line">NOTICE:  pg_safe_recycle: <span class="keyword">table</span> public.test1 moved <span class="keyword">to</span> recycled_tables.test1_drop_20250905_120333 (<span class="keyword">DROP</span> operation)</span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">1.372</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># \dt recycled_tables.<span class="operator">*</span></span><br><span class="line">                         List <span class="keyword">of</span> relations</span><br><span class="line">     Schema      <span class="operator">|</span>             Name              <span class="operator">|</span> Type  <span class="operator">|</span>  Owner   </span><br><span class="line"><span class="comment">-----------------+-------------------------------+-------+----------</span></span><br><span class="line"> recycled_tables <span class="operator">|</span> test1_drop_20250905_120333    <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test_truncate_20250905_120240 <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line">(<span class="number">2</span> <span class="keyword">rows</span>)</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span>  recycled_tables.test1_drop_20250905_120333;</span><br><span class="line"> id </span><br><span class="line"><span class="comment">----</span></span><br><span class="line">  <span class="number">1</span></span><br><span class="line">  <span class="number">2</span></span><br><span class="line">  <span class="number">3</span></span><br><span class="line">(<span class="number">3</span> <span class="keyword">rows</span>)</span><br></pre></td></tr></table></figure>
+
+<p>多表删除</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">create table</span> test1(id <span class="type">int</span>);</span><br><span class="line"><span class="keyword">CREATE TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">2.031</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">create table</span> test2(id <span class="type">int</span>);</span><br><span class="line"><span class="keyword">CREATE TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">2.249</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">create table</span> test3(id <span class="type">int</span>);</span><br><span class="line"><span class="keyword">CREATE TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">1.231</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># <span class="keyword">truncate</span> <span class="keyword">table</span> test1,test2,test3;</span><br><span class="line">NOTICE:  pg_safe_recycle: <span class="keyword">table</span> public.test1 moved <span class="keyword">to</span> recycled_tables.test1_truncate_20250905_120533 <span class="keyword">and</span> recreated <span class="keyword">empty</span> (<span class="keyword">TRUNCATE</span> operation)</span><br><span class="line">NOTICE:  pg_safe_recycle: <span class="keyword">table</span> public.test2 moved <span class="keyword">to</span> recycled_tables.test2_truncate_20250905_120533 <span class="keyword">and</span> recreated <span class="keyword">empty</span> (<span class="keyword">TRUNCATE</span> operation)</span><br><span class="line">NOTICE:  pg_safe_recycle: <span class="keyword">table</span> public.test3 moved <span class="keyword">to</span> recycled_tables.test3_truncate_20250905_120533 <span class="keyword">and</span> recreated <span class="keyword">empty</span> (<span class="keyword">TRUNCATE</span> operation)</span><br><span class="line"><span class="keyword">TRUNCATE</span> <span class="keyword">TABLE</span></span><br><span class="line"><span class="type">Time</span>: <span class="number">2.782</span> ms</span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># \d</span><br><span class="line">                  List <span class="keyword">of</span> relations</span><br><span class="line"> Schema <span class="operator">|</span>          Name           <span class="operator">|</span> Type  <span class="operator">|</span>  Owner   </span><br><span class="line"><span class="comment">--------+-------------------------+-------+----------</span></span><br><span class="line"> public <span class="operator">|</span> pg_stat_statements      <span class="operator">|</span> <span class="keyword">view</span>  <span class="operator">|</span> postgres</span><br><span class="line"> public <span class="operator">|</span> pg_stat_statements_info <span class="operator">|</span> <span class="keyword">view</span>  <span class="operator">|</span> postgres</span><br><span class="line"> public <span class="operator">|</span> test                    <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> public <span class="operator">|</span> test1                   <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> public <span class="operator">|</span> test2                   <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> public <span class="operator">|</span> test3                   <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line">(<span class="number">6</span> <span class="keyword">rows</span>)</span><br><span class="line"></span><br><span class="line">postgres<span class="variable">@postgres</span><span class="operator">=</span># \dt recycled_tables.<span class="operator">*</span></span><br><span class="line">                          List <span class="keyword">of</span> relations</span><br><span class="line">     Schema      <span class="operator">|</span>              Name              <span class="operator">|</span> Type  <span class="operator">|</span>  Owner   </span><br><span class="line"><span class="comment">-----------------+--------------------------------+-------+----------</span></span><br><span class="line"> recycled_tables <span class="operator">|</span> test1_drop_20250905_120333     <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test1_drop_20250905_120437     <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test1_truncate_20250905_120533 <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test2_drop_20250905_120502     <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test2_truncate_20250905_120533 <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test3_drop_20250905_120502     <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test3_truncate_20250905_120533 <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line"> recycled_tables <span class="operator">|</span> test_truncate_20250905_120240  <span class="operator">|</span> <span class="keyword">table</span> <span class="operator">|</span> postgres</span><br><span class="line">(<span class="number">8</span> <span class="keyword">rows</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="🛡️-注意事项"><a href="#🛡️-注意事项" class="headerlink" title="🛡️ 注意事项"></a>🛡️ 注意事项</h4><ul>
+<li>此插件只用来娱乐，玩玩就行</li>
+<li>暂不支持 DROP CASCADE，以免误删依赖对象</li>
+<li>插件需要配置在 shared_preload_libraries，必须重启才能生效</li>
+<li>不建议在高频 DDL 场景中使用，会增加额外开销</li>
+</ul>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                PostgreSQL安全删除表插件：pg_safe_drop
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2025/09/04/pg_safe_drop/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2025-09-04 12:06</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/ProcessUtility-Hook/">ProcessUtility Hook</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2025/09/16/pg-rewind%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%BC%80%E5%90%AFwal-log-hins/"
+                                   title="pg_rewind为什么需要开启wal_log_hins"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">pg_rewind为什么需要开启wal_log_hins</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2025/09/01/PostgreSQL%E7%9A%84%E9%A2%84%E5%A4%87%E8%AF%AD%E5%8F%A5%E7%94%A8%E6%B3%95/"
+                                   title="PostgreSQL的预备语句用法"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PostgreSQL的预备语句用法</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-recycle"><span class="nav-text">pg_safe_recycle</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-text">主要功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ProcessUtility-Hook%E4%BB%8B%E7%BB%8D"><span class="nav-text">ProcessUtility Hook介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-recycle%E7%9A%84Hook%E5%AE%9E%E7%8E%B0"><span class="nav-text">pg_safe_recycle的Hook实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#PG-init"><span class="nav-text">_PG_init</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pg-safe-recycle-ProcessUtility"><span class="nav-text">pg_safe_recycle_ProcessUtility</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ensure-recycle-schema-exists"><span class="nav-text">ensure_recycle_schema_exists</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handle-drop-table"><span class="nav-text">handle_drop_table</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handle-truncate-table"><span class="nav-text">handle_truncate_table</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#generate-unique-table-name"><span class="nav-text">generate_unique_table_name</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#create-empty-table-like-original"><span class="nav-text">create_empty_table_like_original</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="nav-text">使用教程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%98%84%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="nav-text">😄安装插件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-text">⚙️ 配置参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%96%A5%EF%B8%8F-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-text">🖥️ 使用示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%9B%A1%EF%B8%8F-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">🛡️ 注意事项</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-recycle"><span class="nav-text">pg_safe_recycle</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-text">主要功能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">实现原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ProcessUtility-Hook%E4%BB%8B%E7%BB%8D"><span class="nav-text">ProcessUtility Hook介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pg-safe-recycle%E7%9A%84Hook%E5%AE%9E%E7%8E%B0"><span class="nav-text">pg_safe_recycle的Hook实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#PG-init"><span class="nav-text">_PG_init</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pg-safe-recycle-ProcessUtility"><span class="nav-text">pg_safe_recycle_ProcessUtility</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ensure-recycle-schema-exists"><span class="nav-text">ensure_recycle_schema_exists</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handle-drop-table"><span class="nav-text">handle_drop_table</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handle-truncate-table"><span class="nav-text">handle_truncate_table</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#generate-unique-table-name"><span class="nav-text">generate_unique_table_name</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#create-empty-table-like-original"><span class="nav-text">create_empty_table_like_original</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B"><span class="nav-text">使用教程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%98%84%E5%AE%89%E8%A3%85%E6%8F%92%E4%BB%B6"><span class="nav-text">😄安装插件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-text">⚙️ 配置参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%96%A5%EF%B8%8F-%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-text">🖥️ 使用示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%F0%9F%9B%A1%EF%B8%8F-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">🛡️ 注意事项</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>

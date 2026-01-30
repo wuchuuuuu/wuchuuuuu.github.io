@@ -9,7 +9,7 @@
     
     <title>
         
-            404 |
+            分类: PostgreSQL |
         
         DBA有话说
     </title>
@@ -133,7 +133,7 @@
                         </li>
                     
                         
-                        <li class="menu-item flex-start border-box">
+                        <li class="menu-item flex-start border-box active">
                             <a class="menu-text-color border-box" href="/categories">
                                 
                                     <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
@@ -262,7 +262,7 @@
                 </li>
             
                 
-                <li class="drawer-menu-item border-box not-sub-menu">
+                <li class="drawer-menu-item border-box not-sub-menu active">
                     <label class="drawer-menu-label border-box">
                         <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
                             
@@ -357,15 +357,96 @@
                 
 
                     <div class="fade-in-down-animation">
-    <div class="error-404-container border-box">
-        <div class="text-1 border-box flex-center">404</div>
-        <div class="text-2 border-box flex-center">
-            页面找不到
+    <div class="category-archive-container border-box">
+        <div class="category-name">
+            <i class="fas fa-folder"></i>&nbsp;PostgreSQL
         </div>
-        <div class="text-3 border-box flex-center">
-            <a class="go-home" href="/">前往首页</a>
+        <div class="category-post-list">
+            
+<div class="archive-list-container border-box">
+    
+        <section class="archive-item border-box">
+            <div class="archive-item-header border-box">
+                <span class="archive-year">2024</span>
+            </div>
+            <ul class="archive-item-body border-box">
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">11-27</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/11/27/mmeoryContext/"
+                        >深入理解 PostgreSQL 中的内存上下文（MmeoryContext）</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">11-27</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/11/27/%E5%B8%B8%E7%94%A8%E5%8C%85/"
+                        >GO中常用包</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">10-31</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/10/31/pg_log/"
+                        >PG 的日志模块，追加写？覆盖写？</a>
+                    </li>
+                
+                    <li class="post-item border-box">
+                        <span class="starting-point border-box flex-center"></span>
+                        <span class="post-date border-box">08-07</span>
+                        <a class="post-title border-box text-ellipsis"
+                           href="/2024/08/07/mvcc/"
+                        >Postgresql中元组的隐藏字段与MVCC</a>
+                    </li>
+                
+            </ul>
+        </section>
+    
+</div>
+
         </div>
     </div>
+    
+    <div class="paginator border-box flex-center">
+        <div class="border-box first-page paginator-btn allowed">
+            <a class="border-box"><i class="fa-solid fa-angle-double-left"></i></a>
+        </div>
+
+        <div class="border-box paginator-btn allowed">
+            <a class="border-box"
+               href="/categories/PostgreSQL/"
+            ><i class="fa-solid fa-chevron-left"></i></a>
+        </div>
+
+
+        <div class="page-number-box border-box flex-center">
+            <input class="page-number-input border-box base-style"
+                   type="number"
+                   value="2"
+                   min="1"
+                   max="2"
+            /><span class="delimiter base-style">/</span><span class="base-style">2</span>
+        </div>
+
+
+        <div class="border-box paginator-btn">
+            <a class="border-box"
+               href="/"
+            ><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+
+        <div class="border-box last-page paginator-btn not-allow">
+            <a class="border-box"><i class="fa-solid fa-angle-double-right"></i></a>
+        </div>
+    </div>
+
+
+
+
 </div>
 
 
@@ -523,6 +604,7 @@
 
 
 
+
 <!-- common js -->
 
 <script src="/js/utils.js"></script>
@@ -562,6 +644,10 @@
     
 
     <!-- categories page -->
+    
+        
+<script src="/js/page/category-page.js"></script>
+
     
 
     <!-- links page -->
