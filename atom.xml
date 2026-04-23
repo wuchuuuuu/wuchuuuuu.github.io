@@ -145,32 +145,6 @@
   </entry>
   
   <entry>
-    <title>GC 是怎样监听你的应用的</title>
-    <link href="http://wuchuuuuu.github.io/2025/08/21/GC%20%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9B%91%E5%90%AC%E4%BD%A0%E7%9A%84%E5%BA%94%E7%94%A8%E7%9A%84/"/>
-    <id>http://wuchuuuuu.github.io/2025/08/21/GC%20%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9B%91%E5%90%AC%E4%BD%A0%E7%9A%84%E5%BA%94%E7%94%A8%E7%9A%84/</id>
-    <published>2025-08-21T12:08:41.000Z</published>
-    <updated>2025-08-21T12:30:50.397Z</updated>
-    
-    <content type="html"><![CDATA[<p>Go 语言的垃圾回收（Garbage Collection, GC）机制是自动内存管理的一部分，旨在自动回收不再使用的内存，以防止内存泄漏并提高内存使用效率。Go 的 GC 机制通过多种方式“监听”你的应用，从而决定何时启动垃圾回收、回收哪些对象的内存，以及如何尽可能减少对应用性能的影响。以下是 Go GC 如何监听和管理应用的详细解释：</p><h3 id="1-GC-的基本原理"><a href="#1-GC-的基本原理" class="headerlink" title="1.  GC 的基本原理"></a>1.  GC 的基本原理</h3><ul><li>Go 的垃圾回收器采用  三色标记-清除算法 。这个算法的主要步骤包括：<ol><li>标记阶段 ：GC 遍历从根对象（如全局变量、栈上的变量）可达的所有对象，并将这些对象标记为可达对象。</li><li>清除阶段 ：GC 清理未被标记的对象，将它们的内存释放。</li><li>并发标记 ：在标记过程中，应用程序仍然在运行，GC 和应用程序是并发执行的。</li></ol></li></ul><h3 id="2-GC-监听应用的方式"><a href="#2-GC-监听应用的方式" class="headerlink" title="2.  GC 监听应用的方式"></a>2.  GC 监听应用的方式</h3><h4 id="2-1-堆的增长"><a href="#2-1-堆的增长" class="headerlink" title="2.1  堆的增长"></a>2.1  堆的增长</h4><ul><li>Go 的 GC 主要关注堆内存的使用。当你的应用程序分配内存时，这些内存通常会分配在堆上。GC 通过跟踪堆的增长来“监听”你的应用。</li><li>当堆内存达到某个阈值时（由 <code>GOGC</code> 环境变量控制），GC 会自动触发一次垃圾回收周期。</li></ul><h4 id="2-2-内存分配"><a href="#2-2-内存分配" class="headerlink" title="2.2  内存分配"></a>2.2  内存分配</h4><ul><li>每当你的应用分配新对象时，GC 都会对内存分配进行监控。</li><li>Go 运行时为每个 Goroutine 分配一个小型对象池（<code>mcache</code>），这些对象池中分配的内存不会立即触发 GC。但当对象池耗尽或堆达到某个阈值时，GC 就会介入并检查是否需要进行垃圾回收。</li></ul><h4 id="2-3-堆对象的指针扫描"><a href="#2-3-堆对象的指针扫描" class="headerlink" title="2.3  堆对象的指针扫描"></a>2.3  堆对象的指针扫描</h4><ul><li>在标记阶段，GC 会扫描堆中的所有指针来识别可达的对象。</li><li>这个过程也可以看作是 GC 对应用程序状态的“监听”，因为它通过扫描指针来了解哪些对象仍在被引用，哪些对象已经不再使用。</li></ul><h4 id="2-4-协作式抢占"><a href="#2-4-协作式抢占" class="headerlink" title="2.4  协作式抢占"></a>2.4  协作式抢占</h4><ul><li>Go 的 GC 通过协作式抢占机制“监听”应用的执行。协作式抢占指的是 Goroutine 在执行期间，定期检查是否需要让出 CPU 以便让 GC 执行。</li><li>当 GC 需要进行标记或清理操作时，它会通知正在运行的 Goroutine，Goroutine 会在安全点（如函数调用、内存分配等）暂停执行，等待 GC 完成工作后再继续。</li></ul><h3 id="3-GC-调优"><a href="#3-GC-调优" class="headerlink" title="3.  GC 调优"></a>3.  GC 调优</h3><ul><li>GOGC 环境变量 ：<code>GOGC</code> 是一个控制 GC 频率的环境变量。它的默认值是 100，表示当堆内存增长到上一次 GC 后大小的 100% 时，触发下一次 GC。增大 <code>GOGC</code> 的值会减少 GC 的频率，适合内存较大且不频繁分配的场景；减小 <code>GOGC</code> 的值则会增加 GC 的频率，适合对内存占用敏感的应用。</li><li>内存限制 ：Go 1.19 及以后版本引入了 <code>GOMEMLIMIT</code> 选项，允许开发者设置一个硬内存上限。当应用内存接近这个上限时，GC 会更加积极地回收内存。</li></ul><h3 id="4-如何观察和调试-GC-行为"><a href="#4-如何观察和调试-GC-行为" class="headerlink" title="4.  如何观察和调试 GC 行为"></a>4.  如何观察和调试 GC 行为</h3><ul><li>运行时监控 ：Go 提供了多种工具来监控 GC 的行为，比如通过 <code>runtime.ReadMemStats</code> 函数获取内存分配和 GC 统计信息，或者使用 <code>pprof</code> 工具来分析内存分配和 GC 活动。</li><li>GC 日志 ：可以使用 <code>GODEBUG=gctrace=1</code> 环境变量来开启 GC 日志输出，帮助开发者分析 GC 的频率、暂停时间等详细信息。</li></ul><h3 id="5-GC-对应用的影响"><a href="#5-GC-对应用的影响" class="headerlink" title="5.  GC 对应用的影响"></a>5.  GC 对应用的影响</h3><ul><li>STW（Stop-the-World） ：尽管 Go 的 GC 设计成尽可能减少对应用程序的暂停，但在某些情况下（如堆扫描、最终清理阶段），仍然会出现短暂的 STW 停顿。Go 的 GC 不断优化，以减少这些停顿对应用性能的影响。</li><li>吞吐量与延迟的平衡 ：GC 在回收内存时可能会降低程序的吞吐量，而减少 GC 的频率则可能增加内存使用。通过调整 <code>GOGC</code> 等参数，开发者可以在内存使用和程序性能之间找到平衡点。</li></ul><p>Go 的 GC 通过监控堆内存、分配行为、指针扫描和协作式抢占等方式，智能地管理内存，并尽量减少对应用程序的干扰。了解这些机制可以帮助开发者优化 Go 应用程序的性能和内存使用。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;Go 语言的垃圾回收（Garbage Collection, GC）机制是自动内存管理的一部分，旨在自动回收不再使用的内存，以防止内存泄漏并提高内存使用效率。Go 的 GC 机制通过多种方式“监听”你的应用，从而决定何时启动垃圾回收、回收哪些对象的内存，以及如何尽可能减少对</summary>
-      
-    
-    
-    
-    <category term="GO八股文" scheme="http://wuchuuuuu.github.io/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/"/>
-    
-    
-    <category term="gc" scheme="http://wuchuuuuu.github.io/tags/gc/"/>
-    
-    <category term="go" scheme="http://wuchuuuuu.github.io/tags/go/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Context的使用场景</title>
     <link href="http://wuchuuuuu.github.io/2025/08/21/Context%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/"/>
     <id>http://wuchuuuuu.github.io/2025/08/21/Context%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF/</id>
@@ -194,6 +168,32 @@
     <category term="context" scheme="http://wuchuuuuu.github.io/tags/context/"/>
     
     <category term="ctx" scheme="http://wuchuuuuu.github.io/tags/ctx/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>GC 是怎样监听你的应用的</title>
+    <link href="http://wuchuuuuu.github.io/2025/08/21/GC%20%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9B%91%E5%90%AC%E4%BD%A0%E7%9A%84%E5%BA%94%E7%94%A8%E7%9A%84/"/>
+    <id>http://wuchuuuuu.github.io/2025/08/21/GC%20%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9B%91%E5%90%AC%E4%BD%A0%E7%9A%84%E5%BA%94%E7%94%A8%E7%9A%84/</id>
+    <published>2025-08-21T12:08:41.000Z</published>
+    <updated>2025-08-21T12:30:50.397Z</updated>
+    
+    <content type="html"><![CDATA[<p>Go 语言的垃圾回收（Garbage Collection, GC）机制是自动内存管理的一部分，旨在自动回收不再使用的内存，以防止内存泄漏并提高内存使用效率。Go 的 GC 机制通过多种方式“监听”你的应用，从而决定何时启动垃圾回收、回收哪些对象的内存，以及如何尽可能减少对应用性能的影响。以下是 Go GC 如何监听和管理应用的详细解释：</p><h3 id="1-GC-的基本原理"><a href="#1-GC-的基本原理" class="headerlink" title="1.  GC 的基本原理"></a>1.  GC 的基本原理</h3><ul><li>Go 的垃圾回收器采用  三色标记-清除算法 。这个算法的主要步骤包括：<ol><li>标记阶段 ：GC 遍历从根对象（如全局变量、栈上的变量）可达的所有对象，并将这些对象标记为可达对象。</li><li>清除阶段 ：GC 清理未被标记的对象，将它们的内存释放。</li><li>并发标记 ：在标记过程中，应用程序仍然在运行，GC 和应用程序是并发执行的。</li></ol></li></ul><h3 id="2-GC-监听应用的方式"><a href="#2-GC-监听应用的方式" class="headerlink" title="2.  GC 监听应用的方式"></a>2.  GC 监听应用的方式</h3><h4 id="2-1-堆的增长"><a href="#2-1-堆的增长" class="headerlink" title="2.1  堆的增长"></a>2.1  堆的增长</h4><ul><li>Go 的 GC 主要关注堆内存的使用。当你的应用程序分配内存时，这些内存通常会分配在堆上。GC 通过跟踪堆的增长来“监听”你的应用。</li><li>当堆内存达到某个阈值时（由 <code>GOGC</code> 环境变量控制），GC 会自动触发一次垃圾回收周期。</li></ul><h4 id="2-2-内存分配"><a href="#2-2-内存分配" class="headerlink" title="2.2  内存分配"></a>2.2  内存分配</h4><ul><li>每当你的应用分配新对象时，GC 都会对内存分配进行监控。</li><li>Go 运行时为每个 Goroutine 分配一个小型对象池（<code>mcache</code>），这些对象池中分配的内存不会立即触发 GC。但当对象池耗尽或堆达到某个阈值时，GC 就会介入并检查是否需要进行垃圾回收。</li></ul><h4 id="2-3-堆对象的指针扫描"><a href="#2-3-堆对象的指针扫描" class="headerlink" title="2.3  堆对象的指针扫描"></a>2.3  堆对象的指针扫描</h4><ul><li>在标记阶段，GC 会扫描堆中的所有指针来识别可达的对象。</li><li>这个过程也可以看作是 GC 对应用程序状态的“监听”，因为它通过扫描指针来了解哪些对象仍在被引用，哪些对象已经不再使用。</li></ul><h4 id="2-4-协作式抢占"><a href="#2-4-协作式抢占" class="headerlink" title="2.4  协作式抢占"></a>2.4  协作式抢占</h4><ul><li>Go 的 GC 通过协作式抢占机制“监听”应用的执行。协作式抢占指的是 Goroutine 在执行期间，定期检查是否需要让出 CPU 以便让 GC 执行。</li><li>当 GC 需要进行标记或清理操作时，它会通知正在运行的 Goroutine，Goroutine 会在安全点（如函数调用、内存分配等）暂停执行，等待 GC 完成工作后再继续。</li></ul><h3 id="3-GC-调优"><a href="#3-GC-调优" class="headerlink" title="3.  GC 调优"></a>3.  GC 调优</h3><ul><li>GOGC 环境变量 ：<code>GOGC</code> 是一个控制 GC 频率的环境变量。它的默认值是 100，表示当堆内存增长到上一次 GC 后大小的 100% 时，触发下一次 GC。增大 <code>GOGC</code> 的值会减少 GC 的频率，适合内存较大且不频繁分配的场景；减小 <code>GOGC</code> 的值则会增加 GC 的频率，适合对内存占用敏感的应用。</li><li>内存限制 ：Go 1.19 及以后版本引入了 <code>GOMEMLIMIT</code> 选项，允许开发者设置一个硬内存上限。当应用内存接近这个上限时，GC 会更加积极地回收内存。</li></ul><h3 id="4-如何观察和调试-GC-行为"><a href="#4-如何观察和调试-GC-行为" class="headerlink" title="4.  如何观察和调试 GC 行为"></a>4.  如何观察和调试 GC 行为</h3><ul><li>运行时监控 ：Go 提供了多种工具来监控 GC 的行为，比如通过 <code>runtime.ReadMemStats</code> 函数获取内存分配和 GC 统计信息，或者使用 <code>pprof</code> 工具来分析内存分配和 GC 活动。</li><li>GC 日志 ：可以使用 <code>GODEBUG=gctrace=1</code> 环境变量来开启 GC 日志输出，帮助开发者分析 GC 的频率、暂停时间等详细信息。</li></ul><h3 id="5-GC-对应用的影响"><a href="#5-GC-对应用的影响" class="headerlink" title="5.  GC 对应用的影响"></a>5.  GC 对应用的影响</h3><ul><li>STW（Stop-the-World） ：尽管 Go 的 GC 设计成尽可能减少对应用程序的暂停，但在某些情况下（如堆扫描、最终清理阶段），仍然会出现短暂的 STW 停顿。Go 的 GC 不断优化，以减少这些停顿对应用性能的影响。</li><li>吞吐量与延迟的平衡 ：GC 在回收内存时可能会降低程序的吞吐量，而减少 GC 的频率则可能增加内存使用。通过调整 <code>GOGC</code> 等参数，开发者可以在内存使用和程序性能之间找到平衡点。</li></ul><p>Go 的 GC 通过监控堆内存、分配行为、指针扫描和协作式抢占等方式，智能地管理内存，并尽量减少对应用程序的干扰。了解这些机制可以帮助开发者优化 Go 应用程序的性能和内存使用。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;Go 语言的垃圾回收（Garbage Collection, GC）机制是自动内存管理的一部分，旨在自动回收不再使用的内存，以防止内存泄漏并提高内存使用效率。Go 的 GC 机制通过多种方式“监听”你的应用，从而决定何时启动垃圾回收、回收哪些对象的内存，以及如何尽可能减少对</summary>
+      
+    
+    
+    
+    <category term="GO八股文" scheme="http://wuchuuuuu.github.io/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/"/>
+    
+    
+    <category term="gc" scheme="http://wuchuuuuu.github.io/tags/gc/"/>
+    
+    <category term="go" scheme="http://wuchuuuuu.github.io/tags/go/"/>
     
   </entry>
   
@@ -438,33 +438,6 @@
   </entry>
   
   <entry>
-    <title>go runtime 简析</title>
-    <link href="http://wuchuuuuu.github.io/2025/08/21/go%20runtime%20%E7%AE%80%E6%9E%90/"/>
-    <id>http://wuchuuuuu.github.io/2025/08/21/go%20runtime%20%E7%AE%80%E6%9E%90/</id>
-    <published>2025-08-21T12:08:41.000Z</published>
-    <updated>2025-08-21T12:30:50.408Z</updated>
-    
-    <content type="html"><![CDATA[<p>Go 的运行时系统（runtime）是 Go 语言的核心组成部分之一，负责管理 Goroutine 的调度、垃圾回收、内存分配、系统调用等底层操作。它在 Go 程序的执行过程中扮演着重要角色。以下是对 Go 运行时系统的简要分析：</p><h3 id="1-Goroutine-调度"><a href="#1-Goroutine-调度" class="headerlink" title="1. Goroutine 调度"></a>1. Goroutine 调度</h3><h4 id="Goroutine-管理"><a href="#Goroutine-管理" class="headerlink" title="Goroutine 管理"></a>Goroutine 管理</h4><ul><li>Goroutine  是 Go 的轻量级线程，由 Go 运行时系统管理。</li><li>运行时系统负责 Goroutine 的创建、调度、挂起和恢复。</li></ul><h4 id="调度模型"><a href="#调度模型" class="headerlink" title="调度模型"></a>调度模型</h4><ul><li><p>G-P-M 模型 ：</p></li><li><p>G (Goroutine) ：表示正在执行的 Goroutine。</p></li><li><p>P (Processor) ：表示调度器的逻辑处理单元，负责管理 Goroutine 的调度。</p></li><li><p>M (Machine) ：表示操作系统线程，运行 Goroutine。</p></li><li><p>调度器 ：负责将 Goroutine 分配到可用的线程（M）上，并管理它们的状态（就绪、挂起、运行等）。</p></li><li><p>Goroutine 调度的关键函数 ：</p></li><li><p><code>gopark</code> ：将 Goroutine 挂起，进入等待状态。</p></li><li><p><code>goready</code> ：将挂起的 Goroutine 恢复为可运行状态。</p></li></ul><h3 id="2-内存管理"><a href="#2-内存管理" class="headerlink" title="2. 内存管理"></a>2. 内存管理</h3><h4 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h4><ul><li><code>malloc</code> 和 <code>free</code> ：Go 运行时系统提供了自己的内存分配器，用于处理内存分配和释放操作，优化了内存管理的效率。</li><li>内存分配器 ：基于分配器（如  <code>heap</code>  和  <code>stack</code> ）来分配和回收内存，处理不同大小的内存块。</li></ul><h4 id="垃圾回收（GC）"><a href="#垃圾回收（GC）" class="headerlink" title="垃圾回收（GC）"></a>垃圾回收（GC）</h4><ul><li>GC 算法 ：Go 使用并发垃圾回收算法来管理内存。</li><li>标记-清除算法 ：通过标记活动对象和清除未被标记的对象来回收内存。</li><li>STW（Stop-the-World） ：在 GC 过程中，可能会发生 STW 事件，这时候所有 Goroutine 会被挂起，直到垃圾回收完成。</li></ul><h3 id="3-系统调用"><a href="#3-系统调用" class="headerlink" title="3. 系统调用"></a>3. 系统调用</h3><h4 id="系统调用的封装"><a href="#系统调用的封装" class="headerlink" title="系统调用的封装"></a>系统调用的封装</h4><ul><li>系统调用 ：Go 运行时提供了对操作系统系统调用的封装，例如文件 I&#x2F;O、网络操作等。</li><li>跨平台性 ：运行时系统通过不同的实现方式（如  <code>syscall</code>  包）在不同平台上提供一致的接口。</li></ul><h3 id="4-运行时调度"><a href="#4-运行时调度" class="headerlink" title="4. 运行时调度"></a>4. 运行时调度</h3><h4 id="调度机制"><a href="#调度机制" class="headerlink" title="调度机制"></a>调度机制</h4><ul><li>抢占式调度 ：Go 运行时系统使用抢占式调度机制，以确保 Goroutine 在执行时不会阻塞其他 Goroutine 的执行。</li><li>工作窃取（Work Stealing） ：调度器使用工作窃取算法来平衡负载，将 Goroutine 从繁忙的线程迁移到空闲线程上。</li></ul><h3 id="5-运行时内部结构"><a href="#5-运行时内部结构" class="headerlink" title="5. 运行时内部结构"></a>5. 运行时内部结构</h3><h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><ul><li>Goroutine 栈 ：每个 Goroutine 都有一个栈，栈的大小可以动态调整。</li><li>调度队列 ：用于管理待执行和挂起的 Goroutine。</li></ul><h4 id="锁和同步"><a href="#锁和同步" class="headerlink" title="锁和同步"></a>锁和同步</h4><ul><li>锁机制 ：运行时系统内部使用各种锁（如  <code>mutex</code>  和  <code>spinlock</code> ）来管理 Goroutine 的状态和同步。</li><li>信号量 ：用于实现同步和阻塞机制，例如在 IO 操作中等待事件完成。</li></ul><h3 id="6-性能优化"><a href="#6-性能优化" class="headerlink" title="6. 性能优化"></a>6. 性能优化</h3><h4 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h4><ul><li>自旋锁 ：用于减少锁的竞争和上下文切换的开销，提高 Goroutine 的调度效率。</li></ul><h4 id="内存分配优化"><a href="#内存分配优化" class="headerlink" title="内存分配优化"></a>内存分配优化</h4><ul><li>内存池 ：运行时系统使用内存池来优化内存分配，减少分配和释放内存的开销。</li></ul><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Go 的运行时系统是 Go 语言的核心部分，负责 Goroutine 的调度、内存管理、系统调用的封装等任务。通过高效的调度机制、并发垃圾回收、内存优化等技术，Go 的运行时系统能够提供高效的性能和良好的用户体验。了解运行时的内部机制有助于更好地优化 Go 应用程序的性能，理解 Goroutine 的行为和内存管理策略。</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;Go 的运行时系统（runtime）是 Go 语言的核心组成部分之一，负责管理 Goroutine 的调度、垃圾回收、内存分配、系统调用等底层操作。它在 Go 程序的执行过程中扮演着重要角色。以下是对 Go 运行时系统的简要分析：&lt;/p&gt;
-&lt;h3 id=&quot;1-Gorouti</summary>
-      
-    
-    
-    
-    <category term="GO八股文" scheme="http://wuchuuuuu.github.io/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/"/>
-    
-    
-    <category term="goroutine" scheme="http://wuchuuuuu.github.io/tags/goroutine/"/>
-    
-    <category term="go" scheme="http://wuchuuuuu.github.io/tags/go/"/>
-    
-  </entry>
-  
-  <entry>
     <title>gofunc过程</title>
     <link href="http://wuchuuuuu.github.io/2025/08/21/gofunc%E8%BF%87%E7%A8%8B/"/>
     <id>http://wuchuuuuu.github.io/2025/08/21/gofunc%E8%BF%87%E7%A8%8B/</id>
@@ -491,6 +464,33 @@
     <category term="goroutine" scheme="http://wuchuuuuu.github.io/tags/goroutine/"/>
     
     <category term="来执行" scheme="http://wuchuuuuu.github.io/tags/%E6%9D%A5%E6%89%A7%E8%A1%8C/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>go runtime 简析</title>
+    <link href="http://wuchuuuuu.github.io/2025/08/21/go%20runtime%20%E7%AE%80%E6%9E%90/"/>
+    <id>http://wuchuuuuu.github.io/2025/08/21/go%20runtime%20%E7%AE%80%E6%9E%90/</id>
+    <published>2025-08-21T12:08:41.000Z</published>
+    <updated>2025-08-21T12:30:50.408Z</updated>
+    
+    <content type="html"><![CDATA[<p>Go 的运行时系统（runtime）是 Go 语言的核心组成部分之一，负责管理 Goroutine 的调度、垃圾回收、内存分配、系统调用等底层操作。它在 Go 程序的执行过程中扮演着重要角色。以下是对 Go 运行时系统的简要分析：</p><h3 id="1-Goroutine-调度"><a href="#1-Goroutine-调度" class="headerlink" title="1. Goroutine 调度"></a>1. Goroutine 调度</h3><h4 id="Goroutine-管理"><a href="#Goroutine-管理" class="headerlink" title="Goroutine 管理"></a>Goroutine 管理</h4><ul><li>Goroutine  是 Go 的轻量级线程，由 Go 运行时系统管理。</li><li>运行时系统负责 Goroutine 的创建、调度、挂起和恢复。</li></ul><h4 id="调度模型"><a href="#调度模型" class="headerlink" title="调度模型"></a>调度模型</h4><ul><li><p>G-P-M 模型 ：</p></li><li><p>G (Goroutine) ：表示正在执行的 Goroutine。</p></li><li><p>P (Processor) ：表示调度器的逻辑处理单元，负责管理 Goroutine 的调度。</p></li><li><p>M (Machine) ：表示操作系统线程，运行 Goroutine。</p></li><li><p>调度器 ：负责将 Goroutine 分配到可用的线程（M）上，并管理它们的状态（就绪、挂起、运行等）。</p></li><li><p>Goroutine 调度的关键函数 ：</p></li><li><p><code>gopark</code> ：将 Goroutine 挂起，进入等待状态。</p></li><li><p><code>goready</code> ：将挂起的 Goroutine 恢复为可运行状态。</p></li></ul><h3 id="2-内存管理"><a href="#2-内存管理" class="headerlink" title="2. 内存管理"></a>2. 内存管理</h3><h4 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h4><ul><li><code>malloc</code> 和 <code>free</code> ：Go 运行时系统提供了自己的内存分配器，用于处理内存分配和释放操作，优化了内存管理的效率。</li><li>内存分配器 ：基于分配器（如  <code>heap</code>  和  <code>stack</code> ）来分配和回收内存，处理不同大小的内存块。</li></ul><h4 id="垃圾回收（GC）"><a href="#垃圾回收（GC）" class="headerlink" title="垃圾回收（GC）"></a>垃圾回收（GC）</h4><ul><li>GC 算法 ：Go 使用并发垃圾回收算法来管理内存。</li><li>标记-清除算法 ：通过标记活动对象和清除未被标记的对象来回收内存。</li><li>STW（Stop-the-World） ：在 GC 过程中，可能会发生 STW 事件，这时候所有 Goroutine 会被挂起，直到垃圾回收完成。</li></ul><h3 id="3-系统调用"><a href="#3-系统调用" class="headerlink" title="3. 系统调用"></a>3. 系统调用</h3><h4 id="系统调用的封装"><a href="#系统调用的封装" class="headerlink" title="系统调用的封装"></a>系统调用的封装</h4><ul><li>系统调用 ：Go 运行时提供了对操作系统系统调用的封装，例如文件 I&#x2F;O、网络操作等。</li><li>跨平台性 ：运行时系统通过不同的实现方式（如  <code>syscall</code>  包）在不同平台上提供一致的接口。</li></ul><h3 id="4-运行时调度"><a href="#4-运行时调度" class="headerlink" title="4. 运行时调度"></a>4. 运行时调度</h3><h4 id="调度机制"><a href="#调度机制" class="headerlink" title="调度机制"></a>调度机制</h4><ul><li>抢占式调度 ：Go 运行时系统使用抢占式调度机制，以确保 Goroutine 在执行时不会阻塞其他 Goroutine 的执行。</li><li>工作窃取（Work Stealing） ：调度器使用工作窃取算法来平衡负载，将 Goroutine 从繁忙的线程迁移到空闲线程上。</li></ul><h3 id="5-运行时内部结构"><a href="#5-运行时内部结构" class="headerlink" title="5. 运行时内部结构"></a>5. 运行时内部结构</h3><h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><ul><li>Goroutine 栈 ：每个 Goroutine 都有一个栈，栈的大小可以动态调整。</li><li>调度队列 ：用于管理待执行和挂起的 Goroutine。</li></ul><h4 id="锁和同步"><a href="#锁和同步" class="headerlink" title="锁和同步"></a>锁和同步</h4><ul><li>锁机制 ：运行时系统内部使用各种锁（如  <code>mutex</code>  和  <code>spinlock</code> ）来管理 Goroutine 的状态和同步。</li><li>信号量 ：用于实现同步和阻塞机制，例如在 IO 操作中等待事件完成。</li></ul><h3 id="6-性能优化"><a href="#6-性能优化" class="headerlink" title="6. 性能优化"></a>6. 性能优化</h3><h4 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h4><ul><li>自旋锁 ：用于减少锁的竞争和上下文切换的开销，提高 Goroutine 的调度效率。</li></ul><h4 id="内存分配优化"><a href="#内存分配优化" class="headerlink" title="内存分配优化"></a>内存分配优化</h4><ul><li>内存池 ：运行时系统使用内存池来优化内存分配，减少分配和释放内存的开销。</li></ul><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Go 的运行时系统是 Go 语言的核心部分，负责 Goroutine 的调度、内存管理、系统调用的封装等任务。通过高效的调度机制、并发垃圾回收、内存优化等技术，Go 的运行时系统能够提供高效的性能和良好的用户体验。了解运行时的内部机制有助于更好地优化 Go 应用程序的性能，理解 Goroutine 的行为和内存管理策略。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;Go 的运行时系统（runtime）是 Go 语言的核心组成部分之一，负责管理 Goroutine 的调度、垃圾回收、内存分配、系统调用等底层操作。它在 Go 程序的执行过程中扮演着重要角色。以下是对 Go 运行时系统的简要分析：&lt;/p&gt;
+&lt;h3 id=&quot;1-Gorouti</summary>
+      
+    
+    
+    
+    <category term="GO八股文" scheme="http://wuchuuuuu.github.io/categories/GO%E5%85%AB%E8%82%A1%E6%96%87/"/>
+    
+    
+    <category term="goroutine" scheme="http://wuchuuuuu.github.io/tags/goroutine/"/>
+    
+    <category term="go" scheme="http://wuchuuuuu.github.io/tags/go/"/>
     
   </entry>
   
