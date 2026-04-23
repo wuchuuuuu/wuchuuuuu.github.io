@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            从零理解B-Tree索引：PostgreSQL为何偏爱它 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        从零理解B-Tree索引：PostgreSQL为何偏爱它
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">化神洞玄</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2026-04-23 21:15:00</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Apr 23 2026 21:09:00 GMT+0800">2026-04-23 21:09:00</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E7%B4%A2%E5%BC%95/">索引</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/B-Tree/">B-Tree</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>几乎每一个数据库开发者都听过 B-Tree，但真正能说清楚<strong>它为什么长成那样</strong>、<strong>为什么数据库钟情于它</strong>的人并不多。这篇文章，我们从<strong>第一性原理</strong>出发，一步步把 PostgreSQL 的 B-Tree 索引拆解清楚。</p>
+</blockquote>
+<hr>
+<h2 id="🌱-从一个问题开始"><a href="#🌱-从一个问题开始" class="headerlink" title="🌱 从一个问题开始"></a>🌱 从一个问题开始</h2><p>假设有一张 1000 万行的用户表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> users (</span><br><span class="line">    id     <span class="type">bigint</span> <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">    name   text,</span><br><span class="line">    email  text</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>执行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">8888888</span>;</span><br></pre></td></tr></table></figure>
+
+<p>没有索引时，数据库要<strong>全表扫描</strong>——读完 1000 万行才找到目标。<br>有了 <code>id</code> 上的 B-Tree 主键索引，只需要 <strong>3~4 次 I&#x2F;O</strong> 就能定位到它。</p>
+<p>这中间的魔法，就是<strong>树</strong>。</p>
+<hr>
+<h2 id="🌳-为什么选”B”树而不是”二叉”树？"><a href="#🌳-为什么选”B”树而不是”二叉”树？" class="headerlink" title="🌳 为什么选”B”树而不是”二叉”树？"></a>🌳 为什么选”B”树而不是”二叉”树？</h2><p>初学者常问：为什么不用平衡二叉搜索树（BST）或红黑树呢？</p>
+<p>因为<strong>磁盘不是内存</strong>。</p>
+<p>内存按<strong>字节</strong>寻址，磁盘按<strong>页</strong>（通常 8KB）读取。<br>如果用二叉树，1000 万个键需要 <code>log₂(10⁷) ≈ 23</code> 层——意味着 23 次磁盘 I&#x2F;O。</p>
+<p>而 B-Tree 的每个节点都是一<strong>页</strong>（PostgreSQL 是 8KB），一页能容纳数百个键。<br>假设一页能放 <strong>256 个键</strong>，那么 1000 万个键只需要：</p>
+<p>$$<br>\log_{256}(10^7) \approx 3<br>$$</p>
+<p>仅 <strong>3 层树</strong>就能索引 1000 万行数据，磁盘 I&#x2F;O 少了近 10 倍。</p>
+<blockquote>
+<p><strong>B-Tree 的哲学</strong>：<strong>每次磁盘 I&#x2F;O，尽可能多带回信息。</strong></p>
+</blockquote>
+<hr>
+<h2 id="🔍-PostgreSQL-B-Tree-的物理结构"><a href="#🔍-PostgreSQL-B-Tree-的物理结构" class="headerlink" title="🔍 PostgreSQL B-Tree 的物理结构"></a>🔍 PostgreSQL B-Tree 的物理结构</h2><p>PostgreSQL 使用的实际上是 <strong>B+Tree 的变种</strong>，叶子节点之间通过链表连接，方便范围扫描：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">                      ┌──────────────────────┐</span><br><span class="line">                      │    [50 | 100 | 200]  │  ← Root Page (Meta)</span><br><span class="line">                      └───┬────┬────┬────────┘</span><br><span class="line">                          │    │    │</span><br><span class="line">        ┌─────────────────┘    │    └──────────────────┐</span><br><span class="line">        ▼                       ▼                       ▼</span><br><span class="line">   ┌────────┐              ┌────────┐              ┌────────┐</span><br><span class="line">   │ 10, 30 │              │ 60, 80 │              │120,150 │  ← Internal</span><br><span class="line">   └─┬────┬─┘              └─┬────┬─┘              └─┬────┬─┘</span><br><span class="line">     │    │                   │    │                   │    │</span><br><span class="line">     ▼    ▼                   ▼    ▼                   ▼    ▼</span><br><span class="line">┌──────┬──────┬─...────────────────────────...───┬──────┬──────┐</span><br><span class="line">│ 1,5  │20,25 │30,45 │50,55 │60,70 │80,95 │ ... │150,180│200,..│← Leaf</span><br><span class="line">└──┬───┴──┬───┴──────┴──────┴──────┴──────┴──────┴──────┴──┬──┘</span><br><span class="line">   └──→───┴──→───→───→───→───→───→───→───→───→───→───→─────┘</span><br><span class="line">                   (叶子节点之间的双向链表)</span><br></pre></td></tr></table></figure>
+
+<p>关键特性：</p>
+<ul>
+<li><strong>Root → Internal → Leaf</strong> 三种节点类型</li>
+<li><strong>所有真实数据（heap TID）只存在于叶子节点</strong></li>
+<li>叶子节点之间通过 <code>btpo_prev</code> &#x2F; <code>btpo_next</code> 相连，范围查询只需要顺着链表读</li>
+<li>每一页都是 <strong>8KB</strong>，按需分裂与合并</li>
+</ul>
+<hr>
+<h2 id="🧩-一次索引查询的完整旅程"><a href="#🧩-一次索引查询的完整旅程" class="headerlink" title="🧩 一次索引查询的完整旅程"></a>🧩 一次索引查询的完整旅程</h2><p>让我们看看 <code>SELECT * FROM users WHERE id = 8888888</code> 到底经历了什么：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Step 1: 读取 Meta Page</span><br><span class="line">      └─ 找到 Root Page 的 block number</span><br><span class="line">Step 2: 读取 Root Page</span><br><span class="line">      └─ 二分查找 8888888 应该走哪个子树</span><br><span class="line">Step 3: 读取 Internal Page</span><br><span class="line">      └─ 再次二分查找，定位到目标叶子节点</span><br><span class="line">Step 4: 读取 Leaf Page</span><br><span class="line">      └─ 找到 (8888888, (ctid)) 条目</span><br><span class="line">Step 5: 根据 ctid 读取 Heap Page</span><br><span class="line">      └─ 返回实际的行数据</span><br></pre></td></tr></table></figure>
+
+<p><strong>4~5 次 I&#x2F;O</strong> 就完成了千万级数据的定位，这就是 B-Tree 的魔力。</p>
+<hr>
+<h2 id="🌿-叶子节点里到底存了什么？"><a href="#🌿-叶子节点里到底存了什么？" class="headerlink" title="🌿 叶子节点里到底存了什么？"></a>🌿 叶子节点里到底存了什么？</h2><p>一个叶子节点的每个条目大致长这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">IndexTuple</span> &#123;</span></span><br><span class="line">    ItemPointerData t_tid;   <span class="comment">/* 指向 heap tuple 的 (blockno, offset) */</span></span><br><span class="line">    uint16          t_info;  <span class="comment">/* 长度 + 一些标志位 */</span></span><br><span class="line">    <span class="comment">/* 接着是 key 的实际数据 ... */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键点</strong>：B-Tree 索引里并<strong>不存放行数据</strong>，只存 <code>(key, ctid)</code> 对。<br>要拿到真正的行内容，必须再去<strong>堆表</strong>中根据 <code>ctid</code> 取出来——这就是所谓的 <strong>Index Scan</strong>。</p>
+<p>如果查询只需要索引里的列（比如 <code>SELECT id FROM users WHERE id = 100</code>），PostgreSQL 可以直接用 <strong>Index Only Scan</strong>，连堆表都不去读：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> id <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line"><span class="comment">-- Index Only Scan using users_pkey on users</span></span><br><span class="line"><span class="comment">--   Heap Fetches: 0</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>Heap Fetches: 0</code> 是性能狂人的终极目标。</p>
+</blockquote>
+<hr>
+<h2 id="⚡-B-Tree-的三种常见扫描方式"><a href="#⚡-B-Tree-的三种常见扫描方式" class="headerlink" title="⚡ B-Tree 的三种常见扫描方式"></a>⚡ B-Tree 的三种常见扫描方式</h2><p>PostgreSQL 的查询计划中，B-Tree 能生成三种扫描节点：</p>
+<h3 id="1-Index-Scan"><a href="#1-Index-Scan" class="headerlink" title="1. Index Scan"></a>1. Index Scan</h3><p>先走索引，再回表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> name <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">100</span>;</span><br><span class="line"><span class="comment">-- Index Scan using users_pkey on users</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Index-Only-Scan"><a href="#2-Index-Only-Scan" class="headerlink" title="2. Index Only Scan"></a>2. Index Only Scan</h3><p>查询字段全部被索引覆盖，不回表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> id <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="keyword">BETWEEN</span> <span class="number">100</span> <span class="keyword">AND</span> <span class="number">200</span>;</span><br><span class="line"><span class="comment">-- Index Only Scan using users_pkey on users</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Bitmap-Index-Scan"><a href="#3-Bitmap-Index-Scan" class="headerlink" title="3. Bitmap Index Scan"></a>3. Bitmap Index Scan</h3><p>适合中等选择性（返回行数多但不至于全表）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">EXPLAIN <span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> id <span class="keyword">IN</span> (<span class="number">1</span>,<span class="number">5</span>,<span class="number">9</span>,...);</span><br><span class="line"><span class="comment">-- Bitmap Heap Scan on users</span></span><br><span class="line"><span class="comment">--   -&gt; Bitmap Index Scan on users_pkey</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Bitmap Scan 会把候选 tid 收集成位图，再<strong>按块顺序</strong>读取堆表，大大减少随机 I&#x2F;O。</p>
+</blockquote>
+<hr>
+<h2 id="🧪-B-Tree-不擅长什么？"><a href="#🧪-B-Tree-不擅长什么？" class="headerlink" title="🧪 B-Tree 不擅长什么？"></a>🧪 B-Tree 不擅长什么？</h2><p>虽然万能，但它不是银弹：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>适用索引</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>等值 &#x2F; 范围查询</td>
+<td>✅ B-Tree</td>
+<td>天生擅长</td>
+</tr>
+<tr>
+<td>前缀匹配 <code>LIKE &#39;ab%&#39;</code></td>
+<td>✅ B-Tree</td>
+<td>能走范围</td>
+</tr>
+<tr>
+<td>中间匹配 <code>LIKE &#39;%ab%&#39;</code></td>
+<td>❌ B-Tree</td>
+<td>需要 <code>pg_trgm</code> + GIN</td>
+</tr>
+<tr>
+<td>全文搜索</td>
+<td>❌ B-Tree</td>
+<td>用 GIN + <code>tsvector</code></td>
+</tr>
+<tr>
+<td>数组包含关系</td>
+<td>❌ B-Tree</td>
+<td>用 GIN</td>
+</tr>
+<tr>
+<td>地理空间查询</td>
+<td>❌ B-Tree</td>
+<td>用 GiST &#x2F; SP-GiST</td>
+</tr>
+<tr>
+<td>多维相似性搜索</td>
+<td>❌ B-Tree</td>
+<td>用 GiST &#x2F; pgvector(HNSW)</td>
+</tr>
+</tbody></table>
+<p><strong>一句话总结</strong>：<strong>B-Tree 适合有序的数据和范围查询；其他复杂查询要找它的朋友们。</strong></p>
+<hr>
+<h2 id="🧹-B-Tree-的阴暗面：膨胀"><a href="#🧹-B-Tree-的阴暗面：膨胀" class="headerlink" title="🧹 B-Tree 的阴暗面：膨胀"></a>🧹 B-Tree 的阴暗面：膨胀</h2><p>B-Tree 索引有一个臭名昭著的问题——<strong>膨胀（bloat）</strong>。</p>
+<p>PostgreSQL 的 MVCC 机制决定了<strong>更新 &#x3D; 插入新版本 + 旧版本待回收</strong>，索引条目也随之增加。<br>死元组对应的索引项被 VACUUM 清理后，<strong>空间并不会还给操作系统</strong>，而是留在索引文件里。</p>
+<p>长此以往，一个健康的索引可能膨胀到<strong>两倍甚至更多</strong>。</p>
+<p>排查膨胀：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 使用 pgstattuple 扩展</span></span><br><span class="line"><span class="keyword">CREATE</span> EXTENSION pgstattuple;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> pgstatindex(<span class="string">&#x27;users_pkey&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>治理手段：</p>
+<ul>
+<li><code>REINDEX INDEX CONCURRENTLY users_pkey;</code>（PG 12+，在线重建）</li>
+<li>设计上避免高频更新索引列</li>
+<li>监控 <code>pg_stat_user_indexes</code> 里的 <code>idx_scan</code>，删掉从不使用的索引</li>
+</ul>
+<hr>
+<h2 id="🛠️-实战：如何创造一个好的索引"><a href="#🛠️-实战：如何创造一个好的索引" class="headerlink" title="🛠️ 实战：如何创造一个好的索引"></a>🛠️ 实战：如何创造一个好的索引</h2><h3 id="原则一：选择性优先"><a href="#原则一：选择性优先" class="headerlink" title="原则一：选择性优先"></a>原则一：选择性优先</h3><p>选择性 &#x3D; 不同值数量 &#x2F; 总行数。选择性越高，索引越有效。<br><code>gender</code>（只有 M&#x2F;F）上的索引几乎没用；<code>email</code> 上的索引效果极佳。</p>
+<h3 id="原则二：遵循最左前缀"><a href="#原则二：遵循最左前缀" class="headerlink" title="原则二：遵循最左前缀"></a>原则二：遵循最左前缀</h3><p>多列索引 <code>(a, b, c)</code> 只对以 <code>a</code> 开头的查询有效：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- ✅ 能用</span></span><br><span class="line"><span class="keyword">WHERE</span> a <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">WHERE</span> a <span class="operator">=</span> <span class="number">1</span> <span class="keyword">AND</span> b <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="keyword">WHERE</span> a <span class="operator">=</span> <span class="number">1</span> <span class="keyword">AND</span> b <span class="operator">=</span> <span class="number">2</span> <span class="keyword">AND</span> c <span class="operator">=</span> <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ❌ 不能用</span></span><br><span class="line"><span class="keyword">WHERE</span> b <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="keyword">WHERE</span> c <span class="operator">=</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="原则三：为排序服务"><a href="#原则三：为排序服务" class="headerlink" title="原则三：为排序服务"></a>原则三：为排序服务</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX idx_created <span class="keyword">ON</span> orders (created_at <span class="keyword">DESC</span>);</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">ORDER</span> <span class="keyword">BY</span> created_at <span class="keyword">DESC</span> LIMIT <span class="number">10</span>;</span><br><span class="line"><span class="comment">-- 直接走索引倒序扫描，无需排序</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="原则四：部分索引省空间"><a href="#原则四：部分索引省空间" class="headerlink" title="原则四：部分索引省空间"></a>原则四：部分索引省空间</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> INDEX idx_active_users <span class="keyword">ON</span> users (last_login)</span><br><span class="line">    <span class="keyword">WHERE</span> status <span class="operator">=</span> <span class="string">&#x27;active&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>只索引活跃用户，<strong>占用更小、维护更快</strong>。</p>
+<hr>
+<h2 id="✨-结语"><a href="#✨-结语" class="headerlink" title="✨ 结语"></a>✨ 结语</h2><p>B-Tree 之于数据库，就像字母表之于语言——<strong>平凡、古老，却是一切复杂的起点</strong>。</p>
+<p>它能在 1000 万行里 3 次 I&#x2F;O 精准命中；<br>它能让排序免费、范围无痛；<br>它能用最朴素的结构撑起最现代的查询。</p>
+<p>但它也并非万能——膨胀、选择性、覆盖性，每一个都值得我们反复琢磨。</p>
+<blockquote>
+<p><strong>懂索引的人，看到的是数据的秩序；懂 B-Tree 的人，看到的是 I&#x2F;O 的艺术。</strong></p>
+</blockquote>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                从零理解B-Tree索引：PostgreSQL为何偏爱它
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2026/04/23/从零理解B-Tree索引-PostgreSQL为何偏爱它/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2026-04-23 21:15</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E7%B4%A2%E5%BC%95/">索引</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/B-Tree/">B-Tree</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2026/04/23/VACUUM%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F-PostgreSQL%E6%9C%80%E6%B8%A9%E6%9F%94%E7%9A%84%E6%B8%85%E9%81%93%E5%A4%AB/"
+                                   title="VACUUM的前世今生：PostgreSQL最温柔的清道夫"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">VACUUM的前世今生：PostgreSQL最温柔的清道夫</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2026/04/23/PostgreSQL%E7%9A%84WAL%E6%97%A5%E5%BF%97%E6%9C%BA%E5%88%B6%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/"
+                                   title="PostgreSQL的WAL日志机制深度解析"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">PostgreSQL的WAL日志机制深度解析</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%B1-%E4%BB%8E%E4%B8%80%E4%B8%AA%E9%97%AE%E9%A2%98%E5%BC%80%E5%A7%8B"><span class="nav-text">🌱 从一个问题开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%B3-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E2%80%9DB%E2%80%9D%E6%A0%91%E8%80%8C%E4%B8%8D%E6%98%AF%E2%80%9D%E4%BA%8C%E5%8F%89%E2%80%9D%E6%A0%91%EF%BC%9F"><span class="nav-text">🌳 为什么选”B”树而不是”二叉”树？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%8D-PostgreSQL-B-Tree-%E7%9A%84%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84"><span class="nav-text">🔍 PostgreSQL B-Tree 的物理结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A9-%E4%B8%80%E6%AC%A1%E7%B4%A2%E5%BC%95%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%AE%8C%E6%95%B4%E6%97%85%E7%A8%8B"><span class="nav-text">🧩 一次索引查询的完整旅程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%BF-%E5%8F%B6%E5%AD%90%E8%8A%82%E7%82%B9%E9%87%8C%E5%88%B0%E5%BA%95%E5%AD%98%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">🌿 叶子节点里到底存了什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%A1-B-Tree-%E7%9A%84%E4%B8%89%E7%A7%8D%E5%B8%B8%E8%A7%81%E6%89%AB%E6%8F%8F%E6%96%B9%E5%BC%8F"><span class="nav-text">⚡ B-Tree 的三种常见扫描方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Index-Scan"><span class="nav-text">1. Index Scan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Index-Only-Scan"><span class="nav-text">2. Index Only Scan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Bitmap-Index-Scan"><span class="nav-text">3. Bitmap Index Scan</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AA-B-Tree-%E4%B8%8D%E6%93%85%E9%95%BF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">🧪 B-Tree 不擅长什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B9-B-Tree-%E7%9A%84%E9%98%B4%E6%9A%97%E9%9D%A2%EF%BC%9A%E8%86%A8%E8%83%80"><span class="nav-text">🧹 B-Tree 的阴暗面：膨胀</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%A6%82%E4%BD%95%E5%88%9B%E9%80%A0%E4%B8%80%E4%B8%AA%E5%A5%BD%E7%9A%84%E7%B4%A2%E5%BC%95"><span class="nav-text">🛠️ 实战：如何创造一个好的索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E4%B8%80%EF%BC%9A%E9%80%89%E6%8B%A9%E6%80%A7%E4%BC%98%E5%85%88"><span class="nav-text">原则一：选择性优先</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E4%BA%8C%EF%BC%9A%E9%81%B5%E5%BE%AA%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="nav-text">原则二：遵循最左前缀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E4%B8%89%EF%BC%9A%E4%B8%BA%E6%8E%92%E5%BA%8F%E6%9C%8D%E5%8A%A1"><span class="nav-text">原则三：为排序服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E5%9B%9B%EF%BC%9A%E9%83%A8%E5%88%86%E7%B4%A2%E5%BC%95%E7%9C%81%E7%A9%BA%E9%97%B4"><span class="nav-text">原则四：部分索引省空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%B1-%E4%BB%8E%E4%B8%80%E4%B8%AA%E9%97%AE%E9%A2%98%E5%BC%80%E5%A7%8B"><span class="nav-text">🌱 从一个问题开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%B3-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E2%80%9DB%E2%80%9D%E6%A0%91%E8%80%8C%E4%B8%8D%E6%98%AF%E2%80%9D%E4%BA%8C%E5%8F%89%E2%80%9D%E6%A0%91%EF%BC%9F"><span class="nav-text">🌳 为什么选”B”树而不是”二叉”树？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%8D-PostgreSQL-B-Tree-%E7%9A%84%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84"><span class="nav-text">🔍 PostgreSQL B-Tree 的物理结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A9-%E4%B8%80%E6%AC%A1%E7%B4%A2%E5%BC%95%E6%9F%A5%E8%AF%A2%E7%9A%84%E5%AE%8C%E6%95%B4%E6%97%85%E7%A8%8B"><span class="nav-text">🧩 一次索引查询的完整旅程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%BF-%E5%8F%B6%E5%AD%90%E8%8A%82%E7%82%B9%E9%87%8C%E5%88%B0%E5%BA%95%E5%AD%98%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">🌿 叶子节点里到底存了什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%A1-B-Tree-%E7%9A%84%E4%B8%89%E7%A7%8D%E5%B8%B8%E8%A7%81%E6%89%AB%E6%8F%8F%E6%96%B9%E5%BC%8F"><span class="nav-text">⚡ B-Tree 的三种常见扫描方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Index-Scan"><span class="nav-text">1. Index Scan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Index-Only-Scan"><span class="nav-text">2. Index Only Scan</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Bitmap-Index-Scan"><span class="nav-text">3. Bitmap Index Scan</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AA-B-Tree-%E4%B8%8D%E6%93%85%E9%95%BF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">🧪 B-Tree 不擅长什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B9-B-Tree-%E7%9A%84%E9%98%B4%E6%9A%97%E9%9D%A2%EF%BC%9A%E8%86%A8%E8%83%80"><span class="nav-text">🧹 B-Tree 的阴暗面：膨胀</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E5%AE%9E%E6%88%98%EF%BC%9A%E5%A6%82%E4%BD%95%E5%88%9B%E9%80%A0%E4%B8%80%E4%B8%AA%E5%A5%BD%E7%9A%84%E7%B4%A2%E5%BC%95"><span class="nav-text">🛠️ 实战：如何创造一个好的索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E4%B8%80%EF%BC%9A%E9%80%89%E6%8B%A9%E6%80%A7%E4%BC%98%E5%85%88"><span class="nav-text">原则一：选择性优先</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E4%BA%8C%EF%BC%9A%E9%81%B5%E5%BE%AA%E6%9C%80%E5%B7%A6%E5%89%8D%E7%BC%80"><span class="nav-text">原则二：遵循最左前缀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E4%B8%89%EF%BC%9A%E4%B8%BA%E6%8E%92%E5%BA%8F%E6%9C%8D%E5%8A%A1"><span class="nav-text">原则三：为排序服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E5%88%99%E5%9B%9B%EF%BC%9A%E9%83%A8%E5%88%86%E7%B4%A2%E5%BC%95%E7%9C%81%E7%A9%BA%E9%97%B4"><span class="nav-text">原则四：部分索引省空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>

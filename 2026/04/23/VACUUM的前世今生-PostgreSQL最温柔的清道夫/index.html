@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            VACUUM的前世今生：PostgreSQL最温柔的清道夫 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        VACUUM的前世今生：PostgreSQL最温柔的清道夫
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">化神洞玄</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2026-04-23 21:20:00</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Apr 23 2026 21:09:45 GMT+0800">2026-04-23 21:09:45</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/VACUUM/">VACUUM</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/MVCC/">MVCC</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>MVCC 给了 PostgreSQL 读写不互斥的优雅，也留下了”死元组”这个后遗症。如何优雅地清理它们？答案是 <strong>VACUUM</strong>——这位温柔的清道夫，默默维持着整个数据库的秩序。</p>
+</blockquote>
+<hr>
+<h2 id="🍂-一切从一条-UPDATE-说起"><a href="#🍂-一切从一条-UPDATE-说起" class="headerlink" title="🍂 一切从一条 UPDATE 说起"></a>🍂 一切从一条 UPDATE 说起</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> users <span class="keyword">SET</span> name <span class="operator">=</span> <span class="string">&#x27;张三&#x27;</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p>在 PostgreSQL 里，这条看似简单的 SQL 其实做了三件事：</p>
+<ol>
+<li><strong>把原来那行标记为”删除”</strong>（设置 <code>xmax</code>）</li>
+<li><strong>插入一行新版本</strong>（设置 <code>xmin</code>）</li>
+<li><strong>让所有索引指向新版本</strong>（HOT update 例外）</li>
+</ol>
+<p>结果是：磁盘上<strong>多出了一行</strong>，原来那行并没有真正消失。</p>
+<p>这些”<strong>看得见但再也用不到</strong>“的元组，就是<strong>死元组（dead tuple）</strong>。</p>
+<blockquote>
+<p>如果没有任何回收机制，数据库空间会像暴雪后的街道一样被垃圾塞满。</p>
+</blockquote>
+<hr>
+<h2 id="🧹-VACUUM：负责收拾残局的人"><a href="#🧹-VACUUM：负责收拾残局的人" class="headerlink" title="🧹 VACUUM：负责收拾残局的人"></a>🧹 VACUUM：负责收拾残局的人</h2><p>VACUUM 的工作，用一句话概括：</p>
+<blockquote>
+<p><strong>扫描表，找到死元组对应的空间，标记为可重用。</strong></p>
+</blockquote>
+<p>注意它做的<strong>不是</strong>：</p>
+<ul>
+<li>❌ 把表变小（除非加 <code>FULL</code>）</li>
+<li>❌ 把空间归还给操作系统</li>
+<li>❌ 阻塞读写（普通 VACUUM 不会）</li>
+</ul>
+<p>它做的<strong>是</strong>：</p>
+<ul>
+<li>✅ 把死元组占用的槽位回收进 <strong>FSM（Free Space Map）</strong></li>
+<li>✅ 更新 <strong>VM（Visibility Map）</strong>，让 Index Only Scan 更有效</li>
+<li>✅ 推进 <code>relfrozenxid</code>，防止事务 ID 回卷</li>
+</ul>
+<hr>
+<h2 id="🧬-VACUUM-的三种形态"><a href="#🧬-VACUUM-的三种形态" class="headerlink" title="🧬 VACUUM 的三种形态"></a>🧬 VACUUM 的三种形态</h2><h3 id="1-VACUUM（普通版）"><a href="#1-VACUUM（普通版）" class="headerlink" title="1. VACUUM（普通版）"></a>1. <code>VACUUM</code>（普通版）</h3><p>最常见的，<strong>不锁表、在线运行</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VACUUM users;</span><br></pre></td></tr></table></figure>
+
+<p><strong>只回收死元组占用的空间，不整理碎片</strong>。表的物理大小不变，只是内部出现了”空洞”。</p>
+<h3 id="2-VACUUM-FULL（重型武器）"><a href="#2-VACUUM-FULL（重型武器）" class="headerlink" title="2. VACUUM FULL（重型武器）"></a>2. <code>VACUUM FULL</code>（重型武器）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VACUUM <span class="keyword">FULL</span> users;</span><br></pre></td></tr></table></figure>
+
+<p>会<strong>重写整张表</strong>：创建一张新表，把活元组顺序写入，最后替换旧表。<br>效果是表变得紧凑、空间归还 OS。</p>
+<p><strong>代价</strong>：需要 <strong>ACCESS EXCLUSIVE LOCK</strong>，期间<strong>无法读写</strong>。</p>
+<h3 id="3-VACUUM-ANALYZE"><a href="#3-VACUUM-ANALYZE" class="headerlink" title="3. VACUUM ANALYZE"></a>3. <code>VACUUM ANALYZE</code></h3><p>顺便更新统计信息，给查询优化器提供弹药：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">VACUUM ANALYZE users;</span><br></pre></td></tr></table></figure>
+
+<p>生产环境的日常维护里，这是最常用的一道组合拳。</p>
+<hr>
+<h2 id="🔍-一次-VACUUM-的完整流水线"><a href="#🔍-一次-VACUUM-的完整流水线" class="headerlink" title="🔍 一次 VACUUM 的完整流水线"></a>🔍 一次 VACUUM 的完整流水线</h2><p>以 <code>VACUUM users</code> 为例：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">┌──────────────────────────────────────────────────────┐</span><br><span class="line">│ Phase 1: Heap Scan                                   │</span><br><span class="line">│   逐页扫描堆表，收集死元组的 ctid 到内存数组         │</span><br><span class="line">│   受 maintenance_work_mem 限制                       │</span><br><span class="line">└──────────────┬───────────────────────────────────────┘</span><br><span class="line">               ▼</span><br><span class="line">┌──────────────────────────────────────────────────────┐</span><br><span class="line">│ Phase 2: Index Vacuum                                │</span><br><span class="line">│   对每个索引，删除指向死元组 ctid 的索引项           │</span><br><span class="line">│   这是 VACUUM 最耗时的阶段                           │</span><br><span class="line">└──────────────┬───────────────────────────────────────┘</span><br><span class="line">               ▼</span><br><span class="line">┌──────────────────────────────────────────────────────┐</span><br><span class="line">│ Phase 3: Heap Vacuum                                 │</span><br><span class="line">│   真正释放堆页中的死元组空间到 FSM                   │</span><br><span class="line">└──────────────┬───────────────────────────────────────┘</span><br><span class="line">               ▼</span><br><span class="line">┌──────────────────────────────────────────────────────┐</span><br><span class="line">│ Phase 4: Truncate（可选）                            │</span><br><span class="line">│   如果尾部的页全空了，把表尾部截断归还 OS            │</span><br><span class="line">└──────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键观察</strong>：Phase 2 必须扫描<strong>整个索引</strong>，所以索引越多、越大，VACUUM 越慢。</p>
+<hr>
+<h2 id="🤖-Autovacuum：会自己上岗的清洁工"><a href="#🤖-Autovacuum：会自己上岗的清洁工" class="headerlink" title="🤖 Autovacuum：会自己上岗的清洁工"></a>🤖 Autovacuum：会自己上岗的清洁工</h2><p>手动 VACUUM 太累，PostgreSQL 提供了 <strong>autovacuum</strong> 守护进程，它会根据表的<strong>变脏程度</strong>自动触发清理。</p>
+<p>触发条件（简化版）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dead_tuples &gt; autovacuum_vacuum_threshold</span><br><span class="line">           + autovacuum_vacuum_scale_factor × total_tuples</span><br></pre></td></tr></table></figure>
+
+<p>默认参数 <code>threshold = 50</code>、<code>scale_factor = 0.2</code>，意味着：<br><strong>一张百万行的表要死 20 万行才会触发 autovacuum</strong>——对于热表来说远远不够。</p>
+<h3 id="为热表定制-autovacuum"><a href="#为热表定制-autovacuum" class="headerlink" title="为热表定制 autovacuum"></a>为热表定制 autovacuum</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER TABLE</span> orders <span class="keyword">SET</span> (</span><br><span class="line">    autovacuum_vacuum_scale_factor <span class="operator">=</span> <span class="number">0.05</span>,   <span class="comment">-- 5% 就触发</span></span><br><span class="line">    autovacuum_vacuum_threshold <span class="operator">=</span> <span class="number">1000</span>,</span><br><span class="line">    autovacuum_analyze_scale_factor <span class="operator">=</span> <span class="number">0.02</span>,</span><br><span class="line">    autovacuum_vacuum_cost_limit <span class="operator">=</span> <span class="number">2000</span>       <span class="comment">-- 让它跑得更快</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p><strong>生产经验</strong>：对于大表、热表、高频更新表，<strong>一定要单独调 autovacuum 参数</strong>，默认值不靠谱。</p>
+<hr>
+<h2 id="🧊-FREEZE-与事务-ID-回卷"><a href="#🧊-FREEZE-与事务-ID-回卷" class="headerlink" title="🧊 FREEZE 与事务 ID 回卷"></a>🧊 FREEZE 与事务 ID 回卷</h2><p>PostgreSQL 的事务 ID 是 <strong>32 位无符号整数</strong>，最大约 <strong>42 亿</strong>。</p>
+<p>用完怎么办？回卷（wraparound）——一旦发生，老事务创建的行会突然”从未来看见自己是未来”，导致<strong>数据损坏</strong>。</p>
+<p>为了防止这件事，VACUUM 会把”非常老”的事务 ID 替换成一个特殊的 <strong>FrozenXid</strong>，这个过程叫 <strong>FREEZE</strong>。</p>
+<p>触发阈值由 <code>vacuum_freeze_min_age</code>（默认 5000 万）和 <code>autovacuum_freeze_max_age</code>（默认 2 亿）控制。</p>
+<p>如果看到类似日志：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">WARNING:  database &quot;mydb&quot; must be vacuumed within 10000000 transactions</span><br><span class="line">HINT:  To avoid a database shutdown, execute a database-wide VACUUM.</span><br></pre></td></tr></table></figure>
+
+<p><strong>立刻行动</strong>，否则数据库会在回卷前主动拒绝写入，避免损坏。</p>
+<hr>
+<h2 id="🧪-监控-VACUUM-的健康度"><a href="#🧪-监控-VACUUM-的健康度" class="headerlink" title="🧪 监控 VACUUM 的健康度"></a>🧪 监控 VACUUM 的健康度</h2><h3 id="查看死元组比例"><a href="#查看死元组比例" class="headerlink" title="查看死元组比例"></a>查看死元组比例</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> schemaname, relname,</span><br><span class="line">       n_live_tup, n_dead_tup,</span><br><span class="line">       round(n_dead_tup::<span class="type">numeric</span> <span class="operator">/</span> <span class="built_in">NULLIF</span>(n_live_tup, <span class="number">0</span>), <span class="number">2</span>) <span class="keyword">AS</span> dead_ratio,</span><br><span class="line">       last_autovacuum, last_vacuum</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_user_tables</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> n_dead_tup <span class="keyword">DESC</span></span><br><span class="line">LIMIT <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+<p>死元组比例超过 20% 就该关注了。</p>
+<h3 id="查看正在运行的-VACUUM"><a href="#查看正在运行的-VACUUM" class="headerlink" title="查看正在运行的 VACUUM"></a>查看正在运行的 VACUUM</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> pid, datname, relid::regclass <span class="keyword">AS</span> <span class="keyword">table</span>,</span><br><span class="line">       phase, heap_blks_scanned, heap_blks_total,</span><br><span class="line">       index_vacuum_count</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_progress_vacuum;</span><br></pre></td></tr></table></figure>
+
+<p>这是 PG 9.6+ 提供的<strong>进度视图</strong>，比盲等要文明得多。</p>
+<h3 id="查看事务-ID-剩余寿命"><a href="#查看事务-ID-剩余寿命" class="headerlink" title="查看事务 ID 剩余寿命"></a>查看事务 ID 剩余寿命</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> datname, age(datfrozenxid),</span><br><span class="line">       <span class="number">2</span><span class="operator">^</span><span class="number">31</span> <span class="operator">-</span> age(datfrozenxid) <span class="keyword">AS</span> remaining_xids</span><br><span class="line"><span class="keyword">FROM</span> pg_database</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> age(datfrozenxid) <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>remaining_xids</code> 越小越危险。</p>
+<hr>
+<h2 id="🧨-常见的-VACUUM-踩坑"><a href="#🧨-常见的-VACUUM-踩坑" class="headerlink" title="🧨 常见的 VACUUM 踩坑"></a>🧨 常见的 VACUUM 踩坑</h2><h3 id="坑-1：长事务阻止清理"><a href="#坑-1：长事务阻止清理" class="headerlink" title="坑 1：长事务阻止清理"></a>坑 1：长事务阻止清理</h3><p>只要有一个事务号比某元组的 <code>xmax</code> 还小，VACUUM 就<strong>不敢</strong>清理它——这就是<strong>长事务的原罪</strong>。</p>
+<p>排查：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> pid, usename, state, xact_start, query</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_activity</span><br><span class="line"><span class="keyword">WHERE</span> state <span class="operator">=</span> <span class="string">&#x27;idle in transaction&#x27;</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> xact_start;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>一个 idle in transaction 连接，能让整个数据库的 VACUUM 集体罢工。</strong></p>
+</blockquote>
+<h3 id="坑-2：复制槽持有-WAL"><a href="#坑-2：复制槽持有-WAL" class="headerlink" title="坑 2：复制槽持有 WAL"></a>坑 2：复制槽持有 WAL</h3><p>未消费的逻辑复制槽会持续持有 WAL 及其指向的事务，效果等同于长事务：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> slot_name, active, restart_lsn, confirmed_flush_lsn</span><br><span class="line"><span class="keyword">FROM</span> pg_replication_slots;</span><br></pre></td></tr></table></figure>
+
+<p><strong>不用的槽及时 <code>pg_drop_replication_slot()</code></strong>。</p>
+<h3 id="坑-3：大表-VACUUM-FULL-锁死业务"><a href="#坑-3：大表-VACUUM-FULL-锁死业务" class="headerlink" title="坑 3：大表 VACUUM FULL 锁死业务"></a>坑 3：大表 VACUUM FULL 锁死业务</h3><p><code>VACUUM FULL</code> 在生产线上几乎是<strong>禁术</strong>。更优雅的选择：</p>
+<ul>
+<li><code>pg_repack</code> 扩展：不阻塞业务地重建表</li>
+<li><code>CLUSTER</code>：需要索引，但也会锁表</li>
+<li>PG 14+ 的 <code>REINDEX ... CONCURRENTLY</code> 用于索引膨胀</li>
+</ul>
+<hr>
+<h2 id="⚙️-推荐的-autovacuum-参数调整"><a href="#⚙️-推荐的-autovacuum-参数调整" class="headerlink" title="⚙️ 推荐的 autovacuum 参数调整"></a>⚙️ 推荐的 autovacuum 参数调整</h2><p>对一个 OLTP 系统，以下参数通常比默认值更合理：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 整体更激进</span></span><br><span class="line"><span class="attr">autovacuum_max_workers</span> = <span class="number">6</span></span><br><span class="line"><span class="attr">autovacuum_naptime</span> = <span class="number">15</span>s</span><br><span class="line"></span><br><span class="line"><span class="comment"># 成本控制</span></span><br><span class="line"><span class="attr">autovacuum_vacuum_cost_delay</span> = <span class="number">2</span>ms</span><br><span class="line"><span class="attr">autovacuum_vacuum_cost_limit</span> = <span class="number">2000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志观察</span></span><br><span class="line"><span class="attr">log_autovacuum_min_duration</span> = <span class="number">1</span>s</span><br></pre></td></tr></table></figure>
+
+<p><strong>核心思路</strong>：让 autovacuum <strong>更频繁、更温柔</strong>地跑，而不是<strong>一次性猛烈</strong>地清理。</p>
+<hr>
+<h2 id="✨-结语"><a href="#✨-结语" class="headerlink" title="✨ 结语"></a>✨ 结语</h2><p>VACUUM 并不是一个”可有可无的维护操作”，它是 PostgreSQL 的<strong>循环系统</strong>——<br>没有它，MVCC 的血液会凝固；没有它，事务 ID 会耗尽；没有它，磁盘会慢慢窒息。</p>
+<p>它朴素得像清晨的清洁工，却承担着城市运转的底层秩序。</p>
+<blockquote>
+<p><strong>理解 VACUUM，不只是了解一条命令，而是读懂 PostgreSQL 的生命节律。</strong></p>
+</blockquote>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                VACUUM的前世今生：PostgreSQL最温柔的清道夫
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2026/04/23/VACUUM的前世今生-PostgreSQL最温柔的清道夫/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2026-04-23 21:20</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/VACUUM/">VACUUM</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/MVCC/">MVCC</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2026/04/23/%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E7%9A%84%E8%89%BA%E6%9C%AF-%E8%AF%BB%E6%87%82EXPLAIN%E7%9A%84%E6%AF%8F%E4%B8%80%E8%A1%8C/"
+                                   title="执行计划的艺术：读懂EXPLAIN的每一行"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">执行计划的艺术：读懂EXPLAIN的每一行</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2026/04/23/%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3B-Tree%E7%B4%A2%E5%BC%95-PostgreSQL%E4%B8%BA%E4%BD%95%E5%81%8F%E7%88%B1%E5%AE%83/"
+                                   title="从零理解B-Tree索引：PostgreSQL为何偏爱它"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">从零理解B-Tree索引：PostgreSQL为何偏爱它</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8D%82-%E4%B8%80%E5%88%87%E4%BB%8E%E4%B8%80%E6%9D%A1-UPDATE-%E8%AF%B4%E8%B5%B7"><span class="nav-text">🍂 一切从一条 UPDATE 说起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B9-VACUUM%EF%BC%9A%E8%B4%9F%E8%B4%A3%E6%94%B6%E6%8B%BE%E6%AE%8B%E5%B1%80%E7%9A%84%E4%BA%BA"><span class="nav-text">🧹 VACUUM：负责收拾残局的人</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AC-VACUUM-%E7%9A%84%E4%B8%89%E7%A7%8D%E5%BD%A2%E6%80%81"><span class="nav-text">🧬 VACUUM 的三种形态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-VACUUM%EF%BC%88%E6%99%AE%E9%80%9A%E7%89%88%EF%BC%89"><span class="nav-text">1. VACUUM（普通版）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-VACUUM-FULL%EF%BC%88%E9%87%8D%E5%9E%8B%E6%AD%A6%E5%99%A8%EF%BC%89"><span class="nav-text">2. VACUUM FULL（重型武器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-VACUUM-ANALYZE"><span class="nav-text">3. VACUUM ANALYZE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%8D-%E4%B8%80%E6%AC%A1-VACUUM-%E7%9A%84%E5%AE%8C%E6%95%B4%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-text">🔍 一次 VACUUM 的完整流水线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A4%96-Autovacuum%EF%BC%9A%E4%BC%9A%E8%87%AA%E5%B7%B1%E4%B8%8A%E5%B2%97%E7%9A%84%E6%B8%85%E6%B4%81%E5%B7%A5"><span class="nav-text">🤖 Autovacuum：会自己上岗的清洁工</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E7%83%AD%E8%A1%A8%E5%AE%9A%E5%88%B6-autovacuum"><span class="nav-text">为热表定制 autovacuum</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%8A-FREEZE-%E4%B8%8E%E4%BA%8B%E5%8A%A1-ID-%E5%9B%9E%E5%8D%B7"><span class="nav-text">🧊 FREEZE 与事务 ID 回卷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AA-%E7%9B%91%E6%8E%A7-VACUUM-%E7%9A%84%E5%81%A5%E5%BA%B7%E5%BA%A6"><span class="nav-text">🧪 监控 VACUUM 的健康度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%AD%BB%E5%85%83%E7%BB%84%E6%AF%94%E4%BE%8B"><span class="nav-text">查看死元组比例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84-VACUUM"><span class="nav-text">查看正在运行的 VACUUM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E4%BA%8B%E5%8A%A1-ID-%E5%89%A9%E4%BD%99%E5%AF%BF%E5%91%BD"><span class="nav-text">查看事务 ID 剩余寿命</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A8-%E5%B8%B8%E8%A7%81%E7%9A%84-VACUUM-%E8%B8%A9%E5%9D%91"><span class="nav-text">🧨 常见的 VACUUM 踩坑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%91-1%EF%BC%9A%E9%95%BF%E4%BA%8B%E5%8A%A1%E9%98%BB%E6%AD%A2%E6%B8%85%E7%90%86"><span class="nav-text">坑 1：长事务阻止清理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%91-2%EF%BC%9A%E5%A4%8D%E5%88%B6%E6%A7%BD%E6%8C%81%E6%9C%89-WAL"><span class="nav-text">坑 2：复制槽持有 WAL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%91-3%EF%BC%9A%E5%A4%A7%E8%A1%A8-VACUUM-FULL-%E9%94%81%E6%AD%BB%E4%B8%9A%E5%8A%A1"><span class="nav-text">坑 3：大表 VACUUM FULL 锁死业务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E6%8E%A8%E8%8D%90%E7%9A%84-autovacuum-%E5%8F%82%E6%95%B0%E8%B0%83%E6%95%B4"><span class="nav-text">⚙️ 推荐的 autovacuum 参数调整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8D%82-%E4%B8%80%E5%88%87%E4%BB%8E%E4%B8%80%E6%9D%A1-UPDATE-%E8%AF%B4%E8%B5%B7"><span class="nav-text">🍂 一切从一条 UPDATE 说起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B9-VACUUM%EF%BC%9A%E8%B4%9F%E8%B4%A3%E6%94%B6%E6%8B%BE%E6%AE%8B%E5%B1%80%E7%9A%84%E4%BA%BA"><span class="nav-text">🧹 VACUUM：负责收拾残局的人</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AC-VACUUM-%E7%9A%84%E4%B8%89%E7%A7%8D%E5%BD%A2%E6%80%81"><span class="nav-text">🧬 VACUUM 的三种形态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-VACUUM%EF%BC%88%E6%99%AE%E9%80%9A%E7%89%88%EF%BC%89"><span class="nav-text">1. VACUUM（普通版）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-VACUUM-FULL%EF%BC%88%E9%87%8D%E5%9E%8B%E6%AD%A6%E5%99%A8%EF%BC%89"><span class="nav-text">2. VACUUM FULL（重型武器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-VACUUM-ANALYZE"><span class="nav-text">3. VACUUM ANALYZE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%8D-%E4%B8%80%E6%AC%A1-VACUUM-%E7%9A%84%E5%AE%8C%E6%95%B4%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-text">🔍 一次 VACUUM 的完整流水线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A4%96-Autovacuum%EF%BC%9A%E4%BC%9A%E8%87%AA%E5%B7%B1%E4%B8%8A%E5%B2%97%E7%9A%84%E6%B8%85%E6%B4%81%E5%B7%A5"><span class="nav-text">🤖 Autovacuum：会自己上岗的清洁工</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E7%83%AD%E8%A1%A8%E5%AE%9A%E5%88%B6-autovacuum"><span class="nav-text">为热表定制 autovacuum</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%8A-FREEZE-%E4%B8%8E%E4%BA%8B%E5%8A%A1-ID-%E5%9B%9E%E5%8D%B7"><span class="nav-text">🧊 FREEZE 与事务 ID 回卷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AA-%E7%9B%91%E6%8E%A7-VACUUM-%E7%9A%84%E5%81%A5%E5%BA%B7%E5%BA%A6"><span class="nav-text">🧪 监控 VACUUM 的健康度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%AD%BB%E5%85%83%E7%BB%84%E6%AF%94%E4%BE%8B"><span class="nav-text">查看死元组比例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%AD%A3%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84-VACUUM"><span class="nav-text">查看正在运行的 VACUUM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E4%BA%8B%E5%8A%A1-ID-%E5%89%A9%E4%BD%99%E5%AF%BF%E5%91%BD"><span class="nav-text">查看事务 ID 剩余寿命</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A8-%E5%B8%B8%E8%A7%81%E7%9A%84-VACUUM-%E8%B8%A9%E5%9D%91"><span class="nav-text">🧨 常见的 VACUUM 踩坑</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%91-1%EF%BC%9A%E9%95%BF%E4%BA%8B%E5%8A%A1%E9%98%BB%E6%AD%A2%E6%B8%85%E7%90%86"><span class="nav-text">坑 1：长事务阻止清理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%91-2%EF%BC%9A%E5%A4%8D%E5%88%B6%E6%A7%BD%E6%8C%81%E6%9C%89-WAL"><span class="nav-text">坑 2：复制槽持有 WAL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9D%91-3%EF%BC%9A%E5%A4%A7%E8%A1%A8-VACUUM-FULL-%E9%94%81%E6%AD%BB%E4%B8%9A%E5%8A%A1"><span class="nav-text">坑 3：大表 VACUUM FULL 锁死业务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E6%8E%A8%E8%8D%90%E7%9A%84-autovacuum-%E5%8F%82%E6%95%B0%E8%B0%83%E6%95%B4"><span class="nav-text">⚙️ 推荐的 autovacuum 参数调整</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>

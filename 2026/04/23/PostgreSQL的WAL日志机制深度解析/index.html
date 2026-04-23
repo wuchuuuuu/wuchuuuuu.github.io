@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            PostgreSQL的WAL日志机制深度解析 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PostgreSQL的WAL日志机制深度解析
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">化神洞玄</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2026-04-23 21:10:00</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Apr 23 2026 21:07:36 GMT+0800">2026-04-23 21:07:36</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/WAL/">WAL</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E4%BA%8B%E5%8A%A1/">事务</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>有人说：<strong>“不理解 WAL，就不算真正理解数据库。”</strong> 这句话并不夸张。WAL（Write-Ahead Logging）是 PostgreSQL 事务持久性与崩溃恢复的根基，也是流复制、PITR、逻辑解码背后的那台”隐形发动机”。</p>
+</blockquote>
+<p>这篇文章我们从<strong>它为什么存在</strong>、<strong>它长什么样</strong>、<strong>它如何工作</strong>三个维度，把 WAL 彻底讲透。</p>
+<hr>
+<h2 id="🎯-为什么需要-WAL？"><a href="#🎯-为什么需要-WAL？" class="headerlink" title="🎯 为什么需要 WAL？"></a>🎯 为什么需要 WAL？</h2><p>想象一个最朴素的场景：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> accounts <span class="keyword">SET</span> balance <span class="operator">=</span> balance <span class="operator">-</span> <span class="number">100</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">UPDATE</span> accounts <span class="keyword">SET</span> balance <span class="operator">=</span> balance <span class="operator">+</span> <span class="number">100</span> <span class="keyword">WHERE</span> id <span class="operator">=</span> <span class="number">2</span>;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果数据库<strong>每次修改都直接刷盘</strong>，性能会烂到无法接受；<br>如果<strong>修改只停留在内存</strong>，一旦宕机，数据就丢了。</p>
+<p>WAL 的哲学非常朴素：<strong>“日志先行”</strong>。</p>
+<blockquote>
+<p>任何对数据页的修改，<strong>必须先</strong>把”修改动作”写入 WAL 日志文件并刷盘，才允许数据页落盘。</p>
+</blockquote>
+<p>只要 WAL 还在，哪怕数据库崩溃在最惨烈的时刻，我们都能通过<strong>重放 WAL</strong>把数据恢复到一致状态。</p>
+<hr>
+<h2 id="🧱-WAL-的物理结构"><a href="#🧱-WAL-的物理结构" class="headerlink" title="🧱 WAL 的物理结构"></a>🧱 WAL 的物理结构</h2><p>WAL 文件存放在 <code>$PGDATA/pg_wal/</code> 目录（老版本叫 <code>pg_xlog</code>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">ls</span> -l <span class="variable">$PGDATA</span>/pg_wal/</span><br><span class="line">-rw------- 1 postgres postgres 16M Apr 23 20:00 000000010000000000000001</span><br><span class="line">-rw------- 1 postgres postgres 16M Apr 23 20:15 000000010000000000000002</span><br><span class="line">-rw------- 1 postgres postgres 16M Apr 23 20:30 000000010000000000000003</span><br></pre></td></tr></table></figure>
+
+<p>每个 WAL 段文件默认 <strong>16MB</strong>，文件名由三部分组成：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">00000001  00000000  00000001</span><br><span class="line">   │         │         │</span><br><span class="line">TimelineID  LogID    SegID</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>TimelineID</strong>：时间线 ID，每次做 PITR 或 promote 会 +1</li>
+<li><strong>LogID + SegID</strong>：共同构成 WAL 文件在流中的位置（LSN）</li>
+</ul>
+<h3 id="LSN：WAL-世界的”坐标轴”"><a href="#LSN：WAL-世界的”坐标轴”" class="headerlink" title="LSN：WAL 世界的”坐标轴”"></a>LSN：WAL 世界的”坐标轴”</h3><p>LSN（Log Sequence Number）是 WAL 日志流中的<strong>字节偏移量</strong>，格式为 <code>XXXXXXXX/YYYYYYYY</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> pg_current_wal_lsn();</span><br><span class="line"> pg_current_wal_lsn</span><br><span class="line"><span class="comment">--------------------</span></span><br><span class="line"> <span class="number">0</span><span class="operator">/</span><span class="number">3</span>A8B4C90</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>整个 PostgreSQL 集群的一生，可以看作一条不断增长的字节流，LSN 就是流上的”时间戳”。</p>
+</blockquote>
+<hr>
+<h2 id="🔄-一次-UPDATE-在-WAL-中的旅程"><a href="#🔄-一次-UPDATE-在-WAL-中的旅程" class="headerlink" title="🔄 一次 UPDATE 在 WAL 中的旅程"></a>🔄 一次 UPDATE 在 WAL 中的旅程</h2><p>我们跟踪一条 <code>UPDATE</code> 语句，看看 WAL 是如何被生产和消费的：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│  1. 后端进程修改 shared_buffers 中的数据页        │</span><br><span class="line">│     （页在内存里变脏 dirty）                       │</span><br><span class="line">└─────────────┬───────────────────────────────────┘</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│  2. 生成 WAL 记录，写入 WAL Buffer                │</span><br><span class="line">│     包含：redo 信息 + LSN + 事务 ID 等            │</span><br><span class="line">└─────────────┬───────────────────────────────────┘</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│  3. COMMIT 时 fsync WAL 到磁盘                   │</span><br><span class="line">│     （这一步决定了事务的&quot;持久性&quot;）                 │</span><br><span class="line">└─────────────┬───────────────────────────────────┘</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│  4. 返回客户端：事务提交成功 ✅                    │</span><br><span class="line">└─────────────┬───────────────────────────────────┘</span><br><span class="line">              │</span><br><span class="line">              ▼</span><br><span class="line">┌─────────────────────────────────────────────────┐</span><br><span class="line">│  5. 后台 bgwriter / checkpointer 慢慢把脏页刷盘   │</span><br><span class="line">└─────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键洞察：事务提交时并不需要等数据页落盘，只要 WAL 落盘就够了。</strong></p>
+<p>这就是 WAL 的精髓——<strong>用顺序写日志换取随机写数据页的推迟</strong>。</p>
+<hr>
+<h2 id="🧠-WAL-记录长什么样？"><a href="#🧠-WAL-记录长什么样？" class="headerlink" title="🧠 WAL 记录长什么样？"></a>🧠 WAL 记录长什么样？</h2><p>每条 WAL 记录由一个<strong>记录头</strong>和一个或多个<strong>数据块</strong>组成：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">XLogRecord</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    uint32      xl_tot_len;   <span class="comment">/* 整条记录的总长度 */</span></span><br><span class="line">    TransactionId xl_xid;     <span class="comment">/* 事务 ID */</span></span><br><span class="line">    XLogRecPtr  xl_prev;      <span class="comment">/* 上一条 WAL 的 LSN */</span></span><br><span class="line">    uint8       xl_info;      <span class="comment">/* 标志位 */</span></span><br><span class="line">    RmgrId      xl_rmid;      <span class="comment">/* 资源管理器 ID */</span></span><br><span class="line">    pg_crc32c   xl_crc;       <span class="comment">/* 循环冗余校验 */</span></span><br><span class="line">    <span class="comment">/* 后面紧跟 XLogRecordBlockHeader 和数据 ... */</span></span><br><span class="line">&#125; XLogRecord;</span><br></pre></td></tr></table></figure>
+
+<p><code>xl_rmid</code> 字段指向<strong>资源管理器</strong>（Resource Manager），PostgreSQL 为不同类型的变更定义了各自的 rmgr：</p>
+<table>
+<thead>
+<tr>
+<th>rmgr</th>
+<th>负责的操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>RM_HEAP_ID</code></td>
+<td>堆表的 insert &#x2F; update &#x2F; delete</td>
+</tr>
+<tr>
+<td><code>RM_BTREE_ID</code></td>
+<td>B-Tree 索引变更</td>
+</tr>
+<tr>
+<td><code>RM_XACT_ID</code></td>
+<td>事务提交 &#x2F; 回滚</td>
+</tr>
+<tr>
+<td><code>RM_XLOG_ID</code></td>
+<td>WAL 自身的元数据（checkpoint 等）</td>
+</tr>
+<tr>
+<td><code>RM_STANDBY_ID</code></td>
+<td>热备相关</td>
+</tr>
+</tbody></table>
+<p>每种 rmgr 都实现了 <code>redo</code> 函数，崩溃恢复时按 LSN 顺序回放。</p>
+<hr>
+<h2 id="🛡️-Full-Page-Write：WAL-的”兜底保险”"><a href="#🛡️-Full-Page-Write：WAL-的”兜底保险”" class="headerlink" title="🛡️ Full Page Write：WAL 的”兜底保险”"></a>🛡️ Full Page Write：WAL 的”兜底保险”</h2><p>磁盘有个令人头疼的特性：<strong>页写入不是原子的</strong>。</p>
+<p>PostgreSQL 的数据页通常是 8KB，而磁盘扇区是 512B 或 4KB。如果正好在写页的中间宕机，磁盘上会出现<strong>半新半旧的”撕裂页”（torn page）</strong>。这种页面的 checksum 都算不对，更谈不上 redo。</p>
+<p>解决办法是 <strong>FPW（Full Page Write）</strong>：</p>
+<blockquote>
+<p>每个 checkpoint 之后，<strong>每个数据页第一次被修改时</strong>，会把<strong>整页</strong>写进 WAL。</p>
+</blockquote>
+<p>这样，哪怕出现撕裂页，也能从 WAL 的整页副本中恢复出干净的数据页。</p>
+<p><strong>代价</strong>：WAL 体积膨胀明显，尤其在大批量写入时。</p>
+<p><strong>优化建议</strong>：</p>
+<ul>
+<li>保持较长的 <code>checkpoint_timeout</code>（如 15min）</li>
+<li>在批量导入前<strong>临时关闭</strong> <code>full_page_writes</code>（风险自担）</li>
+<li>使用 <code>pg_basebackup -c fast</code> 做基础备份避免长时间影响</li>
+</ul>
+<hr>
+<h2 id="🧰-查看-WAL-内部：pg-waldump"><a href="#🧰-查看-WAL-内部：pg-waldump" class="headerlink" title="🧰 查看 WAL 内部：pg_waldump"></a>🧰 查看 WAL 内部：pg_waldump</h2><p>PostgreSQL 自带了一把解剖刀——<code>pg_waldump</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ pg_waldump 000000010000000000000003 | <span class="built_in">head</span> -5</span><br><span class="line">rmgr: Heap      len (rec/tot): 69/69, tx: 742, lsn: 0/03000028,</span><br><span class="line">  prev 0/02FFFFE8, desc: INSERT off 1 flags 0x00, blkref <span class="comment">#0:</span></span><br><span class="line">  rel 1663/12345/16384 blk 0</span><br><span class="line">rmgr: Transaction len (rec/tot): 34/34, tx: 742, lsn: 0/03000070,</span><br><span class="line">  prev 0/03000028, desc: COMMIT 2026-04-23 20:10:35</span><br></pre></td></tr></table></figure>
+
+<p>从中我们能清晰看到每条 WAL 记录的<strong>资源管理器</strong>、<strong>LSN</strong>、<strong>事务 ID</strong>、<strong>描述信息</strong>，排查疑难杂症的终极武器。</p>
+<hr>
+<h2 id="⚙️-与-WAL-相关的关键参数"><a href="#⚙️-与-WAL-相关的关键参数" class="headerlink" title="⚙️ 与 WAL 相关的关键参数"></a>⚙️ 与 WAL 相关的关键参数</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>默认值</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>wal_level</code></td>
+<td><code>replica</code></td>
+<td>决定 WAL 记录详略：minimal &#x2F; replica &#x2F; logical</td>
+</tr>
+<tr>
+<td><code>synchronous_commit</code></td>
+<td><code>on</code></td>
+<td>提交时是否等待 WAL 刷盘</td>
+</tr>
+<tr>
+<td><code>wal_buffers</code></td>
+<td><code>-1</code>（自动）</td>
+<td>WAL 缓冲区大小</td>
+</tr>
+<tr>
+<td><code>wal_writer_delay</code></td>
+<td><code>200ms</code></td>
+<td>WAL writer 的唤醒间隔</td>
+</tr>
+<tr>
+<td><code>max_wal_size</code></td>
+<td><code>1GB</code></td>
+<td>触发 checkpoint 的软上限</td>
+</tr>
+<tr>
+<td><code>min_wal_size</code></td>
+<td><code>80MB</code></td>
+<td>WAL 文件回收的下限</td>
+</tr>
+<tr>
+<td><code>full_page_writes</code></td>
+<td><code>on</code></td>
+<td>是否启用整页写</td>
+</tr>
+</tbody></table>
+<p><strong>调参哲学</strong>：</p>
+<ul>
+<li><strong>性能优先</strong>：放大 <code>wal_buffers</code>、调大 <code>max_wal_size</code>，让 checkpoint 更稀疏</li>
+<li><strong>延迟敏感</strong>：<code>synchronous_commit = off</code>（允许丢失最近提交）</li>
+<li><strong>强一致</strong>：配合 <code>synchronous_standby_names</code> 做同步复制</li>
+</ul>
+<hr>
+<h2 id="🌊-WAL-的下游：复制、PITR-与逻辑解码"><a href="#🌊-WAL-的下游：复制、PITR-与逻辑解码" class="headerlink" title="🌊 WAL 的下游：复制、PITR 与逻辑解码"></a>🌊 WAL 的下游：复制、PITR 与逻辑解码</h2><p>WAL 不只是为了恢复自己，它还是下游生态的水源：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">                    ┌──────────────────┐</span><br><span class="line">                    │   流复制 Standby  │</span><br><span class="line">                    └──────────────────┘</span><br><span class="line">                             ▲</span><br><span class="line">                             │ WAL Stream</span><br><span class="line">                ┌────────────┴────────────┐</span><br><span class="line">Primary ───►  WAL  ────────────►  ┌──────────────────┐</span><br><span class="line">                             │    │   归档 + PITR     │</span><br><span class="line">                             │    └──────────────────┘</span><br><span class="line">                             ▼</span><br><span class="line">                    ┌──────────────────┐</span><br><span class="line">                    │ 逻辑解码 / CDC    │</span><br><span class="line">                    │ (Debezium 等)    │</span><br><span class="line">                    └──────────────────┘</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>流复制</strong>：Standby 持续拉取并回放主库的 WAL</li>
+<li><strong>PITR</strong>：基础备份 + 归档 WAL &#x3D; 可恢复到任意时间点</li>
+<li><strong>逻辑解码</strong>：<code>wal_level = logical</code> 后，可把 WAL 解码成行级变更，作为 CDC 的数据源</li>
+</ul>
+<hr>
+<h2 id="📌-一些容易踩坑的点"><a href="#📌-一些容易踩坑的点" class="headerlink" title="📌 一些容易踩坑的点"></a>📌 一些容易踩坑的点</h2><ol>
+<li><strong><code>pg_wal</code> 被塞满</strong>：通常是 replication slot 持有、归档失败或长事务导致；先查 <code>pg_replication_slots</code> 和 <code>pg_stat_archiver</code></li>
+<li><strong><code>synchronous_commit = off</code> 的语义</strong>：<strong>丢的是最近的提交，不是一致性</strong>，崩溃恢复后数据库仍然是一致的</li>
+<li><strong>逻辑槽（logical slot）不使用时必须删除</strong>：否则 WAL 永远无法回收</li>
+<li><strong>不要手动删除 pg_wal 下的文件</strong>：永远使用 <code>pg_archivecleanup</code> 或让 PostgreSQL 自己管理</li>
+</ol>
+<hr>
+<h2 id="✨-结语"><a href="#✨-结语" class="headerlink" title="✨ 结语"></a>✨ 结语</h2><p>WAL 之于 PostgreSQL，就像心电图之于人体——它记录了数据库的每一次心跳。</p>
+<p>从事务的<strong>持久性</strong>，到<strong>崩溃恢复</strong>的秒级重建；<br>从<strong>流复制</strong>的优雅同步，到 <strong>PITR</strong> 的时光机能力；<br>从 <strong>CDC</strong> 管道到 <strong>逻辑复制</strong> 的跨版本迁移……</p>
+<p>一张小小的 16MB 文件，扛起了整个 PostgreSQL 生态的半壁江山。</p>
+<p>读懂 WAL，你就读懂了 PostgreSQL 的灵魂。</p>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                PostgreSQL的WAL日志机制深度解析
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2026/04/23/PostgreSQL的WAL日志机制深度解析/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2026-04-23 21:10</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/WAL/">WAL</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E4%BA%8B%E5%8A%A1/">事务</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2026/04/23/%E4%BB%8E%E9%9B%B6%E7%90%86%E8%A7%A3B-Tree%E7%B4%A2%E5%BC%95-PostgreSQL%E4%B8%BA%E4%BD%95%E5%81%8F%E7%88%B1%E5%AE%83/"
+                                   title="从零理解B-Tree索引：PostgreSQL为何偏爱它"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">从零理解B-Tree索引：PostgreSQL为何偏爱它</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2026/04/23/psql%E5%9C%A8%E6%9C%AC%E5%9C%B0%E5%8A%A0%E4%B8%8D%E5%8A%A0-h/"
+                                   title="psql在本地加不加-h ？"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">psql在本地加不加-h ？</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8E%AF-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-WAL%EF%BC%9F"><span class="nav-text">🎯 为什么需要 WAL？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B1-WAL-%E7%9A%84%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84"><span class="nav-text">🧱 WAL 的物理结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LSN%EF%BC%9AWAL-%E4%B8%96%E7%95%8C%E7%9A%84%E2%80%9D%E5%9D%90%E6%A0%87%E8%BD%B4%E2%80%9D"><span class="nav-text">LSN：WAL 世界的”坐标轴”</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%84-%E4%B8%80%E6%AC%A1-UPDATE-%E5%9C%A8-WAL-%E4%B8%AD%E7%9A%84%E6%97%85%E7%A8%8B"><span class="nav-text">🔄 一次 UPDATE 在 WAL 中的旅程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A0-WAL-%E8%AE%B0%E5%BD%95%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7%EF%BC%9F"><span class="nav-text">🧠 WAL 记录长什么样？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A1%EF%B8%8F-Full-Page-Write%EF%BC%9AWAL-%E7%9A%84%E2%80%9D%E5%85%9C%E5%BA%95%E4%BF%9D%E9%99%A9%E2%80%9D"><span class="nav-text">🛡️ Full Page Write：WAL 的”兜底保险”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B0-%E6%9F%A5%E7%9C%8B-WAL-%E5%86%85%E9%83%A8%EF%BC%9Apg-waldump"><span class="nav-text">🧰 查看 WAL 内部：pg_waldump</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E4%B8%8E-WAL-%E7%9B%B8%E5%85%B3%E7%9A%84%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0"><span class="nav-text">⚙️ 与 WAL 相关的关键参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%8A-WAL-%E7%9A%84%E4%B8%8B%E6%B8%B8%EF%BC%9A%E5%A4%8D%E5%88%B6%E3%80%81PITR-%E4%B8%8E%E9%80%BB%E8%BE%91%E8%A7%A3%E7%A0%81"><span class="nav-text">🌊 WAL 的下游：复制、PITR 与逻辑解码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%8C-%E4%B8%80%E4%BA%9B%E5%AE%B9%E6%98%93%E8%B8%A9%E5%9D%91%E7%9A%84%E7%82%B9"><span class="nav-text">📌 一些容易踩坑的点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8E%AF-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-WAL%EF%BC%9F"><span class="nav-text">🎯 为什么需要 WAL？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B1-WAL-%E7%9A%84%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84"><span class="nav-text">🧱 WAL 的物理结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LSN%EF%BC%9AWAL-%E4%B8%96%E7%95%8C%E7%9A%84%E2%80%9D%E5%9D%90%E6%A0%87%E8%BD%B4%E2%80%9D"><span class="nav-text">LSN：WAL 世界的”坐标轴”</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%84-%E4%B8%80%E6%AC%A1-UPDATE-%E5%9C%A8-WAL-%E4%B8%AD%E7%9A%84%E6%97%85%E7%A8%8B"><span class="nav-text">🔄 一次 UPDATE 在 WAL 中的旅程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A0-WAL-%E8%AE%B0%E5%BD%95%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7%EF%BC%9F"><span class="nav-text">🧠 WAL 记录长什么样？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A1%EF%B8%8F-Full-Page-Write%EF%BC%9AWAL-%E7%9A%84%E2%80%9D%E5%85%9C%E5%BA%95%E4%BF%9D%E9%99%A9%E2%80%9D"><span class="nav-text">🛡️ Full Page Write：WAL 的”兜底保险”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%B0-%E6%9F%A5%E7%9C%8B-WAL-%E5%86%85%E9%83%A8%EF%BC%9Apg-waldump"><span class="nav-text">🧰 查看 WAL 内部：pg_waldump</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E4%B8%8E-WAL-%E7%9B%B8%E5%85%B3%E7%9A%84%E5%85%B3%E9%94%AE%E5%8F%82%E6%95%B0"><span class="nav-text">⚙️ 与 WAL 相关的关键参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%8A-WAL-%E7%9A%84%E4%B8%8B%E6%B8%B8%EF%BC%9A%E5%A4%8D%E5%88%B6%E3%80%81PITR-%E4%B8%8E%E9%80%BB%E8%BE%91%E8%A7%A3%E7%A0%81"><span class="nav-text">🌊 WAL 的下游：复制、PITR 与逻辑解码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%8C-%E4%B8%80%E4%BA%9B%E5%AE%B9%E6%98%93%E8%B8%A9%E5%9D%91%E7%9A%84%E7%82%B9"><span class="nav-text">📌 一些容易踩坑的点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>

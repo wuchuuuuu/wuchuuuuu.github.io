@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            PostgreSQL的流复制：主从同步的艺术 |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        PostgreSQL的流复制：主从同步的艺术
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">化神洞玄</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2026-04-23 21:50:00</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Thu Apr 23 2026 21:15:39 GMT+0800">2026-04-23 21:15:39</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/PostgreSQL/">PostgreSQL</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E6%B5%81%E5%A4%8D%E5%88%B6/">流复制</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/">高可用</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>高可用从来不是一个功能，而是一整套哲学。<br>PostgreSQL 的流复制机制，把”<strong>主库写，备库跟</strong>“这件事做到了优雅、稳定、可调。本篇文章，我们从<strong>原理</strong>讲到<strong>架构</strong>，从<strong>配置</strong>讲到<strong>排障</strong>，全面梳理流复制的艺术。</p>
+</blockquote>
+<hr>
+<h2 id="🌊-什么是流复制？"><a href="#🌊-什么是流复制？" class="headerlink" title="🌊 什么是流复制？"></a>🌊 什么是流复制？</h2><p>PostgreSQL 的流复制（Streaming Replication），本质上是一件<strong>朴素</strong>的事：</p>
+<blockquote>
+<p><strong>Primary 把产生的 WAL 日志</strong>通过 TCP 连接<strong>持续发送</strong>给 Standby，Standby 不断<strong>重放</strong>这些 WAL，保持与主库一致。</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">  Primary                        Standby</span><br><span class="line">┌────────────┐                 ┌────────────┐</span><br><span class="line">│  Backend    │                 │  Startup    │</span><br><span class="line">│  ↓ WAL      │                 │  ↑ Replay   │</span><br><span class="line">│  WAL Writer │──── TCP ────►   │  WAL Receiver│</span><br><span class="line">│  ↓          │  (WAL stream)   │  ↓          │</span><br><span class="line">│  pg_wal/    │                 │  pg_wal/    │</span><br><span class="line">└────────────┘                 └────────────┘</span><br></pre></td></tr></table></figure>
+
+<p>一张图看清本质：<strong>WAL 是主备之间唯一的”血管”</strong>。</p>
+<hr>
+<h2 id="🧬-WAL-流的三种传输方式"><a href="#🧬-WAL-流的三种传输方式" class="headerlink" title="🧬 WAL 流的三种传输方式"></a>🧬 WAL 流的三种传输方式</h2><h3 id="1-异步复制（默认）"><a href="#1-异步复制（默认）" class="headerlink" title="1. 异步复制（默认）"></a>1. 异步复制（默认）</h3><p>Primary <strong>不等</strong>备库确认，事务就算提交。</p>
+<ul>
+<li>✅ 主库延迟最低</li>
+<li>❌ 主库宕机时，<strong>可能丢失最近几条事务</strong></li>
+</ul>
+<h3 id="2-同步复制"><a href="#2-同步复制" class="headerlink" title="2. 同步复制"></a>2. 同步复制</h3><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">synchronous_standby_names</span> = <span class="string">&#x27;standby1&#x27;</span></span><br><span class="line"><span class="attr">synchronous_commit</span> = <span class="literal">on</span></span><br></pre></td></tr></table></figure>
+
+<p>Primary <strong>等至少一个备库 fsync 落盘</strong>后，才算提交成功。</p>
+<ul>
+<li>✅ 强一致，RPO &#x3D; 0</li>
+<li>❌ 备库挂了或网络抖动，主库写入会卡死</li>
+</ul>
+<h3 id="3-Quorum-同步（PG-10-）"><a href="#3-Quorum-同步（PG-10-）" class="headerlink" title="3. Quorum 同步（PG 10+）"></a>3. Quorum 同步（PG 10+）</h3><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">synchronous_standby_names</span> = <span class="string">&#x27;ANY 2 (s1, s2, s3)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>只要 <strong>任意 2 个</strong>备库确认就提交——在<strong>一致性</strong>和<strong>可用性</strong>之间取巧妙平衡。</p>
+<hr>
+<h2 id="🔄-复制的四个关键-LSN"><a href="#🔄-复制的四个关键-LSN" class="headerlink" title="🔄 复制的四个关键 LSN"></a>🔄 复制的四个关键 LSN</h2><p>流复制中，每个阶段都有自己的 LSN 坐标：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Primary:                                   Standby:</span><br><span class="line">  │                                           │</span><br><span class="line">  │  write_lsn  → flush_lsn → sent_lsn        │</span><br><span class="line">  │                                           │</span><br><span class="line">  │        ──────── WAL 流 ──────►            │</span><br><span class="line">  │                                           │</span><br><span class="line">  │                       write_lsn           │</span><br><span class="line">  │                       flush_lsn           │</span><br><span class="line">  │                       replay_lsn          │</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>write_lsn</code>：备库<strong>已接收并写入 WAL 文件</strong>的位置</li>
+<li><code>flush_lsn</code>：备库<strong>已 fsync 到磁盘</strong>的位置</li>
+<li><code>replay_lsn</code>：备库<strong>已重放</strong>到数据页的位置</li>
+</ul>
+<h3 id="查询命令"><a href="#查询命令" class="headerlink" title="查询命令"></a>查询命令</h3><p>在 <strong>Primary</strong> 上：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> application_name, client_addr,</span><br><span class="line">       state, sync_state,</span><br><span class="line">       pg_wal_lsn_diff(pg_current_wal_lsn(), sent_lsn)   <span class="keyword">AS</span> send_lag,</span><br><span class="line">       pg_wal_lsn_diff(sent_lsn, flush_lsn)              <span class="keyword">AS</span> flush_lag,</span><br><span class="line">       pg_wal_lsn_diff(flush_lsn, replay_lsn)            <span class="keyword">AS</span> replay_lag</span><br><span class="line"><span class="keyword">FROM</span> pg_stat_replication;</span><br></pre></td></tr></table></figure>
+
+<p>在 <strong>Standby</strong> 上：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> pg_is_in_recovery(),</span><br><span class="line">       pg_last_wal_receive_lsn(),</span><br><span class="line">       pg_last_wal_replay_lsn(),</span><br><span class="line">       pg_last_xact_replay_timestamp();</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>replay_lag</code> 才是业务真正关心的——<strong>数据什么时候能在备库被查到</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="🛠️-从零搭建一套流复制"><a href="#🛠️-从零搭建一套流复制" class="headerlink" title="🛠️ 从零搭建一套流复制"></a>🛠️ 从零搭建一套流复制</h2><h3 id="第一步：主库配置"><a href="#第一步：主库配置" class="headerlink" title="第一步：主库配置"></a>第一步：主库配置</h3><p>编辑 <code>postgresql.conf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">listen_addresses</span> = <span class="string">&#x27;*&#x27;</span></span><br><span class="line"><span class="attr">wal_level</span> = replica</span><br><span class="line"><span class="attr">max_wal_senders</span> = <span class="number">10</span></span><br><span class="line"><span class="attr">wal_keep_size</span> = <span class="number">1</span>GB</span><br><span class="line"><span class="attr">hot_standby</span> = <span class="literal">on</span>          <span class="comment"># 允许备库被只读查询</span></span><br></pre></td></tr></table></figure>
+
+<p>编辑 <code>pg_hba.conf</code> 放行复制连接：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">host replication replicator 10.0.0.0/8 scram-sha-256</span><br></pre></td></tr></table></figure>
+
+<p>创建复制用户：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> ROLE replicator <span class="keyword">WITH</span> REPLICATION LOGIN PASSWORD <span class="string">&#x27;xxx&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>重启主库。</p>
+<h3 id="第二步：从主库做基础备份"><a href="#第二步：从主库做基础备份" class="headerlink" title="第二步：从主库做基础备份"></a>第二步：从主库做基础备份</h3><p>在<strong>备库机器</strong>上：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pg_basebackup \</span><br><span class="line">    -h primary.host \</span><br><span class="line">    -U replicator \</span><br><span class="line">    -D /var/lib/postgresql/data \</span><br><span class="line">    -Fp -Xs -P -R \</span><br><span class="line">    --slot=standby1_slot --create-slot</span><br></pre></td></tr></table></figure>
+
+<p><code>-R</code> 会<strong>自动生成</strong> <code>standby.signal</code> 和 <code>postgresql.auto.conf</code>，省去手写配置。<br><code>--slot</code> 创建<strong>复制槽</strong>（下一节细说）。</p>
+<h3 id="第三步：启动备库"><a href="#第三步：启动备库" class="headerlink" title="第三步：启动备库"></a>第三步：启动备库</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pg_ctl -D /var/lib/postgresql/data start</span><br></pre></td></tr></table></figure>
+
+<p>检查：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 备库上</span></span><br><span class="line"><span class="keyword">SELECT</span> pg_is_in_recovery();   <span class="comment">-- t</span></span><br><span class="line"><span class="comment">-- 主库上</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> pg_stat_replication;   <span class="comment">-- 看到 standby1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>大功告成</strong>，一套异步流复制就跑起来了。</p>
+<hr>
+<h2 id="🧃-复制槽（Replication-Slot）：不再”丢-WAL”"><a href="#🧃-复制槽（Replication-Slot）：不再”丢-WAL”" class="headerlink" title="🧃 复制槽（Replication Slot）：不再”丢 WAL”"></a>🧃 复制槽（Replication Slot）：不再”丢 WAL”</h2><p>没有复制槽时，如果备库离线太久，主库可能已经<strong>回收</strong>了备库还没拉走的 WAL。再连上来就提示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FATAL: requested WAL segment 00000001... has already been removed</span><br></pre></td></tr></table></figure>
+
+<p>这就意味着<strong>需要重新做 basebackup</strong>。</p>
+<p><strong>复制槽的作用</strong>：</p>
+<blockquote>
+<p><strong>让主库知道</strong>“有个备库还没消费到这里”，<strong>禁止回收</strong>这部分 WAL。</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建物理复制槽</span></span><br><span class="line"><span class="keyword">SELECT</span> pg_create_physical_replication_slot(<span class="string">&#x27;standby1_slot&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看槽</span></span><br><span class="line"><span class="keyword">SELECT</span> slot_name, slot_type, active, restart_lsn,</span><br><span class="line">       pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) <span class="keyword">AS</span> wal_retained</span><br><span class="line"><span class="keyword">FROM</span> pg_replication_slots;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：复制槽<strong>失活</strong>（备库长期离线）会让主库<strong>无限堆积 WAL</strong>，磁盘打爆。<br>配合 PG 13+ 的 <code>max_slot_wal_keep_size</code> 限制上限：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">max_slot_wal_keep_size</span> = <span class="number">10</span>GB</span><br></pre></td></tr></table></figure>
+
+<p>超过就允许回收，保护主库磁盘。</p>
+<hr>
+<h2 id="🧠-备库的”热读”能力"><a href="#🧠-备库的”热读”能力" class="headerlink" title="🧠 备库的”热读”能力"></a>🧠 备库的”热读”能力</h2><p><code>hot_standby = on</code> 让备库允许只读查询，但有一个<strong>微妙的问题</strong>：</p>
+<h3 id="Hot-Standby-的查询冲突"><a href="#Hot-Standby-的查询冲突" class="headerlink" title="Hot Standby 的查询冲突"></a>Hot Standby 的查询冲突</h3><p>备库正在重放一个清理死元组的 WAL，而此时有一个<strong>长查询</strong>正在读这些数据——怎么办？</p>
+<p>PostgreSQL 的默认策略：<strong>取消查询</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR:  canceling statement due to conflict with recovery</span><br><span class="line">DETAIL: User query might have needed to see row versions that must be removed.</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p><strong>方案 1：推迟重放</strong></p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">max_standby_streaming_delay</span> = <span class="number">30</span>s    <span class="comment"># 等 30 秒</span></span><br></pre></td></tr></table></figure>
+
+<p>给查询留一个宽限窗口。代价是<strong>备库延迟可能增加</strong>。</p>
+<p><strong>方案 2：同步快照（hot_standby_feedback）</strong></p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hot_standby_feedback</span> = <span class="literal">on</span></span><br></pre></td></tr></table></figure>
+
+<p>备库<strong>主动告诉主库</strong>：”我这里还有 XID&#x3D;xxx 的事务在跑”，主库就不清理对应的元组。<br>副作用：<strong>主库 VACUUM 效率可能下降</strong>。</p>
+<p><strong>选择哲学</strong>：读多慢查询 → 开 feedback；写优先 → 开 max_standby_delay。</p>
+<hr>
+<h2 id="🧭-延迟备库（Delayed-Standby）"><a href="#🧭-延迟备库（Delayed-Standby）" class="headerlink" title="🧭 延迟备库（Delayed Standby）"></a>🧭 延迟备库（Delayed Standby）</h2><p>这是一个常被低估的功能——<strong>专门给”人类犯错”准备的后悔药</strong>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">recovery_min_apply_delay</span> = <span class="string">&#x27;1h&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>备库<strong>接收 WAL 后延迟 1 小时</strong>再重放。<br>万一主库上误删了表，你还有 1 小时时间从这个备库救数据。</p>
+<p><strong>低成本、极高性价比</strong>——每个生产集群都应该配一个。</p>
+<hr>
+<h2 id="📡-逻辑复制-vs-物理流复制"><a href="#📡-逻辑复制-vs-物理流复制" class="headerlink" title="📡 逻辑复制 vs 物理流复制"></a>📡 逻辑复制 vs 物理流复制</h2><p>顺带澄清一个概念：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>物理流复制</th>
+<th>逻辑复制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>传输单元</td>
+<td>WAL 字节流</td>
+<td>解码后的行级变更</td>
+</tr>
+<tr>
+<td>主备版本一致性</td>
+<td>必须一致</td>
+<td>可跨大版本</td>
+</tr>
+<tr>
+<td>备库是否可写</td>
+<td>只读</td>
+<td><strong>可写</strong></td>
+</tr>
+<tr>
+<td>粒度</td>
+<td>整个集群</td>
+<td>单表 &#x2F; 单数据库</td>
+</tr>
+<tr>
+<td>典型用途</td>
+<td>高可用、读写分离</td>
+<td>数据集成、跨版本升级、CDC</td>
+</tr>
+</tbody></table>
+<p><strong>一句话</strong>：<strong>高可用用物理流复制，数据流动用逻辑复制</strong>。</p>
+<hr>
+<h2 id="🧯-常见故障与排查"><a href="#🧯-常见故障与排查" class="headerlink" title="🧯 常见故障与排查"></a>🧯 常见故障与排查</h2><h3 id="症状-1：replay-lag-持续增长"><a href="#症状-1：replay-lag-持续增长" class="headerlink" title="症状 1：replay_lag 持续增长"></a>症状 1：replay_lag 持续增长</h3><p>可能原因：</p>
+<ul>
+<li>备库 I&#x2F;O 或 CPU 饱和 → 监控备库负载</li>
+<li>主库生成 WAL 过快 → 关注批量写入</li>
+<li>备库配置过低 → 调大 <code>max_wal_senders</code>, <code>wal_receiver_timeout</code></li>
+</ul>
+<h3 id="症状-2：主库-pg-wal-爆满"><a href="#症状-2：主库-pg-wal-爆满" class="headerlink" title="症状 2：主库 pg_wal 爆满"></a>症状 2：主库 pg_wal 爆满</h3><p>查复制槽：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> slot_name, active, pg_size_pretty(</span><br><span class="line">  pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) <span class="keyword">AS</span> retained</span><br><span class="line"><span class="keyword">FROM</span> pg_replication_slots <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="number">3</span> <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<p>有<strong>非活跃</strong>且保留大量 WAL 的槽 → <strong>删掉</strong>或修复备库。</p>
+<h3 id="症状-3：备库日志出现-requested-WAL-segment-has-already-been-removed"><a href="#症状-3：备库日志出现-requested-WAL-segment-has-already-been-removed" class="headerlink" title="症状 3：备库日志出现 requested WAL segment has already been removed"></a>症状 3：备库日志出现 <code>requested WAL segment has already been removed</code></h3><p>主库 WAL 被回收了。解决：</p>
+<ul>
+<li>使用复制槽</li>
+<li>加大 <code>wal_keep_size</code></li>
+<li>配置 WAL 归档（<code>archive_command</code>）+ <code>restore_command</code></li>
+</ul>
+<h3 id="症状-4：同步备库让主库卡死"><a href="#症状-4：同步备库让主库卡死" class="headerlink" title="症状 4：同步备库让主库卡死"></a>症状 4：同步备库让主库卡死</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LOG: waiting for synchronous replication</span><br></pre></td></tr></table></figure>
+
+<p>备库挂了但仍在同步名单里，主库所有事务会悬停。紧急恢复：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 降级为异步</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">SYSTEM</span> <span class="keyword">SET</span> synchronous_standby_names <span class="operator">=</span> <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"><span class="keyword">SELECT</span> pg_reload_conf();</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="🏰-生产级高可用拓扑"><a href="#🏰-生产级高可用拓扑" class="headerlink" title="🏰 生产级高可用拓扑"></a>🏰 生产级高可用拓扑</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">           ┌─────────────┐</span><br><span class="line">           │  Primary    │</span><br><span class="line">           └──────┬──────┘</span><br><span class="line">                  │ Streaming</span><br><span class="line">      ┌───────────┼───────────┐</span><br><span class="line">      ▼           ▼           ▼</span><br><span class="line">┌──────────┐ ┌──────────┐ ┌──────────┐</span><br><span class="line">│ Standby1 │ │ Standby2 │ │ Delayed  │</span><br><span class="line">│ (sync)   │ │ (async)  │ │ (1h lag) │</span><br><span class="line">└──────────┘ └──────────┘ └──────────┘</span><br><span class="line">      ▲           ▲</span><br><span class="line">      └───────────┘</span><br><span class="line">      Patroni / repmgr</span><br><span class="line">      （故障自动切换）</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>至少 1 个同步备库</strong>保 RPO</li>
+<li><strong>多个异步备库</strong>承接只读流量</li>
+<li><strong>1 个延迟备库</strong>做人祸后悔药</li>
+<li><strong>Patroni</strong>配合 etcd&#x2F;Consul 做自动故障转移</li>
+</ul>
+<hr>
+<h2 id="✨-结语"><a href="#✨-结语" class="headerlink" title="✨ 结语"></a>✨ 结语</h2><p>流复制是 PostgreSQL 最”稳重”的特性之一：</p>
+<ul>
+<li>简单得像一条水管</li>
+<li>灵活得像一件织物</li>
+<li>强大得像一座堡垒</li>
+</ul>
+<p>它用 WAL 连接了时间与空间，让一份数据在多个节点<strong>同一频率</strong>跳动。</p>
+<blockquote>
+<p><strong>不是因为数据库强，才有高可用；而是因为有流复制，数据库才敢说”我永远在线”。</strong></p>
+</blockquote>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                PostgreSQL的流复制：主从同步的艺术
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2026/04/23/PostgreSQL的流复制-主从同步的艺术/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2026-04-23 21:50</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E6%B5%81%E5%A4%8D%E5%88%B6/">流复制</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/">高可用</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                            <div class="prev-post">
+                                <a class="prev"
+                                   rel="prev"
+                                   href="/2026/04/23/%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%98%AF%E6%80%8E%E4%B9%88%E7%82%BC%E6%88%90%E7%9A%84-%E4%BB%8Epg_stat_statements%E8%AF%B4%E8%B5%B7/"
+                                   title="慢查询是怎么炼成的：从pg_stat_statements说起"
+                                >
+                                    <span class="left arrow-icon flex-center">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </span>
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">慢查询是怎么炼成的：从pg_stat_statements说起</span>
+                                        <span class="post-nav-item">上一篇</span>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2026/04/23/%E5%88%86%E5%8C%BA%E8%A1%A8%E7%9A%84%E4%BD%BF%E7%94%A8%E5%93%B2%E5%AD%A6-%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%AF%A5%E6%8B%86%E6%80%8E%E4%B9%88%E6%8B%86%E6%89%8D%E4%BC%98%E9%9B%85/"
+                                   title="分区表的使用哲学：什么时候该拆，怎么拆才优雅"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">分区表的使用哲学：什么时候该拆，怎么拆才优雅</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%8A-%E4%BB%80%E4%B9%88%E6%98%AF%E6%B5%81%E5%A4%8D%E5%88%B6%EF%BC%9F"><span class="nav-text">🌊 什么是流复制？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AC-WAL-%E6%B5%81%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="nav-text">🧬 WAL 流的三种传输方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-text">1. 异步复制（默认）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%90%8C%E6%AD%A5%E5%A4%8D%E5%88%B6"><span class="nav-text">2. 同步复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Quorum-%E5%90%8C%E6%AD%A5%EF%BC%88PG-10-%EF%BC%89"><span class="nav-text">3. Quorum 同步（PG 10+）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%84-%E5%A4%8D%E5%88%B6%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%85%B3%E9%94%AE-LSN"><span class="nav-text">🔄 复制的四个关键 LSN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E5%91%BD%E4%BB%A4"><span class="nav-text">查询命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E6%B5%81%E5%A4%8D%E5%88%B6"><span class="nav-text">🛠️ 从零搭建一套流复制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E4%B8%BB%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="nav-text">第一步：主库配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E4%BB%8E%E4%B8%BB%E5%BA%93%E5%81%9A%E5%9F%BA%E7%A1%80%E5%A4%87%E4%BB%BD"><span class="nav-text">第二步：从主库做基础备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%90%AF%E5%8A%A8%E5%A4%87%E5%BA%93"><span class="nav-text">第三步：启动备库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%83-%E5%A4%8D%E5%88%B6%E6%A7%BD%EF%BC%88Replication-Slot%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%86%8D%E2%80%9D%E4%B8%A2-WAL%E2%80%9D"><span class="nav-text">🧃 复制槽（Replication Slot）：不再”丢 WAL”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A0-%E5%A4%87%E5%BA%93%E7%9A%84%E2%80%9D%E7%83%AD%E8%AF%BB%E2%80%9D%E8%83%BD%E5%8A%9B"><span class="nav-text">🧠 备库的”热读”能力</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hot-Standby-%E7%9A%84%E6%9F%A5%E8%AF%A2%E5%86%B2%E7%AA%81"><span class="nav-text">Hot Standby 的查询冲突</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AD-%E5%BB%B6%E8%BF%9F%E5%A4%87%E5%BA%93%EF%BC%88Delayed-Standby%EF%BC%89"><span class="nav-text">🧭 延迟备库（Delayed Standby）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%A1-%E9%80%BB%E8%BE%91%E5%A4%8D%E5%88%B6-vs-%E7%89%A9%E7%90%86%E6%B5%81%E5%A4%8D%E5%88%B6"><span class="nav-text">📡 逻辑复制 vs 物理流复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AF-%E5%B8%B8%E8%A7%81%E6%95%85%E9%9A%9C%E4%B8%8E%E6%8E%92%E6%9F%A5"><span class="nav-text">🧯 常见故障与排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-1%EF%BC%9Areplay-lag-%E6%8C%81%E7%BB%AD%E5%A2%9E%E9%95%BF"><span class="nav-text">症状 1：replay_lag 持续增长</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-2%EF%BC%9A%E4%B8%BB%E5%BA%93-pg-wal-%E7%88%86%E6%BB%A1"><span class="nav-text">症状 2：主库 pg_wal 爆满</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-3%EF%BC%9A%E5%A4%87%E5%BA%93%E6%97%A5%E5%BF%97%E5%87%BA%E7%8E%B0-requested-WAL-segment-has-already-been-removed"><span class="nav-text">症状 3：备库日志出现 requested WAL segment has already been removed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-4%EF%BC%9A%E5%90%8C%E6%AD%A5%E5%A4%87%E5%BA%93%E8%AE%A9%E4%B8%BB%E5%BA%93%E5%8D%A1%E6%AD%BB"><span class="nav-text">症状 4：同步备库让主库卡死</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8F%B0-%E7%94%9F%E4%BA%A7%E7%BA%A7%E9%AB%98%E5%8F%AF%E7%94%A8%E6%8B%93%E6%89%91"><span class="nav-text">🏰 生产级高可用拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8C%8A-%E4%BB%80%E4%B9%88%E6%98%AF%E6%B5%81%E5%A4%8D%E5%88%B6%EF%BC%9F"><span class="nav-text">🌊 什么是流复制？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AC-WAL-%E6%B5%81%E7%9A%84%E4%B8%89%E7%A7%8D%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="nav-text">🧬 WAL 流的三种传输方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-text">1. 异步复制（默认）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%90%8C%E6%AD%A5%E5%A4%8D%E5%88%B6"><span class="nav-text">2. 同步复制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Quorum-%E5%90%8C%E6%AD%A5%EF%BC%88PG-10-%EF%BC%89"><span class="nav-text">3. Quorum 同步（PG 10+）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%94%84-%E5%A4%8D%E5%88%B6%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%85%B3%E9%94%AE-LSN"><span class="nav-text">🔄 复制的四个关键 LSN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E5%91%BD%E4%BB%A4"><span class="nav-text">查询命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E5%A5%97%E6%B5%81%E5%A4%8D%E5%88%B6"><span class="nav-text">🛠️ 从零搭建一套流复制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E4%B8%BB%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="nav-text">第一步：主库配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E4%BB%8E%E4%B8%BB%E5%BA%93%E5%81%9A%E5%9F%BA%E7%A1%80%E5%A4%87%E4%BB%BD"><span class="nav-text">第二步：从主库做基础备份</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%90%AF%E5%8A%A8%E5%A4%87%E5%BA%93"><span class="nav-text">第三步：启动备库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%83-%E5%A4%8D%E5%88%B6%E6%A7%BD%EF%BC%88Replication-Slot%EF%BC%89%EF%BC%9A%E4%B8%8D%E5%86%8D%E2%80%9D%E4%B8%A2-WAL%E2%80%9D"><span class="nav-text">🧃 复制槽（Replication Slot）：不再”丢 WAL”</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%A0-%E5%A4%87%E5%BA%93%E7%9A%84%E2%80%9D%E7%83%AD%E8%AF%BB%E2%80%9D%E8%83%BD%E5%8A%9B"><span class="nav-text">🧠 备库的”热读”能力</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hot-Standby-%E7%9A%84%E6%9F%A5%E8%AF%A2%E5%86%B2%E7%AA%81"><span class="nav-text">Hot Standby 的查询冲突</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AD-%E5%BB%B6%E8%BF%9F%E5%A4%87%E5%BA%93%EF%BC%88Delayed-Standby%EF%BC%89"><span class="nav-text">🧭 延迟备库（Delayed Standby）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%93%A1-%E9%80%BB%E8%BE%91%E5%A4%8D%E5%88%B6-vs-%E7%89%A9%E7%90%86%E6%B5%81%E5%A4%8D%E5%88%B6"><span class="nav-text">📡 逻辑复制 vs 物理流复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%AF-%E5%B8%B8%E8%A7%81%E6%95%85%E9%9A%9C%E4%B8%8E%E6%8E%92%E6%9F%A5"><span class="nav-text">🧯 常见故障与排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-1%EF%BC%9Areplay-lag-%E6%8C%81%E7%BB%AD%E5%A2%9E%E9%95%BF"><span class="nav-text">症状 1：replay_lag 持续增长</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-2%EF%BC%9A%E4%B8%BB%E5%BA%93-pg-wal-%E7%88%86%E6%BB%A1"><span class="nav-text">症状 2：主库 pg_wal 爆满</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-3%EF%BC%9A%E5%A4%87%E5%BA%93%E6%97%A5%E5%BF%97%E5%87%BA%E7%8E%B0-requested-WAL-segment-has-already-been-removed"><span class="nav-text">症状 3：备库日志出现 requested WAL segment has already been removed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%97%87%E7%8A%B6-4%EF%BC%9A%E5%90%8C%E6%AD%A5%E5%A4%87%E5%BA%93%E8%AE%A9%E4%B8%BB%E5%BA%93%E5%8D%A1%E6%AD%BB"><span class="nav-text">症状 4：同步备库让主库卡死</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8F%B0-%E7%94%9F%E4%BA%A7%E7%BA%A7%E9%AB%98%E5%8F%AF%E7%94%A8%E6%8B%93%E6%89%91"><span class="nav-text">🏰 生产级高可用拓扑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9C%A8-%E7%BB%93%E8%AF%AD"><span class="nav-text">✨ 结语</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>
