@@ -399,7 +399,7 @@
             
                 <span class="meta-info-item post-update-date">
                     <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                    <span class="datetime" data-updated="Thu Apr 23 2026 21:05:08 GMT+0800">2026-04-23 21:05:08</span>
+                    <span class="datetime" data-updated="Thu Apr 23 2026 21:07:14 GMT+0800">2026-04-23 21:07:14</span>
                 </span>
             
         
@@ -449,7 +449,7 @@
 
                     
                          <p>这是一个很好的问题！<code>psql</code> 直接连接和加 <code>-h 127.0.0.1</code> 虽然都是连接本机，但有重要区别：</p>
-<h2 id="🔑-核心区别：连接方式不同"><a href="#🔑-核心区别：连接方式不同" class="headerlink" title="🔑 核心区别：连接方式不同"></a>🔑 核心区别：连接方式不同</h2><h3 id="1-直接连接（不加-h）"><a href="#1-直接连接（不加-h）" class="headerlink" title="1. 直接连接（不加 -h）"></a>1. <strong>直接连接（不加 -h）</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -U postgres -d mydb</span><br></pre></td></tr></table></figure>
+<h2 id="🔑-核心区别：连接方式不同"><a href="#🔑-核心区别：连接方式不同" class="headerlink" title="🔑 核心区别：连接方式不同"></a>🔑 核心区别：连接方式不同</h2><h3 id="1-直接连接（不加-h）"><a href="#1-直接连接（不加-h）" class="headerlink" title="1. 直接连接（不加 -h）"></a>1. 直接连接（不加 -h）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -U postgres -d mydb</span><br></pre></td></tr></table></figure>
 <p><strong>使用：Unix Domain Socket（本地套接字）</strong></p>
 <ul>
 <li>通过文件系统的 socket 文件连接</li>
@@ -457,7 +457,7 @@
 <li><strong>不经过网络栈</strong>，直接进程间通信（IPC）</li>
 </ul>
 <hr>
-<h3 id="2-加-h-127-0-0-1"><a href="#2-加-h-127-0-0-1" class="headerlink" title="2. 加 -h 127.0.0.1"></a>2. <strong>加 -h 127.0.0.1</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -h 127.0.0.1 -U postgres -d mydb</span><br></pre></td></tr></table></figure>
+<h3 id="2-加-h-127-0-0-1"><a href="#2-加-h-127-0-0-1" class="headerlink" title="2. 加 -h 127.0.0.1"></a>2. 加 -h 127.0.0.1</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -h 127.0.0.1 -U postgres -d mydb</span><br></pre></td></tr></table></figure>
 <p><strong>使用：TCP&#x2F;IP 网络连接</strong></p>
 <ul>
 <li>通过 TCP 协议连接到 127.0.0.1:5432</li>
