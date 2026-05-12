@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="梧杵">
+    
+    <title>
+        
+            SQL Server 详细学习指南（PG 专家视角） |
+        
+        DBA有话说
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    
+        <link rel="shortcut icon" href="/images/icon.svg">
+    
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    
+        
+            
+                
+<link rel="stylesheet" href="/css/custom.css">
+
+            
+        
+            
+                
+<link rel="stylesheet" href="https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css">
+
+            
+        
+    
+    <script class="keep-theme-configurations">
+    const KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wuchuuuuu.github.io","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"base_info":{"primary_color":"#0066cc","title":"DBA有话说","author":"梧杵","avatar":"/images/logo.png","logo":"/images/icon.svg","favicon":"/images/icon.svg"},"menu":{"home":"/                        || fa-solid fa-home","archives":"/archives            || fa-solid fa-box-archive","tags":"/tags                  || fa-solid fa-tags","categories":"/categories      || fa-solid fa-layer-group","links":"/links                || fa-solid fa-link","photos":"/photos              || fa-solid fa-image","tools":"/tools                || fa-solid fa-tools","about":"/about                || fa-solid fa-user-graduate"},"first_screen":{"enable":false,"background_img":"/images/bg.svg","background_img_dark":"/images/bg.svg","description":"Keep writing and Keep loving.","hitokoto":true},"social_contact":{"enable":false,"links":{"github":null,"weixin":null,"qq":null,"weibo":null,"zhihu":null,"twitter":null,"x":null,"facebook":null,"email":null}},"scroll":{"progress_bar":false,"percent":true,"hide_header":true},"home":{"announcement":"DBA有话说","category":true,"tag":true,"post_datetime":"updated"},"post":{"author_badge":{"enable":true,"level_badge":false,"custom_badge":["尘缘初启","筑基明理","结丹通窍","元婴问道","化神洞玄","合道归真","太虚游仙","混元无极","天道永恒"]},"word_count":{"wordcount":true,"min2read":true},"datetime_format":"YYYY-MM-DD HH:mm:ss","copyright_info":true,"share":true,"reward":{"enable":true,"img_link":"/images/pay.jpg","text":"您的支持将鼓励我继续创作！","icon":null}},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true,"layout":"right"},"website_count":{"busuanzi_count":{"enable":true,"site_uv":false,"site_pv":false,"page_pv":true}},"local_search":{"enable":true,"preload":true},"comment":{"enable":true,"use":"twikoo","valine":{"appid":null,"appkey":null,"server_urls":null,"placeholder":null},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":"https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo","region":null,"version":"1.6.39"},"waline":{"server_url":null,"reaction":false,"version":"3.3.2"},"giscus":{"repo":null,"repo_id":null,"category":"Announcements","category_id":null,"reactions_enabled":false},"artalk":{"server":null},"disqus":{"shortname":null}},"rss":{"enable":true},"feed":{"type":"atom","path":"atom.xml","limit":20},"lazyload":{"enable":true},"cdn":{"enable":false,"provider":"cdnjs"},"pjax":{"enable":true},"footer":{"since":null,"word_count":true,"site_deploy":{"enable":true,"provider":"github","url":"https://github.com/wuchuuuuu"},"record":{"enable":true,"list":[{"code":"蜀ICP备2025119146号","link":"https://beian.miit.gov.cn/"}]}},"inject":{"enable":true,"css":["/css/custom.css","https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/style.min.css"],"js":["/js/custom.js"]},"mathjax":{"tags":"none","single_dollars":true,"cjk_width":0.9,"normal_width":0.6,"append_css":true,"every_page":false},"root":"","source_data":{"links":[{"title":"朋友们"},{"name":"XPoet","link":"https://xpoet.cn","description":"懒惰是程序员第一生产力","avatar":"https://xpoet.cn/images/avatar.png"},{"name":"不知名艺术家","link":"https://jinzhanqi.com/","description":"love artist, love code.","avatar":"https://s3.ax1x.com/2020/11/17/DVvkB4.jpg"}],"photos":[{"url":"/images/kunkun.png","name":"kunkun"}],"tools":[{"category":"聊天 AI","anchorId":"JUU4JTgxJThBJUU1JUE0JUE5JTIwQUk0"},{"name":"ChatGPT","link":"https://chat.openai.com/","description":"OpenAI 旗下 AI 聊天对话工具","image":"/images/tools/chatgpt.svg"},{"name":"Gemini","link":"https://gemini.google.com/app","description":"Google 旗下 AI 聊天对话工具","image":"/images/tools/gemini.svg"}]},"version":"4.2.5"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="DBA有话说" type="application/atom+xml">
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+
+<main class="page-container border-box">
+    <!-- home first screen  -->
+    
+
+    <!-- page content -->
+    <div class="page-main-content border-box">
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="border-box header-content">
+        <div class="left flex-start border-box">
+            
+                <a class="logo-image border-box" href="/">
+                    <img src="/images/icon.svg">
+                </a>
+            
+            <a class="site-name border-box" href="/">
+               DBA有话说
+            </a>
+        </div>
+
+        <div class="right border-box">
+            <div class="pc border-box">
+                <ul class="menu-list border-box">
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-home"></i>
+                                
+                                首页
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/archives">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                
+                                归档
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tags">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tags"></i>
+                                
+                                标签
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/categories">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                
+                                分类
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/links">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-link"></i>
+                                
+                                友链
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/photos">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-image"></i>
+                                
+                                相册
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/tools">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-tools"></i>
+                                
+                                工具
+                                
+                            </a>
+                            
+                        </li>
+                    
+                        
+                        <li class="menu-item flex-start border-box">
+                            <a class="menu-text-color border-box" href="/about">
+                                
+                                    <i class="menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                
+                                关于
+                                
+                            </a>
+                            
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="menu-text-color fas search fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile border-box flex-start">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list border-box">
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-home"></i>
+                                </span>
+                            
+                            首页
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/archives">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-box-archive"></i>
+                                </span>
+                            
+                            归档
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tags">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tags"></i>
+                                </span>
+                            
+                            标签
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/categories">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-layer-group"></i>
+                                </span>
+                            
+                            分类
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/links">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-link"></i>
+                                </span>
+                            
+                            友链
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/photos">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-image"></i>
+                                </span>
+                            
+                            相册
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/tools">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-tools"></i>
+                                </span>
+                            
+                            工具
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+                
+                <li class="drawer-menu-item border-box not-sub-menu">
+                    <label class="drawer-menu-label border-box">
+                        <a class="drawer-menu-text-color left-side flex-start border-box" href="/about">
+                            
+                                <span class="menu-icon-wrap border-box flex-center">
+                                    <i class="drawer-menu-text-color menu-icon fa-solid fa-user-graduate"></i>
+                                </span>
+                            
+                            关于
+                        </a>
+                        
+                    </label>
+                    
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle border-box">
+
+            <div class="main-content border-box">
+                
+
+                    
+<div class="fade-in-down-animation">
+    <div class="post-page-container border-box">
+        <div class="post-content-container border-box">
+            
+
+            <div class="post-content-bottom border-box">
+                
+                    <div class="post-title">
+                        SQL Server 详细学习指南（PG 专家视角）
+                    </div>
+                
+
+                
+                    <div class="post-header border-box">
+                        
+                            <div class="avatar-box border-box">
+                                <img src="/images/logo.png">
+                            </div>
+                        
+                        <div class="info-box">
+                            <div class="author border-box">
+                                <span class="name">梧杵</span>
+                                
+                                    <span class="author-badge">化神洞玄</span>
+                                
+                            </div>
+                            <div class="meta-info border-box">
+                                
+
+<div class="post-meta-info-container border-box post">
+    <div class="post-meta-info border-box">
+        
+
+        
+            <span class="meta-info-item post-create-date">
+                <i class="icon fa-solid fa-calendar-plus"></i>&nbsp;
+                <span class="datetime">2026-05-12 15:00:00</span>
+            </span>
+
+            
+                <span class="meta-info-item post-update-date">
+                    <i class="icon fa-solid fa-file-pen"></i>&nbsp;
+                    <span class="datetime" data-updated="Tue May 12 2026 15:11:41 GMT+0800">2026-05-12 15:11:41</span>
+                </span>
+            
+        
+
+        
+            <span class="meta-info-item post-category border-box"><i class="icon fas fa-folder"></i>&nbsp;
+                <ul class="post-category-ul">
+                    
+                            <li class="category-item"><a href="/categories/SQL-Server/">SQL Server</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+            <span class="post-tag meta-info-item border-box">
+                <ul class="post-tag-ul">
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/SQL-Server/">SQL Server</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/T-SQL/">T-SQL</a></li>
+                        
+                    
+                            <li class="tag-item"><span class="tag-separator"><i class="icon fas fa-hashtag"></i></span><a href="/tags/%E8%BF%81%E7%A7%BB/">迁移</a></li>
+                        
+                    
+                </ul>
+            </span>
+        
+
+        
+        
+        
+        
+            <span class="meta-info-item post-pv">
+                <i class="icon fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+            </span>
+        
+    </div>
+
+    
+</div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+
+                <div class="post-content keep-markdown-body code-block-unshrink">
+                    
+
+                    
+                         <blockquote>
+<p>面向 PostgreSQL 内核熟悉者的 SQL Server 横向迁移学习手册。本文不重复&quot;SQL 入门&quot;的内容，而是用 PG 专家熟悉的概念去类比、对照、解释 SQL Server 的世界——架构差异、T-SQL 独有特性、索引存储、事务并发、调优工具等等，逐章拆解。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>篇幅</td>
+<td>约 30,000 字</td>
+</tr>
+<tr>
+<td>章节</td>
+<td>12 章</td>
+</tr>
+<tr>
+<td>适用版本</td>
+<td>SQL Server 2019 &#x2F; 2022</td>
+</tr>
+<tr>
+<td>视角</td>
+<td>PostgreSQL 内核专家</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="1-概览与定位"><a href="#1-概览与定位" class="headerlink" title="1. 概览与定位"></a>1. 概览与定位</h2><h3 id="1-1-SQL-Server-是什么"><a href="#1-1-SQL-Server-是什么" class="headerlink" title="1.1 SQL Server 是什么"></a>1.1 SQL Server 是什么</h3><p>SQL Server 是 Microsoft 出品的关系型数据库管理系统，最早源于 1989 年与 Sybase 的合作（这就是为什么 SAP ASE 和 SQL Server 早期有大量共同代码）。从 2005 版开始，SQL Server 才完全独立于 Sybase 演进。SQL Server 2017 起支持 Linux，打破了”只在 Windows 上跑”的历史限制。</p>
+<h3 id="1-2-与-PostgreSQL-的核心定位差异"><a href="#1-2-与-PostgreSQL-的核心定位差异" class="headerlink" title="1.2 与 PostgreSQL 的核心定位差异"></a>1.2 与 PostgreSQL 的核心定位差异</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>PostgreSQL</th>
+<th>SQL Server</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>开源&#x2F;商业</td>
+<td>BSD 协议，完全开源</td>
+<td>商业软件，按 core licensing</td>
+</tr>
+<tr>
+<td>主要用户群</td>
+<td>互联网、初创、开源生态</td>
+<td>企业 ERP、政府、金融、传统行业</td>
+</tr>
+<tr>
+<td>扩展能力</td>
+<td>extension 生态极其丰富（PostGIS、TimescaleDB、Citus）</td>
+<td>内置功能多，第三方扩展少</td>
+</tr>
+<tr>
+<td>编程语言</td>
+<td>PL&#x2F;pgSQL、PL&#x2F;Python、PL&#x2F;Perl、PL&#x2F;V8</td>
+<td>T-SQL（主力）、CLR（C# 函数）</td>
+</tr>
+<tr>
+<td>价格</td>
+<td>免费</td>
+<td>Enterprise 约 $14,000 &#x2F; 核 &#x2F; 永久</td>
+</tr>
+<tr>
+<td>跨平台</td>
+<td>原生支持所有 Unix&#x2F;Linux&#x2F;Windows</td>
+<td>2017+ 才支持 Linux（基于 SQLPAL）</td>
+</tr>
+</tbody></table>
+<h3 id="1-3-版本与-Edition"><a href="#1-3-版本与-Edition" class="headerlink" title="1.3 版本与 Edition"></a>1.3 版本与 Edition</h3><ul>
+<li><strong>Express</strong>：免费，DB 大小限制 10 GB，1 核 1.4 GB 内存。适合学习。</li>
+<li><strong>Standard</strong>：核心功能，最多 24 核 &#x2F; 128 GB 内存。中型应用。</li>
+<li><strong>Enterprise</strong>：全部功能，无硬件上限。Always On 自动故障转移、Columnstore、In-Memory OLTP 等高级特性必须 Enterprise。</li>
+<li><strong>Developer</strong>：功能等同 Enterprise，但<strong>仅限非生产用途</strong>，免费。学习首选。</li>
+<li><strong>Azure SQL Database</strong>：云端 PaaS 版本，按 DTU 或 vCore 计费。</li>
+</ul>
+<blockquote>
+<p>💡 <strong>学习建议</strong>：直接装 Developer Edition（免费且功能完整），别用 Express，否则会缺很多关键特性比如 Columnstore。</p>
+</blockquote>
+<hr>
+<h2 id="2-安装与工具链"><a href="#2-安装与工具链" class="headerlink" title="2. 安装与工具链"></a>2. 安装与工具链</h2><h3 id="2-1-安装-SQL-Server"><a href="#2-1-安装-SQL-Server" class="headerlink" title="2.1 安装 SQL Server"></a>2.1 安装 SQL Server</h3><p><strong>Windows</strong>：下载 SQL Server Developer Edition 安装包，运行后选 “Basic 安装” 即可。安装时务必记住 <code>sa</code> 账户密码（混合认证模式）。</p>
+<p><strong>Linux &#x2F; macOS（Docker）</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker pull mcr.microsoft.com/mssql/server:2022-latest</span><br><span class="line"></span><br><span class="line">docker run -e <span class="string">&quot;ACCEPT_EULA=Y&quot;</span> -e <span class="string">&quot;MSSQL_SA_PASSWORD=YourStrong@Passw0rd&quot;</span> \</span><br><span class="line">  -p 1433:1433 --name mssql -d \</span><br><span class="line">  mcr.microsoft.com/mssql/server:2022-latest</span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> -it mssql /opt/mssql-tools18/bin/sqlcmd -S localhost \</span><br><span class="line">  -U sa -P <span class="string">&#x27;YourStrong@Passw0rd&#x27;</span> -C</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>⚠️ <strong>密码强度要求</strong>：SQL Server 强制密码至少 8 位，且包含三类字符（大写、小写、数字、符号）。<code>123456</code> 这种密码连容器都启动不起来。</p>
+</blockquote>
+<h3 id="2-2-主要工具链"><a href="#2-2-主要工具链" class="headerlink" title="2.2 主要工具链"></a>2.2 主要工具链</h3><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>对应 PG 工具</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SSMS</td>
+<td>pgAdmin</td>
+<td>SQL Server Management Studio，图形化管理工具，仅 Windows</td>
+</tr>
+<tr>
+<td>Azure Data Studio</td>
+<td>DBeaver</td>
+<td>跨平台的现代客户端，VSCode 风格</td>
+</tr>
+<tr>
+<td>sqlcmd</td>
+<td>psql</td>
+<td>命令行客户端</td>
+</tr>
+<tr>
+<td>mssql-cli</td>
+<td>psql</td>
+<td>带语法高亮和自动补全的现代 CLI</td>
+</tr>
+<tr>
+<td>SQL Server Profiler</td>
+<td>—</td>
+<td>已废弃，被 Extended Events 替代</td>
+</tr>
+<tr>
+<td>Extended Events (XEvents)</td>
+<td>pg_stat_statements + auto_explain</td>
+<td>事件追踪框架，性能开销低</td>
+</tr>
+<tr>
+<td>SQL Server Configuration Manager</td>
+<td>postgresql.conf 编辑器</td>
+<td>实例级配置工具</td>
+</tr>
+</tbody></table>
+<h3 id="2-3-sqlcmd-常用命令"><a href="#2-3-sqlcmd-常用命令" class="headerlink" title="2.3 sqlcmd 常用命令"></a>2.3 sqlcmd 常用命令</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sqlcmd <span class="operator">-</span>S localhost <span class="operator">-</span>U sa <span class="operator">-</span>P <span class="string">&#x27;pwd&#x27;</span> <span class="operator">-</span>d mydb <span class="operator">-</span>C</span><br><span class="line"></span><br><span class="line">GO                   <span class="comment">-- 执行批处理（类似 psql 的 ; ）</span></span><br><span class="line">:setvar v &quot;value&quot;    <span class="comment">-- 设置变量</span></span><br><span class="line">:r script.sql        <span class="comment">-- 执行外部脚本（类似 psql 的 \i）</span></span><br><span class="line">:exit                <span class="comment">-- 退出</span></span><br><span class="line">:<span class="operator">!</span><span class="operator">!</span> ls               <span class="comment">-- 执行 shell 命令</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>📌 <strong>PG 用户最大的违和感</strong>：SQL Server 的语句不是用 <code>;</code> 分隔批处理，而是用 <code>GO</code>。<code>GO</code> 不是 SQL 关键字，而是 sqlcmd &#x2F; SSMS 的<strong>批处理分隔符</strong>，告诉客户端”上面这一段一起发送给服务器”。</p>
+</blockquote>
+<hr>
+<h2 id="3-架构详解"><a href="#3-架构详解" class="headerlink" title="3. 架构详解"></a>3. 架构详解</h2><h3 id="3-1-进程模型-vs-线程模型"><a href="#3-1-进程模型-vs-线程模型" class="headerlink" title="3.1 进程模型 vs 线程模型"></a>3.1 进程模型 vs 线程模型</h3><p>这是 PG 和 SQL Server 最根本的差异。</p>
+<p><strong>PostgreSQL — 多进程架构</strong></p>
+<p>Postmaster 主进程 fork 出 backend 子进程，每个连接对应一个 OS 进程。共享内存（shared memory）用于 Buffer Pool。</p>
+<ul>
+<li>优点：单 backend 崩溃不影响其他连接。</li>
+<li>缺点：进程切换开销大，连接数无法太高（通常 &lt;500，需要 PgBouncer）。</li>
+</ul>
+<p><strong>SQL Server — 单进程多线程架构</strong></p>
+<p>整个实例就是一个 <code>sqlservr.exe</code> 进程。<strong>SQLOS</strong> 在用户态实现了类似 OS 的调度层，每个 CPU core 对应一个 Scheduler，管理协作式调度的 Worker。</p>
+<ul>
+<li>优点：连接数可达数万，线程切换开销小。</li>
+<li>缺点：单线程崩溃可能引起整个实例崩溃（实际很少发生）。</li>
+</ul>
+<h3 id="3-2-SQLOS-—-SQL-Server-的”用户态操作系统”"><a href="#3-2-SQLOS-—-SQL-Server-的”用户态操作系统”" class="headerlink" title="3.2 SQLOS — SQL Server 的”用户态操作系统”"></a>3.2 SQLOS — SQL Server 的”用户态操作系统”</h3><p>SQLOS 是 SQL Server 架构中最独特的部分，PG 没有任何对应组件。它在 SQL Server 进程内重建了一套”操作系统”，向上为查询引擎提供统一的 API，向下屏蔽 Windows &#x2F; Linux 的差异。</p>
+<table>
+<thead>
+<tr>
+<th>SQLOS 组件</th>
+<th>职责</th>
+<th>PG 对应物</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Scheduler</td>
+<td>每个 CPU core 一个，管理”可运行 Worker 队列”</td>
+<td>OS 调度（PG 不接管）</td>
+</tr>
+<tr>
+<td>Worker</td>
+<td>对应一个 Windows Thread 或 Linux Thread</td>
+<td>backend 进程</td>
+</tr>
+<tr>
+<td>Memory Manager</td>
+<td>统一管理所有内存（Buffer Pool、Plan Cache、Lock 内存等）</td>
+<td>shared_buffers + 各模块 malloc</td>
+</tr>
+<tr>
+<td>I&#x2F;O Manager</td>
+<td>异步 IO，批量读写 8KB 数据页</td>
+<td>OS pread&#x2F;pwrite</td>
+</tr>
+<tr>
+<td>Lock Manager</td>
+<td>集中管理所有锁结构</td>
+<td>分散在各 backend 的锁哈希表</td>
+</tr>
+<tr>
+<td>Deadlock Monitor</td>
+<td>每 5 秒扫描锁等待图，检测死锁</td>
+<td>backend 内部检查 deadlock_timeout</td>
+</tr>
+</tbody></table>
+<h3 id="3-3-关系引擎（Relational-Engine）"><a href="#3-3-关系引擎（Relational-Engine）" class="headerlink" title="3.3 关系引擎（Relational Engine）"></a>3.3 关系引擎（Relational Engine）</h3><p>对应 PG 的 Parser + Rewriter + Planner + Executor。流水线如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SQL 文本</span><br><span class="line">  ↓ [CMD Parse]      生成解析树 (Parse Tree)</span><br><span class="line">  ↓ [Algebrizer]     绑定列/表名到目录，生成代数树</span><br><span class="line">  ↓ [Optimizer]      基于成本估算生成执行计划（迭代优化）</span><br><span class="line">  ↓ [Execution]      算子驱动执行</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键差异</strong>：SQL Server 的优化器分两个阶段：<strong>Trivial Plan</strong>（简单计划，跳过完整优化）和 <strong>Full Optimization</strong>（完整优化）。优化器会基于”已花费的优化时间”动态决定是否继续探索更优计划——这就是为什么同一个 SQL 在不同时刻可能产生不同计划。</p>
+<h3 id="3-4-存储引擎"><a href="#3-4-存储引擎" class="headerlink" title="3.4 存储引擎"></a>3.4 存储引擎</h3><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>SQL Server</th>
+<th>PostgreSQL 对应</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>页大小</td>
+<td>8 KB（不可调整）</td>
+<td>8 KB（可编译时调）</td>
+</tr>
+<tr>
+<td>区（Extent）</td>
+<td>8 个连续页 &#x3D; 64 KB</td>
+<td>无对应概念</td>
+</tr>
+<tr>
+<td>事务日志</td>
+<td>T-Log（Transaction Log），默认 .ldf 文件</td>
+<td>WAL</td>
+</tr>
+<tr>
+<td>检查点</td>
+<td>Indirect Checkpoint（默认 60 秒）</td>
+<td>checkpoint_timeout</td>
+</tr>
+<tr>
+<td>大对象</td>
+<td>Row Overflow（&gt;8060 字节自动溢出）</td>
+<td>TOAST（Out-of-Line 存储）</td>
+</tr>
+<tr>
+<td>tempdb</td>
+<td>系统 DB，存版本数据&#x2F;临时表&#x2F;排序溢出</td>
+<td>无对应概念，散落在 work_mem &#x2F; 临时表空间</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>💡 <strong>关键认知</strong>：tempdb 是 SQL Server 性能调优的”重灾区”。所有 Snapshot 隔离的行版本、临时表、排序溢出都写在这里。生产环境必须把 tempdb 放在独立的高速存储上，并预创建多个 data file（一般等于 CPU 核数，最多 8 个）以减少 PFS&#x2F;GAM&#x2F;SGAM 页面争用。</p>
+</blockquote>
+<hr>
+<h2 id="4-T-SQL-完全指南"><a href="#4-T-SQL-完全指南" class="headerlink" title="4. T-SQL 完全指南"></a>4. T-SQL 完全指南</h2><h3 id="4-1-数据类型对照"><a href="#4-1-数据类型对照" class="headerlink" title="4.1 数据类型对照"></a>4.1 数据类型对照</h3><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>PostgreSQL</th>
+<th>SQL Server</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>整型</td>
+<td>SMALLINT &#x2F; INT &#x2F; BIGINT</td>
+<td>SMALLINT &#x2F; INT &#x2F; BIGINT</td>
+<td>完全一致</td>
+</tr>
+<tr>
+<td>自增</td>
+<td>SERIAL &#x2F; BIGSERIAL</td>
+<td>IDENTITY(seed, increment)</td>
+<td>SS 也支持 SEQUENCE 对象</td>
+</tr>
+<tr>
+<td>定点数</td>
+<td>NUMERIC(p,s)</td>
+<td>DECIMAL(p,s) &#x2F; NUMERIC(p,s)</td>
+<td>等价</td>
+</tr>
+<tr>
+<td>浮点</td>
+<td>REAL &#x2F; DOUBLE PRECISION</td>
+<td>REAL &#x2F; FLOAT(53)</td>
+<td>等价</td>
+</tr>
+<tr>
+<td>字符</td>
+<td>VARCHAR &#x2F; TEXT</td>
+<td>VARCHAR &#x2F; VARCHAR(MAX)</td>
+<td>VARCHAR(MAX) ≈ TEXT</td>
+</tr>
+<tr>
+<td>Unicode 字符</td>
+<td>VARCHAR（默认 UTF-8）</td>
+<td>NVARCHAR &#x2F; NVARCHAR(MAX)</td>
+<td>SS 必须 N’’ 前缀传中文</td>
+</tr>
+<tr>
+<td>时间</td>
+<td>TIMESTAMP &#x2F; TIMESTAMPTZ</td>
+<td>DATETIME2 &#x2F; DATETIMEOFFSET</td>
+<td>DATETIMEOFFSET 带时区</td>
+</tr>
+<tr>
+<td>布尔</td>
+<td>BOOLEAN</td>
+<td>BIT (0&#x2F;1, 不是 true&#x2F;false)</td>
+<td>关键差异</td>
+</tr>
+<tr>
+<td>UUID</td>
+<td>UUID</td>
+<td>UNIQUEIDENTIFIER</td>
+<td>NEWID() 生成</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>JSON &#x2F; JSONB</td>
+<td>NVARCHAR(MAX) + ISJSON 约束</td>
+<td>SS 没有原生 JSON 类型，但有 JSON 函数</td>
+</tr>
+<tr>
+<td>数组</td>
+<td>原生支持</td>
+<td>不支持，需用 TVP 或字符串</td>
+<td>这是 SS 的明显短板</td>
+</tr>
+<tr>
+<td>枚举</td>
+<td>ENUM</td>
+<td>无，用 CHECK 约束模拟</td>
+<td>—</td>
+</tr>
+<tr>
+<td>地理</td>
+<td>PostGIS</td>
+<td>GEOGRAPHY &#x2F; GEOMETRY（内置）</td>
+<td>SS 内置空间类型</td>
+</tr>
+<tr>
+<td>XML</td>
+<td>XML</td>
+<td>XML（带索引支持）</td>
+<td>等价</td>
+</tr>
+<tr>
+<td>二进制</td>
+<td>BYTEA</td>
+<td>VARBINARY(MAX)</td>
+<td>等价</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-DDL-语法对照"><a href="#4-2-DDL-语法对照" class="headerlink" title="4.2 DDL 语法对照"></a>4.2 DDL 语法对照</h3><h4 id="建表对比"><a href="#建表对比" class="headerlink" title="建表对比"></a>建表对比</h4><p>PostgreSQL 写法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> orders (</span><br><span class="line">  id BIGSERIAL <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">  user_id <span class="type">BIGINT</span> <span class="keyword">NOT NULL</span> <span class="keyword">REFERENCES</span> users(id),</span><br><span class="line">  amount <span class="type">NUMERIC</span>(<span class="number">12</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span> <span class="keyword">CHECK</span> (amount <span class="operator">&gt;</span> <span class="number">0</span>),</span><br><span class="line">  status <span class="type">VARCHAR</span>(<span class="number">20</span>) <span class="keyword">DEFAULT</span> <span class="string">&#x27;pending&#x27;</span>,</span><br><span class="line">  metadata JSONB,</span><br><span class="line">  created_at TIMESTAMPTZ <span class="keyword">DEFAULT</span> NOW()</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> INDEX idx_orders_user <span class="keyword">ON</span> orders(user_id);</span><br><span class="line"><span class="keyword">CREATE</span> INDEX idx_orders_status <span class="keyword">ON</span> orders(status)</span><br><span class="line">  <span class="keyword">WHERE</span> status <span class="operator">!=</span> <span class="string">&#x27;completed&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>SQL Server 写法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE TABLE</span> orders (</span><br><span class="line">  id <span class="type">BIGINT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="keyword">PRIMARY KEY</span>,</span><br><span class="line">  user_id <span class="type">BIGINT</span> <span class="keyword">NOT NULL</span>,</span><br><span class="line">  amount <span class="type">DECIMAL</span>(<span class="number">12</span>,<span class="number">2</span>) <span class="keyword">NOT NULL</span> <span class="keyword">CHECK</span> (amount <span class="operator">&gt;</span> <span class="number">0</span>),</span><br><span class="line">  status NVARCHAR(<span class="number">20</span>) <span class="keyword">DEFAULT</span> N<span class="string">&#x27;pending&#x27;</span>,</span><br><span class="line">  metadata NVARCHAR(MAX) <span class="keyword">CHECK</span> (ISJSON(metadata)<span class="operator">=</span><span class="number">1</span>),</span><br><span class="line">  created_at DATETIMEOFFSET <span class="keyword">DEFAULT</span> SYSDATETIMEOFFSET(),</span><br><span class="line">  <span class="keyword">CONSTRAINT</span> FK_orders_user <span class="keyword">FOREIGN KEY</span> (user_id) <span class="keyword">REFERENCES</span> users(id)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX idx_orders_user <span class="keyword">ON</span> orders(user_id);</span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX idx_orders_status <span class="keyword">ON</span> orders(status)</span><br><span class="line">  <span class="keyword">WHERE</span> status <span class="operator">!=</span> N<span class="string">&#x27;completed&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="修改表"><a href="#修改表" class="headerlink" title="修改表"></a>修改表</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 增加列</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> orders <span class="keyword">ADD</span> remark NVARCHAR(<span class="number">200</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改列类型</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> orders <span class="keyword">ALTER</span> <span class="keyword">COLUMN</span> status NVARCHAR(<span class="number">50</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除列</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> orders <span class="keyword">DROP</span> <span class="keyword">COLUMN</span> remark;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 重命名表（用存储过程，不是 RENAME）</span></span><br><span class="line"><span class="keyword">EXEC</span> sp_rename <span class="string">&#x27;orders&#x27;</span>, <span class="string">&#x27;order_records&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 重命名列</span></span><br><span class="line"><span class="keyword">EXEC</span> sp_rename <span class="string">&#x27;order_records.status&#x27;</span>, <span class="string">&#x27;order_status&#x27;</span>, <span class="string">&#x27;COLUMN&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>⚠️ <strong>关键差异</strong>：SQL Server 没有 PG 风格的 <code>ALTER TABLE ... RENAME TO</code> 语法，必须用系统存储过程 <code>sp_rename</code>。</p>
+</blockquote>
+<h3 id="4-3-查询语法对照"><a href="#4-3-查询语法对照" class="headerlink" title="4.3 查询语法对照"></a>4.3 查询语法对照</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>PostgreSQL</th>
+<th>SQL Server</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>限制结果</td>
+<td><code>LIMIT 10 OFFSET 20</code></td>
+<td><code>OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY</code> 或 <code>SELECT TOP 10</code></td>
+</tr>
+<tr>
+<td>字符串拼接</td>
+<td><code>&#39;a&#39; || &#39;b&#39;</code> 或 <code>CONCAT</code></td>
+<td><code>&#39;a&#39; + &#39;b&#39;</code> 或 <code>CONCAT</code></td>
+</tr>
+<tr>
+<td>条件表达式</td>
+<td><code>CASE WHEN ... THEN ... END</code></td>
+<td>同左，外加 <code>IIF(cond, a, b)</code></td>
+</tr>
+<tr>
+<td>NULL 替换</td>
+<td><code>COALESCE(a, b)</code></td>
+<td><code>ISNULL(a, b)</code> 或 COALESCE</td>
+</tr>
+<tr>
+<td>类型转换</td>
+<td><code>x::INT</code> 或 <code>CAST(x AS INT)</code></td>
+<td><code>CAST(x AS INT)</code> 或 <code>CONVERT(INT, x)</code></td>
+</tr>
+<tr>
+<td>当前时间</td>
+<td><code>NOW()</code> &#x2F; <code>CURRENT_TIMESTAMP</code></td>
+<td><code>GETDATE()</code> &#x2F; <code>SYSDATETIME()</code></td>
+</tr>
+<tr>
+<td>UPSERT</td>
+<td><code>INSERT ... ON CONFLICT DO UPDATE</code></td>
+<td><code>MERGE</code> 语句</td>
+</tr>
+<tr>
+<td>RETURNING</td>
+<td><code>INSERT ... RETURNING *</code></td>
+<td><code>INSERT ... OUTPUT INSERTED.*</code></td>
+</tr>
+<tr>
+<td>WITH 递归</td>
+<td><code>WITH RECURSIVE cte AS (...)</code></td>
+<td><code>WITH cte AS (...)</code>（SS 不需要 RECURSIVE 关键字）</td>
+</tr>
+<tr>
+<td>日期加减</td>
+<td><code>NOW() + INTERVAL &#39;1 day&#39;</code></td>
+<td><code>DATEADD(day, 1, GETDATE())</code></td>
+</tr>
+<tr>
+<td>日期差</td>
+<td><code>age(t1, t2)</code> 或 <code>t1 - t2</code></td>
+<td><code>DATEDIFF(day, t2, t1)</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-4-T-SQL-独有特性"><a href="#4-4-T-SQL-独有特性" class="headerlink" title="4.4 T-SQL 独有特性"></a>4.4 T-SQL 独有特性</h3><h4 id="MERGE-语句（PG-也有但功能弱于-SQL-Server）"><a href="#MERGE-语句（PG-也有但功能弱于-SQL-Server）" class="headerlink" title="MERGE 语句（PG 也有但功能弱于 SQL Server）"></a>MERGE 语句（PG 也有但功能弱于 SQL Server）</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">MERGE</span> <span class="keyword">INTO</span> dim_user <span class="keyword">AS</span> target</span><br><span class="line"><span class="keyword">USING</span> staging_user <span class="keyword">AS</span> source</span><br><span class="line"><span class="keyword">ON</span> target.user_id <span class="operator">=</span> source.user_id</span><br><span class="line"><span class="keyword">WHEN</span> MATCHED <span class="keyword">AND</span> source.updated_at <span class="operator">&gt;</span> target.updated_at <span class="keyword">THEN</span></span><br><span class="line">  <span class="keyword">UPDATE</span> <span class="keyword">SET</span> name <span class="operator">=</span> source.name, updated_at <span class="operator">=</span> source.updated_at</span><br><span class="line"><span class="keyword">WHEN</span> <span class="keyword">NOT</span> MATCHED <span class="keyword">BY</span> TARGET <span class="keyword">THEN</span></span><br><span class="line">  <span class="keyword">INSERT</span> (user_id, name, updated_at) <span class="keyword">VALUES</span> (source.user_id, source.name, source.updated_at)</span><br><span class="line"><span class="keyword">WHEN</span> <span class="keyword">NOT</span> MATCHED <span class="keyword">BY</span> SOURCE <span class="keyword">THEN</span></span><br><span class="line">  <span class="keyword">DELETE</span></span><br><span class="line">OUTPUT $action, inserted.<span class="operator">*</span>, deleted.<span class="operator">*</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>📌 MERGE 的强大之处：一条语句搞定 INSERT + UPDATE + DELETE，并且 <code>OUTPUT</code> 子句返回所有变更行供进一步处理（比如写入审计表）。</p>
+</blockquote>
+<h4 id="OUTPUT-子句"><a href="#OUTPUT-子句" class="headerlink" title="OUTPUT 子句"></a>OUTPUT 子句</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- INSERT 后立即拿到自增 ID</span></span><br><span class="line"><span class="keyword">DECLARE</span> <span class="variable">@inserted</span> <span class="keyword">TABLE</span> (id <span class="type">INT</span>);</span><br><span class="line"><span class="keyword">INSERT INTO</span> orders (user_id, amount)</span><br><span class="line">OUTPUT INSERTED.id <span class="keyword">INTO</span> <span class="variable">@inserted</span></span><br><span class="line"><span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="number">100</span>);</span><br><span class="line"><span class="keyword">SELECT</span> id <span class="keyword">FROM</span> <span class="variable">@inserted</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- DELETE 时归档到历史表</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> orders</span><br><span class="line">OUTPUT DELETED.<span class="operator">*</span> <span class="keyword">INTO</span> orders_archive</span><br><span class="line"><span class="keyword">WHERE</span> created_at <span class="operator">&lt;</span> DATEADD(<span class="keyword">year</span>, <span class="number">-2</span>, GETDATE());</span><br></pre></td></tr></table></figure>
+
+<h4 id="PIVOT-UNPIVOT"><a href="#PIVOT-UNPIVOT" class="headerlink" title="PIVOT &#x2F; UNPIVOT"></a>PIVOT &#x2F; UNPIVOT</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 行转列</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> category, <span class="keyword">year</span>, sales <span class="keyword">FROM</span> yearly_sales</span><br><span class="line">) src</span><br><span class="line">PIVOT (</span><br><span class="line">  <span class="built_in">SUM</span>(sales) <span class="keyword">FOR</span> <span class="keyword">year</span> <span class="keyword">IN</span> ([<span class="number">2023</span>], [<span class="number">2024</span>], [<span class="number">2025</span>])</span><br><span class="line">) <span class="keyword">AS</span> pvt;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 列转行</span></span><br><span class="line"><span class="keyword">SELECT</span> category, <span class="keyword">year</span>, sales <span class="keyword">FROM</span> yearly_sales</span><br><span class="line">UNPIVOT (</span><br><span class="line">  sales <span class="keyword">FOR</span> <span class="keyword">year</span> <span class="keyword">IN</span> (sales_2023, sales_2024, sales_2025)</span><br><span class="line">) <span class="keyword">AS</span> upvt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="CROSS-APPLY-OUTER-APPLY"><a href="#CROSS-APPLY-OUTER-APPLY" class="headerlink" title="CROSS APPLY &#x2F; OUTER APPLY"></a>CROSS APPLY &#x2F; OUTER APPLY</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 类似 PG 的 LATERAL JOIN</span></span><br><span class="line"><span class="keyword">SELECT</span> u.name, ord.last_amount</span><br><span class="line"><span class="keyword">FROM</span> users u</span><br><span class="line"><span class="keyword">CROSS</span> APPLY (</span><br><span class="line">  <span class="keyword">SELECT</span> TOP <span class="number">1</span> amount <span class="keyword">AS</span> last_amount</span><br><span class="line">  <span class="keyword">FROM</span> orders</span><br><span class="line">  <span class="keyword">WHERE</span> user_id <span class="operator">=</span> u.id</span><br><span class="line">  <span class="keyword">ORDER</span> <span class="keyword">BY</span> created_at <span class="keyword">DESC</span></span><br><span class="line">) ord;</span><br></pre></td></tr></table></figure>
+
+<h4 id="TRY…CATCH-异常处理"><a href="#TRY…CATCH-异常处理" class="headerlink" title="TRY…CATCH 异常处理"></a>TRY…CATCH 异常处理</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span> TRY</span><br><span class="line">  <span class="keyword">BEGIN</span> TRANSACTION;</span><br><span class="line">  <span class="keyword">INSERT INTO</span> orders (user_id, amount) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="number">-100</span>);</span><br><span class="line">  <span class="keyword">COMMIT</span> TRANSACTION;</span><br><span class="line"><span class="keyword">END</span> TRY</span><br><span class="line"><span class="keyword">BEGIN</span> CATCH</span><br><span class="line">  IF @<span class="variable">@TRANCOUNT</span> <span class="operator">&gt;</span> <span class="number">0</span> <span class="keyword">ROLLBACK</span> TRANSACTION;</span><br><span class="line">  THROW;</span><br><span class="line"><span class="keyword">END</span> CATCH;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-存储过程与函数"><a href="#4-5-存储过程与函数" class="headerlink" title="4.5 存储过程与函数"></a>4.5 存储过程与函数</h3><h4 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">PROCEDURE</span> sp_create_order</span><br><span class="line">  <span class="variable">@user_id</span> <span class="type">BIGINT</span>,</span><br><span class="line">  <span class="variable">@amount</span> <span class="type">DECIMAL</span>(<span class="number">12</span>,<span class="number">2</span>),</span><br><span class="line">  <span class="variable">@order_id</span> <span class="type">BIGINT</span> OUTPUT</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">  <span class="keyword">SET</span> NOCOUNT <span class="keyword">ON</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">INSERT INTO</span> orders (user_id, amount, status)</span><br><span class="line">  <span class="keyword">VALUES</span> (<span class="variable">@user_id</span>, <span class="variable">@amount</span>, N<span class="string">&#x27;pending&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">SET</span> <span class="variable">@order_id</span> <span class="operator">=</span> SCOPE_IDENTITY();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">RETURN</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="keyword">DECLARE</span> <span class="variable">@new_id</span> <span class="type">BIGINT</span>;</span><br><span class="line"><span class="keyword">EXEC</span> sp_create_order <span class="variable">@user_id</span> <span class="operator">=</span> <span class="number">1</span>, <span class="variable">@amount</span> <span class="operator">=</span> <span class="number">99.99</span>, <span class="variable">@order_id</span> <span class="operator">=</span> <span class="variable">@new_id</span> OUTPUT;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="variable">@new_id</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="标量函数"><a href="#标量函数" class="headerlink" title="标量函数"></a>标量函数</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> fn_get_user_total(<span class="variable">@user_id</span> <span class="type">BIGINT</span>)</span><br><span class="line"><span class="keyword">RETURNS</span> <span class="type">DECIMAL</span>(<span class="number">18</span>,<span class="number">2</span>)</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line">  <span class="keyword">DECLARE</span> <span class="variable">@total</span> <span class="type">DECIMAL</span>(<span class="number">18</span>,<span class="number">2</span>);</span><br><span class="line">  <span class="keyword">SELECT</span> <span class="variable">@total</span> <span class="operator">=</span> <span class="built_in">SUM</span>(amount) <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="variable">@user_id</span>;</span><br><span class="line">  <span class="keyword">RETURN</span> ISNULL(<span class="variable">@total</span>, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">END</span>;</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> dbo.fn_get_user_total(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>🚨 <strong>性能警告</strong>：SQL Server 的<strong>标量函数</strong>历史上有严重性能问题——它们在 SELECT 中是逐行调用的，无法并行化。SQL Server 2019 引入了 <strong>Inline UDF</strong> 自动内联优化，但写法仍要小心。生产环境推荐用 Inline Table-Valued Function（ITVF）替代。</p>
+</blockquote>
+<h4 id="表值函数（推荐写法）"><a href="#表值函数（推荐写法）" class="headerlink" title="表值函数（推荐写法）"></a>表值函数（推荐写法）</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> fn_user_orders(<span class="variable">@user_id</span> <span class="type">BIGINT</span>)</span><br><span class="line"><span class="keyword">RETURNS</span> <span class="keyword">TABLE</span></span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line"><span class="keyword">RETURN</span> (</span><br><span class="line">  <span class="keyword">SELECT</span> id, amount, status, created_at</span><br><span class="line">  <span class="keyword">FROM</span> orders</span><br><span class="line">  <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="variable">@user_id</span></span><br><span class="line">);</span><br><span class="line">GO</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 用法跟表一样</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> fn_user_orders(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="5-索引与存储"><a href="#5-索引与存储" class="headerlink" title="5. 索引与存储"></a>5. 索引与存储</h2><h3 id="5-1-索引类型全景"><a href="#5-1-索引类型全景" class="headerlink" title="5.1 索引类型全景"></a>5.1 索引类型全景</h3><table>
+<thead>
+<tr>
+<th>SQL Server 索引类型</th>
+<th>说明</th>
+<th>PG 对应</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CLUSTERED</td>
+<td>数据按索引键物理排序，每张表最多 1 个</td>
+<td>无（PG 是堆表，CLUSTER 命令是一次性的）</td>
+</tr>
+<tr>
+<td>NONCLUSTERED</td>
+<td>独立的 B-tree 结构，叶子节点存指向数据行的指针</td>
+<td>普通 B-tree 索引</td>
+</tr>
+<tr>
+<td>UNIQUE</td>
+<td>唯一性约束</td>
+<td>UNIQUE INDEX</td>
+</tr>
+<tr>
+<td>FILTERED</td>
+<td>带 WHERE 条件的部分索引</td>
+<td>部分索引（partial index）</td>
+</tr>
+<tr>
+<td>COLUMNSTORE（聚集&#x2F;非聚集）</td>
+<td>列式存储，OLAP 性能 10-100x</td>
+<td>citus 列存或 cstore_fdw</td>
+</tr>
+<tr>
+<td>FULLTEXT</td>
+<td>全文索引</td>
+<td>tsvector + GIN</td>
+</tr>
+<tr>
+<td>XML</td>
+<td>XML 数据索引</td>
+<td>XML + GIN（功能弱）</td>
+</tr>
+<tr>
+<td>SPATIAL</td>
+<td>地理空间索引</td>
+<td>GiST（PostGIS）</td>
+</tr>
+<tr>
+<td>HASH（仅内存优化表）</td>
+<td>内存哈希索引</td>
+<td>HASH 索引</td>
+</tr>
+</tbody></table>
+<h3 id="5-2-聚集索引（CLUSTERED）的关键概念"><a href="#5-2-聚集索引（CLUSTERED）的关键概念" class="headerlink" title="5.2 聚集索引（CLUSTERED）的关键概念"></a>5.2 聚集索引（CLUSTERED）的关键概念</h3><p>这是 PG 用户最容易困惑的点：<strong>每张 SQL Server 表只能有 1 个聚集索引，且通常就是主键</strong>。聚集索引决定数据的物理排序。如果不创建聚集索引，表就是”堆表”（HEAP），性能通常更差。</p>
+<blockquote>
+<p>📌 <strong>类比理解</strong>：</p>
+<ul>
+<li>PG 表 &#x3D; 堆表 + 索引（索引存 ctid 指向堆里的物理位置）</li>
+<li>SS 表 &#x3D; 聚集索引本身就是表（叶子节点是完整数据行），非聚集索引存”聚集键”指向聚集索引</li>
+</ul>
+</blockquote>
+<p><strong>聚集索引设计原则</strong>：</p>
+<ul>
+<li><strong>窄</strong>：列宽要小（INT 比 NVARCHAR(100) 好），因为非聚集索引会重复存这个键</li>
+<li><strong>唯一</strong>：避免重复键值，否则 SS 自动加 4 字节 uniquifier</li>
+<li><strong>静态</strong>：不可变，否则修改会引发非聚集索引的级联更新</li>
+<li><strong>递增</strong>：避免页分裂（page split），<code>IDENTITY</code> 是天然好选择</li>
+<li><strong>非空</strong>：聚集键不能是 NULL</li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>反模式</strong>：用 <code>NEWID()</code>（UUID）做聚集键。UUID 是随机分布的，会导致严重的页分裂和索引碎片。如果非要用 UUID，请用 <code>NEWSEQUENTIALID()</code>（顺序 UUID）。</p>
+</blockquote>
+<h3 id="5-3-覆盖索引：INCLUDE-子句"><a href="#5-3-覆盖索引：INCLUDE-子句" class="headerlink" title="5.3 覆盖索引：INCLUDE 子句"></a>5.3 覆盖索引：INCLUDE 子句</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 假设这是高频查询</span></span><br><span class="line"><span class="keyword">SELECT</span> order_id, amount, created_at</span><br><span class="line"><span class="keyword">FROM</span> orders</span><br><span class="line"><span class="keyword">WHERE</span> user_id <span class="operator">=</span> ? <span class="keyword">AND</span> status <span class="operator">=</span> <span class="string">&#x27;pending&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建覆盖索引（INCLUDE 列不参与排序，仅存在叶子节点）</span></span><br><span class="line"><span class="keyword">CREATE</span> NONCLUSTERED INDEX idx_user_status_cover</span><br><span class="line"><span class="keyword">ON</span> orders(user_id, status)</span><br><span class="line">INCLUDE (order_id, amount, created_at);</span><br></pre></td></tr></table></figure>
+
+<p>这样查询不需要回表（书签查找）即可拿到所有需要的列。PG 13+ 也通过 <code>INCLUDE</code> 子句支持了类似功能。</p>
+<h3 id="5-4-索引维护"><a href="#5-4-索引维护" class="headerlink" title="5.4 索引维护"></a>5.4 索引维护</h3><table>
+<thead>
+<tr>
+<th>操作</th>
+<th>命令</th>
+<th>是否锁表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>重建索引</td>
+<td><code>ALTER INDEX ... REBUILD</code></td>
+<td>默认锁表，<code>WITH (ONLINE=ON)</code> 可在线（仅 Enterprise）</td>
+</tr>
+<tr>
+<td>重组索引</td>
+<td><code>ALTER INDEX ... REORGANIZE</code></td>
+<td>始终在线，但效果弱于 REBUILD</td>
+</tr>
+<tr>
+<td>更新统计</td>
+<td><code>UPDATE STATISTICS table</code></td>
+<td>不锁表</td>
+</tr>
+<tr>
+<td>禁用索引</td>
+<td><code>ALTER INDEX ... DISABLE</code></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p><strong>索引碎片检测</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  OBJECT_NAME(s.object_id) <span class="keyword">AS</span> table_name,</span><br><span class="line">  i.name <span class="keyword">AS</span> index_name,</span><br><span class="line">  s.avg_fragmentation_in_percent,</span><br><span class="line">  s.page_count</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_db_index_physical_stats(DB_ID(), <span class="keyword">NULL</span>, <span class="keyword">NULL</span>, <span class="keyword">NULL</span>, <span class="string">&#x27;LIMITED&#x27;</span>) s</span><br><span class="line"><span class="keyword">JOIN</span> sys.indexes i <span class="keyword">ON</span> s.object_id <span class="operator">=</span> i.object_id <span class="keyword">AND</span> s.index_id <span class="operator">=</span> i.index_id</span><br><span class="line"><span class="keyword">WHERE</span> s.avg_fragmentation_in_percent <span class="operator">&gt;</span> <span class="number">10</span> <span class="keyword">AND</span> s.page_count <span class="operator">&gt;</span> <span class="number">1000</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> s.avg_fragmentation_in_percent <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<p>建议：碎片 5%-30% 用 REORGANIZE，&gt;30% 用 REBUILD。</p>
+<h3 id="5-5-文件组与分区"><a href="#5-5-文件组与分区" class="headerlink" title="5.5 文件组与分区"></a>5.5 文件组与分区</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建文件组</span></span><br><span class="line"><span class="keyword">ALTER</span> DATABASE mydb <span class="keyword">ADD</span> FILEGROUP archive;</span><br><span class="line"><span class="keyword">ALTER</span> DATABASE mydb <span class="keyword">ADD</span> FILE</span><br><span class="line">  (NAME <span class="operator">=</span> <span class="string">&#x27;archive_data&#x27;</span>, FILENAME <span class="operator">=</span> <span class="string">&#x27;D:\data\archive.ndf&#x27;</span>, SIZE <span class="operator">=</span> <span class="number">100</span>MB)</span><br><span class="line"><span class="keyword">TO</span> FILEGROUP archive;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 分区函数：按月分区</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">PARTITION</span> <span class="keyword">FUNCTION</span> pf_orders_by_month (<span class="type">DATE</span>)</span><br><span class="line"><span class="keyword">AS</span> <span class="keyword">RANGE</span> <span class="keyword">RIGHT</span> <span class="keyword">FOR</span> <span class="keyword">VALUES</span> (</span><br><span class="line">  <span class="string">&#x27;2025-01-01&#x27;</span>, <span class="string">&#x27;2025-02-01&#x27;</span>, <span class="string">&#x27;2025-03-01&#x27;</span>, <span class="string">&#x27;2025-04-01&#x27;</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">PARTITION</span> SCHEME ps_orders_by_month</span><br><span class="line"><span class="keyword">AS</span> <span class="keyword">PARTITION</span> pf_orders_by_month</span><br><span class="line"><span class="keyword">ALL</span> <span class="keyword">TO</span> ([<span class="keyword">PRIMARY</span>]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE TABLE</span> orders (</span><br><span class="line">  id <span class="type">BIGINT</span> <span class="keyword">IDENTITY</span>(<span class="number">1</span>,<span class="number">1</span>),</span><br><span class="line">  created_at <span class="type">DATE</span> <span class="keyword">NOT NULL</span>,</span><br><span class="line">  amount <span class="type">DECIMAL</span>(<span class="number">12</span>,<span class="number">2</span>)</span><br><span class="line">) <span class="keyword">ON</span> ps_orders_by_month(created_at);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-事务与并发"><a href="#6-事务与并发" class="headerlink" title="6. 事务与并发"></a>6. 事务与并发</h2><h3 id="6-1-隔离级别"><a href="#6-1-隔离级别" class="headerlink" title="6.1 隔离级别"></a>6.1 隔离级别</h3><table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+<th>SS 实现</th>
+<th>PG 实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>READ UNCOMMITTED</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>支持（NOLOCK）</td>
+<td>不支持（同 RC）</td>
+</tr>
+<tr>
+<td>READ COMMITTED</td>
+<td>—</td>
+<td>✓</td>
+<td>✓</td>
+<td>默认，悲观锁实现</td>
+<td>默认，MVCC 实现</td>
+</tr>
+<tr>
+<td>READ COMMITTED SNAPSHOT</td>
+<td>—</td>
+<td>✓</td>
+<td>✓</td>
+<td>需 ALTER DATABASE 开启</td>
+<td>—</td>
+</tr>
+<tr>
+<td>REPEATABLE READ</td>
+<td>—</td>
+<td>—</td>
+<td>✓</td>
+<td>悲观锁</td>
+<td>MVCC</td>
+</tr>
+<tr>
+<td>SNAPSHOT</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>需开启 ALLOW_SNAPSHOT_ISOLATION</td>
+<td>≈ REPEATABLE READ</td>
+</tr>
+<tr>
+<td>SERIALIZABLE</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>悲观锁（HOLDLOCK）</td>
+<td>SSI（可序列化快照）</td>
+</tr>
+</tbody></table>
+<h3 id="6-2-SQL-Server-的双-MVCC-实现"><a href="#6-2-SQL-Server-的双-MVCC-实现" class="headerlink" title="6.2 SQL Server 的双 MVCC 实现"></a>6.2 SQL Server 的双 MVCC 实现</h3><h4 id="方式-1：READ-COMMITTED-SNAPSHOT-RCSI"><a href="#方式-1：READ-COMMITTED-SNAPSHOT-RCSI" class="headerlink" title="方式 1：READ COMMITTED SNAPSHOT (RCSI)"></a>方式 1：READ COMMITTED SNAPSHOT (RCSI)</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 数据库级开启</span></span><br><span class="line"><span class="keyword">ALTER</span> DATABASE mydb <span class="keyword">SET</span> READ_COMMITTED_SNAPSHOT <span class="keyword">ON</span>;</span><br></pre></td></tr></table></figure>
+
+<p>开启后，默认的 READ COMMITTED 会用行版本读取（不再加共享锁）。这是从 PG 切过来最容易的设置——行为最接近 PG。</p>
+<h4 id="方式-2：Snapshot-Isolation"><a href="#方式-2：Snapshot-Isolation" class="headerlink" title="方式 2：Snapshot Isolation"></a>方式 2：Snapshot Isolation</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 数据库级允许</span></span><br><span class="line"><span class="keyword">ALTER</span> DATABASE mydb <span class="keyword">SET</span> ALLOW_SNAPSHOT_ISOLATION <span class="keyword">ON</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话内启用</span></span><br><span class="line"><span class="keyword">SET</span> TRANSACTION ISOLATION LEVEL SNAPSHOT;</span><br><span class="line"><span class="keyword">BEGIN</span> TRANSACTION;</span><br><span class="line"><span class="comment">-- 读取的是事务开始那一刻的快照</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">COMMIT</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>⚠️ <strong>tempdb 压力警告</strong>：开启 RCSI&#x2F;SI 后，所有更新的旧版本会写入 tempdb 的 version store，导致 tempdb 增长。如果有长事务，version store 会膨胀严重，导致磁盘耗尽。监控视图：<code>sys.dm_tran_version_store</code>。</p>
+</blockquote>
+<h3 id="6-3-锁机制"><a href="#6-3-锁机制" class="headerlink" title="6.3 锁机制"></a>6.3 锁机制</h3><p><strong>锁粒度</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>粒度</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RID</td>
+<td>堆表的行 ID 锁</td>
+</tr>
+<tr>
+<td>KEY</td>
+<td>索引行锁</td>
+</tr>
+<tr>
+<td>PAGE</td>
+<td>8KB 页锁</td>
+</tr>
+<tr>
+<td>EXTENT</td>
+<td>区锁（64KB）</td>
+</tr>
+<tr>
+<td>HoBT</td>
+<td>Heap or B-Tree 锁</td>
+</tr>
+<tr>
+<td>OBJECT</td>
+<td>整表锁</td>
+</tr>
+<tr>
+<td>DATABASE</td>
+<td>整库锁</td>
+</tr>
+</tbody></table>
+<p><strong>锁模式</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>缩写</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Shared</td>
+<td>S</td>
+<td>共享读锁</td>
+</tr>
+<tr>
+<td>Update</td>
+<td>U</td>
+<td>更新锁，避免转换死锁</td>
+</tr>
+<tr>
+<td>Exclusive</td>
+<td>X</td>
+<td>排他锁</td>
+</tr>
+<tr>
+<td>Intent Shared</td>
+<td>IS</td>
+<td>意向共享（页&#x2F;表上）</td>
+</tr>
+<tr>
+<td>Intent Exclusive</td>
+<td>IX</td>
+<td>意向排他</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td>Sch-S &#x2F; Sch-M</td>
+<td>架构稳定锁 &#x2F; 架构修改锁</td>
+</tr>
+</tbody></table>
+<p><strong>锁升级</strong>：SQL Server 会自动将大量行&#x2F;页锁升级为表锁（默认阈值 5000 行）。这与 PG 不同——PG 没有锁升级，但 SS 在大批量更新时会自动升级。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查看是否发生了锁升级</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> sys.dm_tran_locks <span class="keyword">WHERE</span> resource_type <span class="operator">=</span> <span class="string">&#x27;OBJECT&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 禁用锁升级（针对单表）</span></span><br><span class="line"><span class="keyword">ALTER TABLE</span> orders <span class="keyword">SET</span> (LOCK_ESCALATION <span class="operator">=</span> DISABLE);</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-4-死锁处理"><a href="#6-4-死锁处理" class="headerlink" title="6.4 死锁处理"></a>6.4 死锁处理</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 启用死锁追踪</span></span><br><span class="line">DBCC TRACEON (<span class="number">1222</span>, <span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 或使用 Extended Events 捕获死锁图</span></span><br><span class="line"><span class="keyword">CREATE</span> EVENT SESSION deadlock_capture <span class="keyword">ON</span> SERVER</span><br><span class="line"><span class="keyword">ADD</span> EVENT sqlserver.xml_deadlock_report</span><br><span class="line"><span class="keyword">ADD</span> TARGET package0.event_file(<span class="keyword">SET</span> filename <span class="operator">=</span> <span class="string">&#x27;deadlock.xel&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> EVENT SESSION deadlock_capture <span class="keyword">ON</span> SERVER STATE <span class="operator">=</span> <span class="keyword">START</span>;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="7-执行计划与调优"><a href="#7-执行计划与调优" class="headerlink" title="7. 执行计划与调优"></a>7. 执行计划与调优</h2><h3 id="7-1-查看执行计划"><a href="#7-1-查看执行计划" class="headerlink" title="7.1 查看执行计划"></a>7.1 查看执行计划</h3><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>命令&#x2F;操作</th>
+<th>对应 PG</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>估计计划</td>
+<td>Ctrl+L（SSMS）&#x2F; <code>SET SHOWPLAN_XML ON</code></td>
+<td>EXPLAIN</td>
+</tr>
+<tr>
+<td>实际计划</td>
+<td>Ctrl+M（SSMS）&#x2F; <code>SET STATISTICS PROFILE ON</code></td>
+<td>EXPLAIN ANALYZE</td>
+</tr>
+<tr>
+<td>IO 统计</td>
+<td><code>SET STATISTICS IO ON</code></td>
+<td>EXPLAIN (BUFFERS)</td>
+</tr>
+<tr>
+<td>时间统计</td>
+<td><code>SET STATISTICS TIME ON</code></td>
+<td>—</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> STATISTICS IO <span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">SET</span> STATISTICS <span class="type">TIME</span> <span class="keyword">ON</span>;</span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">SET</span> STATISTICS IO OFF;</span><br><span class="line"><span class="keyword">SET</span> STATISTICS <span class="type">TIME</span> OFF;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-主要执行算子"><a href="#7-2-主要执行算子" class="headerlink" title="7.2 主要执行算子"></a>7.2 主要执行算子</h3><table>
+<thead>
+<tr>
+<th>SQL Server 算子</th>
+<th>PG 等价</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Table Scan</td>
+<td>Seq Scan</td>
+<td>堆表全表扫描</td>
+</tr>
+<tr>
+<td>Clustered Index Scan</td>
+<td>Seq Scan</td>
+<td>聚集索引全扫（&#x3D;全表扫描）</td>
+</tr>
+<tr>
+<td>Clustered Index Seek</td>
+<td>Index Scan</td>
+<td>聚集索引查找</td>
+</tr>
+<tr>
+<td>Index Seek</td>
+<td>Index Scan</td>
+<td>非聚集索引查找</td>
+</tr>
+<tr>
+<td>Index Scan</td>
+<td>Index Only Scan &#x2F; Bitmap Heap</td>
+<td>非聚集索引扫描</td>
+</tr>
+<tr>
+<td>Key Lookup &#x2F; RID Lookup</td>
+<td>无对应（PG 总是回堆表）</td>
+<td>书签查找：用聚集键回主表取列</td>
+</tr>
+<tr>
+<td>Nested Loops</td>
+<td>Nested Loop</td>
+<td>嵌套循环连接</td>
+</tr>
+<tr>
+<td>Merge Join</td>
+<td>Merge Join</td>
+<td>归并连接</td>
+</tr>
+<tr>
+<td>Hash Match</td>
+<td>Hash Join</td>
+<td>哈希连接</td>
+</tr>
+<tr>
+<td>Sort</td>
+<td>Sort</td>
+<td>排序，要警惕大数据量</td>
+</tr>
+<tr>
+<td>Stream Aggregate</td>
+<td>Aggregate</td>
+<td>流式聚合（输入有序）</td>
+</tr>
+<tr>
+<td>Hash Match (Aggregate)</td>
+<td>HashAggregate</td>
+<td>哈希聚合</td>
+</tr>
+<tr>
+<td>Filter</td>
+<td>—</td>
+<td>过滤行（在 SS 中是独立算子）</td>
+</tr>
+<tr>
+<td>Compute Scalar</td>
+<td>—</td>
+<td>计算表达式（如 col1 + col2）</td>
+</tr>
+<tr>
+<td>Spool</td>
+<td>Materialize</td>
+<td>临时缓存中间结果到 tempdb</td>
+</tr>
+</tbody></table>
+<h3 id="7-3-性能调优常见模式"><a href="#7-3-性能调优常见模式" class="headerlink" title="7.3 性能调优常见模式"></a>7.3 性能调优常见模式</h3><h4 id="问题-1：Key-Lookup-太多-→-加-INCLUDE-列"><a href="#问题-1：Key-Lookup-太多-→-加-INCLUDE-列" class="headerlink" title="问题 1：Key Lookup 太多 → 加 INCLUDE 列"></a>问题 1：Key Lookup 太多 → 加 INCLUDE 列</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> order_id, amount <span class="keyword">FROM</span> orders</span><br><span class="line"><span class="keyword">WHERE</span> user_id <span class="operator">=</span> ?;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 现状：Index Seek + Key Lookup（每行回主表）</span></span><br><span class="line"><span class="comment">-- 优化：让索引覆盖</span></span><br><span class="line"><span class="keyword">CREATE</span> INDEX idx_user_cover <span class="keyword">ON</span> orders(user_id) INCLUDE (order_id, amount);</span><br></pre></td></tr></table></figure>
+
+<h4 id="问题-2：参数嗅探（Parameter-Sniffing）"><a href="#问题-2：参数嗅探（Parameter-Sniffing）" class="headerlink" title="问题 2：参数嗅探（Parameter Sniffing）"></a>问题 2：参数嗅探（Parameter Sniffing）</h4><p>这是 SS 特有的恶心问题：第一次执行存储过程时，SS 根据传入的参数生成计划并缓存。后续如果传入数据分布完全不同的参数，缓存的计划可能极其不优。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 解法 1：OPTION(RECOMPILE) 每次重新编译</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="variable">@uid</span> OPTION (RECOMPILE);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 解法 2：OPTIMIZE FOR 提示一个典型值</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="variable">@uid</span></span><br><span class="line">OPTION (OPTIMIZE <span class="keyword">FOR</span> (<span class="variable">@uid</span> <span class="operator">=</span> <span class="number">1</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 解法 3：OPTIMIZE FOR UNKNOWN 用统计平均值</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> user_id <span class="operator">=</span> <span class="variable">@uid</span></span><br><span class="line">OPTION (OPTIMIZE <span class="keyword">FOR</span> <span class="literal">UNKNOWN</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="问题-3：统计信息陈旧"><a href="#问题-3：统计信息陈旧" class="headerlink" title="问题 3：统计信息陈旧"></a>问题 3：统计信息陈旧</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 全库更新统计（夜间维护任务）</span></span><br><span class="line"><span class="keyword">EXEC</span> sp_updatestats;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 单表 FULL SCAN 更新（最准）</span></span><br><span class="line"><span class="keyword">UPDATE</span> STATISTICS orders <span class="keyword">WITH</span> FULLSCAN;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看统计信息</span></span><br><span class="line">DBCC SHOW_STATISTICS(<span class="string">&#x27;orders&#x27;</span>, <span class="string">&#x27;idx_user_id&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="问题-4：tempdb-争用"><a href="#问题-4：tempdb-争用" class="headerlink" title="问题 4：tempdb 争用"></a>问题 4：tempdb 争用</h4><p>表现：<code>PAGELATCH_*</code> 等待事件，<code>tempdb 2:1:1</code>（PFS 页面）等。解法：增加 tempdb data file 数量。</p>
+<h3 id="7-4-查询提示（Hint）"><a href="#7-4-查询提示（Hint）" class="headerlink" title="7.4 查询提示（Hint）"></a>7.4 查询提示（Hint）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 强制使用某索引</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WITH</span> (INDEX(idx_user_id)) <span class="keyword">WHERE</span> user_id <span class="operator">=</span> ?;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 强制 join 类型</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> a <span class="keyword">INNER</span> <span class="keyword">MERGE</span> <span class="keyword">JOIN</span> b <span class="keyword">ON</span> a.id <span class="operator">=</span> b.aid;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 禁用并行</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders OPTION (MAXDOP <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 强制重编译</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WHERE</span> id <span class="operator">=</span> ? OPTION (RECOMPILE);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 锁提示（一般避免使用）</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> orders <span class="keyword">WITH</span> (NOLOCK);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>🚨 <strong>反模式警告</strong>：到处加 <code>WITH (NOLOCK)</code> 是 SS 圈非常常见的”性能优化”，但它实际是允许脏读，可能导致重复行、丢失行、读到未提交数据。生产环境推荐用 RCSI 替代。</p>
+</blockquote>
+<hr>
+<h2 id="8-Query-Store"><a href="#8-Query-Store" class="headerlink" title="8. Query Store"></a>8. Query Store</h2><p>Query Store（查询存储）是 SQL Server 2016 引入的内置查询性能监控工具，可以理解为”PG 的 pg_stat_statements + auto_explain + 历史归档 + 图形化分析”的合体。</p>
+<h3 id="8-1-开启-Query-Store"><a href="#8-1-开启-Query-Store" class="headerlink" title="8.1 开启 Query Store"></a>8.1 开启 Query Store</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> DATABASE mydb <span class="keyword">SET</span> QUERY_STORE <span class="operator">=</span> <span class="keyword">ON</span></span><br><span class="line">(</span><br><span class="line">  OPERATION_MODE <span class="operator">=</span> READ_WRITE,</span><br><span class="line">  CLEANUP_POLICY <span class="operator">=</span> (STALE_QUERY_THRESHOLD_DAYS <span class="operator">=</span> <span class="number">30</span>),</span><br><span class="line">  DATA_FLUSH_INTERVAL_SECONDS <span class="operator">=</span> <span class="number">900</span>,</span><br><span class="line">  INTERVAL_LENGTH_MINUTES <span class="operator">=</span> <span class="number">60</span>,</span><br><span class="line">  MAX_STORAGE_SIZE_MB <span class="operator">=</span> <span class="number">1000</span>,</span><br><span class="line">  QUERY_CAPTURE_MODE <span class="operator">=</span> AUTO,</span><br><span class="line">  SIZE_BASED_CLEANUP_MODE <span class="operator">=</span> AUTO</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-常用查询"><a href="#8-2-常用查询" class="headerlink" title="8.2 常用查询"></a>8.2 常用查询</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- TOP 10 慢查询</span></span><br><span class="line"><span class="keyword">SELECT</span> TOP <span class="number">10</span></span><br><span class="line">  q.query_id,</span><br><span class="line">  qt.query_sql_text,</span><br><span class="line">  rs.avg_duration <span class="operator">/</span> <span class="number">1000</span> <span class="keyword">AS</span> avg_ms,</span><br><span class="line">  rs.execution_count,</span><br><span class="line">  rs.last_execution_time</span><br><span class="line"><span class="keyword">FROM</span> sys.query_store_query q</span><br><span class="line"><span class="keyword">JOIN</span> sys.query_store_query_text qt <span class="keyword">ON</span> q.query_text_id <span class="operator">=</span> qt.query_text_id</span><br><span class="line"><span class="keyword">JOIN</span> sys.query_store_plan p <span class="keyword">ON</span> q.query_id <span class="operator">=</span> p.query_id</span><br><span class="line"><span class="keyword">JOIN</span> sys.query_store_runtime_stats rs <span class="keyword">ON</span> p.plan_id <span class="operator">=</span> rs.plan_id</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> rs.avg_duration <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看某查询的所有执行计划版本</span></span><br><span class="line"><span class="keyword">SELECT</span> plan_id, query_plan, last_execution_time</span><br><span class="line"><span class="keyword">FROM</span> sys.query_store_plan</span><br><span class="line"><span class="keyword">WHERE</span> query_id <span class="operator">=</span> <span class="number">1234</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 强制使用某个计划（应对计划退化）</span></span><br><span class="line"><span class="keyword">EXEC</span> sp_query_store_force_plan <span class="variable">@query_id</span> <span class="operator">=</span> <span class="number">1234</span>, <span class="variable">@plan_id</span> <span class="operator">=</span> <span class="number">5678</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 解除强制</span></span><br><span class="line"><span class="keyword">EXEC</span> sp_query_store_unforce_plan <span class="variable">@query_id</span> <span class="operator">=</span> <span class="number">1234</span>, <span class="variable">@plan_id</span> <span class="operator">=</span> <span class="number">5678</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-在-SSMS-图形化分析"><a href="#8-3-在-SSMS-图形化分析" class="headerlink" title="8.3 在 SSMS 图形化分析"></a>8.3 在 SSMS 图形化分析</h3><p>展开数据库 → Query Store 节点，有以下子视图：</p>
+<ul>
+<li><strong>Regressed Queries</strong>：性能退化的查询</li>
+<li><strong>Top Resource Consuming Queries</strong>：消耗资源最多的查询</li>
+<li><strong>Queries with Forced Plans</strong>：被强制计划的查询</li>
+<li><strong>Queries with High Variation</strong>：执行时间方差大的查询</li>
+<li><strong>Tracked Queries</strong>：手动跟踪的查询</li>
+</ul>
+<blockquote>
+<p>💡 <strong>实战价值</strong>：Query Store 是 SQL Server 调优的”杀手级特性”，PG 没有同等级别的内置工具。开启后只占用 1-2% 的开销，但能保留过去 30 天的所有查询计划和执行统计。生产环境强烈建议开启。</p>
+</blockquote>
+<hr>
+<h2 id="9-安全与权限"><a href="#9-安全与权限" class="headerlink" title="9. 安全与权限"></a>9. 安全与权限</h2><h3 id="9-1-认证模型"><a href="#9-1-认证模型" class="headerlink" title="9.1 认证模型"></a>9.1 认证模型</h3><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>对象</th>
+<th>PG 对应</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实例级</td>
+<td>Login（登录账户）</td>
+<td>pg_role（CLUSTER 级）</td>
+</tr>
+<tr>
+<td>数据库级</td>
+<td>User（数据库用户）</td>
+<td>—（PG 没有这层映射）</td>
+</tr>
+<tr>
+<td>对象级</td>
+<td>Schema &#x2F; Table &#x2F; Column 权限</td>
+<td>同左</td>
+</tr>
+<tr>
+<td>角色</td>
+<td>Server Role &#x2F; Database Role</td>
+<td>GROUP ROLE</td>
+</tr>
+</tbody></table>
+<p><strong>关键差异</strong>：SQL Server 把**认证（Login）<strong>和</strong>授权（User）**分开了。一个 Login 在每个数据库里映射为不同的 User，权限独立。PG 没这种分层，role 一统天下。</p>
+<h3 id="9-2-创建账户与授权"><a href="#9-2-创建账户与授权" class="headerlink" title="9.2 创建账户与授权"></a>9.2 创建账户与授权</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 1. 创建实例级 Login</span></span><br><span class="line"><span class="keyword">CREATE</span> LOGIN app_login <span class="keyword">WITH</span> PASSWORD <span class="operator">=</span> <span class="string">&#x27;Strong@Pass123&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 2. 在指定数据库创建 User 并映射 Login</span></span><br><span class="line">USE mydb;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> app_user <span class="keyword">FOR</span> LOGIN app_login;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 3. 授权</span></span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>, <span class="keyword">INSERT</span>, <span class="keyword">UPDATE</span> <span class="keyword">ON</span> SCHEMA::dbo <span class="keyword">TO</span> app_user;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">EXECUTE</span> <span class="keyword">ON</span> sp_create_order <span class="keyword">TO</span> app_user;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 4. 加入预定义角色</span></span><br><span class="line"><span class="keyword">ALTER</span> ROLE db_datareader <span class="keyword">ADD</span> <span class="keyword">MEMBER</span> app_user;</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-3-内置数据库角色"><a href="#9-3-内置数据库角色" class="headerlink" title="9.3 内置数据库角色"></a>9.3 内置数据库角色</h3><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>权限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>db_owner</td>
+<td>数据库所有权限</td>
+</tr>
+<tr>
+<td>db_datareader</td>
+<td>所有表的 SELECT</td>
+</tr>
+<tr>
+<td>db_datawriter</td>
+<td>所有表的 INSERT&#x2F;UPDATE&#x2F;DELETE</td>
+</tr>
+<tr>
+<td>db_ddladmin</td>
+<td>所有 DDL 操作</td>
+</tr>
+<tr>
+<td>db_securityadmin</td>
+<td>权限管理</td>
+</tr>
+<tr>
+<td>db_backupoperator</td>
+<td>备份权限</td>
+</tr>
+</tbody></table>
+<h3 id="9-4-行级安全（Row-Level-Security）"><a href="#9-4-行级安全（Row-Level-Security）" class="headerlink" title="9.4 行级安全（Row-Level Security）"></a>9.4 行级安全（Row-Level Security）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- PG 也有 RLS，语法不同</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">FUNCTION</span> dbo.fn_user_filter(<span class="variable">@tenant_id</span> <span class="type">INT</span>)</span><br><span class="line"><span class="keyword">RETURNS</span> <span class="keyword">TABLE</span></span><br><span class="line"><span class="keyword">WITH</span> SCHEMABINDING</span><br><span class="line"><span class="keyword">AS</span></span><br><span class="line"><span class="keyword">RETURN</span> <span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">AS</span> allowed</span><br><span class="line"><span class="keyword">WHERE</span> <span class="variable">@tenant_id</span> <span class="operator">=</span> <span class="built_in">CAST</span>(SESSION_CONTEXT(N<span class="string">&#x27;tenant_id&#x27;</span>) <span class="keyword">AS</span> <span class="type">INT</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> SECURITY POLICY tenant_filter</span><br><span class="line"><span class="keyword">ADD</span> <span class="keyword">FILTER</span> PREDICATE dbo.fn_user_filter(tenant_id) <span class="keyword">ON</span> dbo.orders</span><br><span class="line"><span class="keyword">WITH</span> (STATE <span class="operator">=</span> <span class="keyword">ON</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-5-透明数据加密（TDE）和-Always-Encrypted"><a href="#9-5-透明数据加密（TDE）和-Always-Encrypted" class="headerlink" title="9.5 透明数据加密（TDE）和 Always Encrypted"></a>9.5 透明数据加密（TDE）和 Always Encrypted</h3><ul>
+<li><strong>TDE</strong>：磁盘文件级加密，应用透明（PG 需要 pgcrypto 或文件系统加密）</li>
+<li><strong>Always Encrypted</strong>：列级加密，密钥不在服务器上，DBA 也看不到明文（PG 无对应）</li>
+</ul>
+<hr>
+<h2 id="10-备份与恢复"><a href="#10-备份与恢复" class="headerlink" title="10. 备份与恢复"></a>10. 备份与恢复</h2><h3 id="10-1-恢复模式"><a href="#10-1-恢复模式" class="headerlink" title="10.1 恢复模式"></a>10.1 恢复模式</h3><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+<th>支持的恢复点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FULL</td>
+<td>记录所有事务到日志</td>
+<td>任意时间点</td>
+</tr>
+<tr>
+<td>SIMPLE</td>
+<td>事务日志自动 truncate</td>
+<td>仅完整&#x2F;差异备份点</td>
+</tr>
+<tr>
+<td>BULK_LOGGED</td>
+<td>大批量操作最小日志</td>
+<td>不能恢复到批量操作中间</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> DATABASE mydb <span class="keyword">SET</span> RECOVERY <span class="keyword">FULL</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-2-备份类型"><a href="#10-2-备份类型" class="headerlink" title="10.2 备份类型"></a>10.2 备份类型</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 完整备份</span></span><br><span class="line">BACKUP DATABASE mydb <span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_full.bak&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> COMPRESSION, CHECKSUM, INIT;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 差异备份（基于上次完整备份）</span></span><br><span class="line">BACKUP DATABASE mydb <span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_diff.bak&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> DIFFERENTIAL, COMPRESSION;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 事务日志备份（FULL 模式必备）</span></span><br><span class="line">BACKUP LOG mydb <span class="keyword">TO</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_log_001.trn&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 验证备份</span></span><br><span class="line">RESTORE VERIFYONLY <span class="keyword">FROM</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_full.bak&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-3-还原（含-Point-In-Time）"><a href="#10-3-还原（含-Point-In-Time）" class="headerlink" title="10.3 还原（含 Point-In-Time）"></a>10.3 还原（含 Point-In-Time）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 还原完整备份（不立即恢复，准备追加日志）</span></span><br><span class="line">RESTORE DATABASE mydb <span class="keyword">FROM</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_full.bak&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> NORECOVERY, REPLACE;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 应用差异备份</span></span><br><span class="line">RESTORE DATABASE mydb <span class="keyword">FROM</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_diff.bak&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> NORECOVERY;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 应用日志备份并恢复到指定时间</span></span><br><span class="line">RESTORE LOG mydb <span class="keyword">FROM</span> DISK <span class="operator">=</span> <span class="string">&#x27;D:\backup\mydb_log_001.trn&#x27;</span></span><br><span class="line"><span class="keyword">WITH</span> STOPAT <span class="operator">=</span> <span class="string">&#x27;2026-05-12 10:30:00&#x27;</span>, RECOVERY;</span><br></pre></td></tr></table></figure>
+
+<h3 id="10-4-备份策略示例"><a href="#10-4-备份策略示例" class="headerlink" title="10.4 备份策略示例"></a>10.4 备份策略示例</h3><ul>
+<li><strong>每周日凌晨 2 点</strong>：完整备份</li>
+<li><strong>每天凌晨 2 点</strong>：差异备份</li>
+<li><strong>每 15 分钟</strong>：日志备份</li>
+<li><strong>保留</strong>：本地 7 天，异地 3 个月</li>
+<li><strong>验证</strong>：每周对最新备份做一次还原演练</li>
+</ul>
+<hr>
+<h2 id="11-高可用：Always-On-可用性组"><a href="#11-高可用：Always-On-可用性组" class="headerlink" title="11. 高可用：Always On 可用性组"></a>11. 高可用：Always On 可用性组</h2><h3 id="11-1-Always-On-概念"><a href="#11-1-Always-On-概念" class="headerlink" title="11.1 Always On 概念"></a>11.1 Always On 概念</h3><p>Always On 是 SQL Server 2012 引入的高可用方案，是数据库级（而非实例级）的副本同步。一个 AG（Availability Group）包含一组数据库，最多 5 个副本（1 主 + 4 备）。</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Always On AG</th>
+<th>PG 流复制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>同步粒度</td>
+<td>数据库级</td>
+<td>实例级</td>
+</tr>
+<tr>
+<td>同步方式</td>
+<td>事务日志块</td>
+<td>WAL 块</td>
+</tr>
+<tr>
+<td>同步模式</td>
+<td>同步提交 &#x2F; 异步提交</td>
+<td>synchronous &#x2F; asynchronous</td>
+</tr>
+<tr>
+<td>读副本</td>
+<td>支持（Enterprise）</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>故障转移</td>
+<td>自动（同步副本）&#x2F; 手动</td>
+<td>需 Patroni &#x2F; repmgr 等外部工具</td>
+</tr>
+<tr>
+<td>统一接入</td>
+<td>Listener（虚拟网络名）</td>
+<td>需要 VIP&#x2F;HAProxy&#x2F;Pgpool</td>
+</tr>
+<tr>
+<td>底层依赖</td>
+<td>WSFC（Windows Server Failover Cluster）</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<h3 id="11-2-创建-Always-On-的步骤"><a href="#11-2-创建-Always-On-的步骤" class="headerlink" title="11.2 创建 Always On 的步骤"></a>11.2 创建 Always On 的步骤</h3><ol>
+<li>所有节点加入同一个 Windows Server Failover Cluster (WSFC)</li>
+<li>每台 SQL Server 启用 Always On 特性（SQL Server Configuration Manager）</li>
+<li>创建端点（Endpoint）用于副本通信：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> ENDPOINT [Hadr_endpoint]</span><br><span class="line">STATE <span class="operator">=</span> STARTED</span><br><span class="line"><span class="keyword">AS</span> TCP (LISTENER_PORT <span class="operator">=</span> <span class="number">5022</span>)</span><br><span class="line"><span class="keyword">FOR</span> DATA_MIRRORING (ROLE <span class="operator">=</span> <span class="keyword">ALL</span>, ENCRYPTION <span class="operator">=</span> REQUIRED ALGORITHM AES);</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>主节点完整备份 + 日志备份，复制到备节点还原（NORECOVERY）</li>
+<li>创建可用性组：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> AVAILABILITY <span class="keyword">GROUP</span> [myag]</span><br><span class="line"><span class="keyword">WITH</span> (AUTOMATED_BACKUP_PREFERENCE <span class="operator">=</span> SECONDARY)</span><br><span class="line"><span class="keyword">FOR</span> DATABASE mydb</span><br><span class="line">REPLICA <span class="keyword">ON</span></span><br><span class="line">  N<span class="string">&#x27;NODE1&#x27;</span> <span class="keyword">WITH</span> (</span><br><span class="line">    ENDPOINT_URL <span class="operator">=</span> N<span class="string">&#x27;TCP://NODE1:5022&#x27;</span>,</span><br><span class="line">    AVAILABILITY_MODE <span class="operator">=</span> SYNCHRONOUS_COMMIT,</span><br><span class="line">    FAILOVER_MODE <span class="operator">=</span> AUTOMATIC,</span><br><span class="line">    SECONDARY_ROLE (ALLOW_CONNECTIONS <span class="operator">=</span> READ_ONLY)</span><br><span class="line">  ),</span><br><span class="line">  N<span class="string">&#x27;NODE2&#x27;</span> <span class="keyword">WITH</span> (</span><br><span class="line">    ENDPOINT_URL <span class="operator">=</span> N<span class="string">&#x27;TCP://NODE2:5022&#x27;</span>,</span><br><span class="line">    AVAILABILITY_MODE <span class="operator">=</span> SYNCHRONOUS_COMMIT,</span><br><span class="line">    FAILOVER_MODE <span class="operator">=</span> AUTOMATIC,</span><br><span class="line">    SECONDARY_ROLE (ALLOW_CONNECTIONS <span class="operator">=</span> READ_ONLY)</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>创建 Listener（虚拟接入点）：</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> AVAILABILITY <span class="keyword">GROUP</span> [myag]</span><br><span class="line"><span class="keyword">ADD</span> LISTENER N<span class="string">&#x27;myag_listener&#x27;</span> (</span><br><span class="line">  <span class="keyword">WITH</span> IP ((N<span class="string">&#x27;10.0.0.100&#x27;</span>, N<span class="string">&#x27;255.255.255.0&#x27;</span>)),</span><br><span class="line">  PORT <span class="operator">=</span> <span class="number">1433</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-3-监控同步状态"><a href="#11-3-监控同步状态" class="headerlink" title="11.3 监控同步状态"></a>11.3 监控同步状态</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 副本状态</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  ar.replica_server_name,</span><br><span class="line">  ars.role_desc,</span><br><span class="line">  ars.synchronization_health_desc,</span><br><span class="line">  ars.connected_state_desc</span><br><span class="line"><span class="keyword">FROM</span> sys.availability_replicas ar</span><br><span class="line"><span class="keyword">JOIN</span> sys.dm_hadr_availability_replica_states ars</span><br><span class="line">  <span class="keyword">ON</span> ar.replica_id <span class="operator">=</span> ars.replica_id;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 数据库同步状态</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  db.database_id,</span><br><span class="line">  d.name <span class="keyword">AS</span> db_name,</span><br><span class="line">  drs.synchronization_state_desc,</span><br><span class="line">  drs.synchronization_health_desc,</span><br><span class="line">  drs.log_send_queue_size,</span><br><span class="line">  drs.redo_queue_size</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_hadr_database_replica_states drs</span><br><span class="line"><span class="keyword">JOIN</span> sys.databases d <span class="keyword">ON</span> drs.database_id <span class="operator">=</span> d.database_id;</span><br></pre></td></tr></table></figure>
+
+<h3 id="11-4-手动故障转移"><a href="#11-4-手动故障转移" class="headerlink" title="11.4 手动故障转移"></a>11.4 手动故障转移</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 同步副本：无数据丢失故障转移</span></span><br><span class="line"><span class="keyword">ALTER</span> AVAILABILITY <span class="keyword">GROUP</span> myag FAILOVER;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 异步副本：可能丢失数据的强制转移</span></span><br><span class="line"><span class="keyword">ALTER</span> AVAILABILITY <span class="keyword">GROUP</span> myag FORCE_FAILOVER_ALLOW_DATA_LOSS;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="12-监控与故障排查"><a href="#12-监控与故障排查" class="headerlink" title="12. 监控与故障排查"></a>12. 监控与故障排查</h2><h3 id="12-1-动态管理视图（DMV）速查"><a href="#12-1-动态管理视图（DMV）速查" class="headerlink" title="12.1 动态管理视图（DMV）速查"></a>12.1 动态管理视图（DMV）速查</h3><p>DMV（Dynamic Management Views）是 SQL Server 暴露内部运行状态的标准接口，对应 PG 的 <code>pg_stat_*</code> 系列视图，但覆盖面更广、粒度更细。</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>DMV</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>会话与请求</td>
+<td><code>sys.dm_exec_sessions</code></td>
+<td>当前所有会话信息（≈ pg_stat_activity）</td>
+</tr>
+<tr>
+<td>会话与请求</td>
+<td><code>sys.dm_exec_requests</code></td>
+<td>当前正在执行的请求</td>
+</tr>
+<tr>
+<td>会话与请求</td>
+<td><code>sys.dm_exec_connections</code></td>
+<td>网络连接信息</td>
+</tr>
+<tr>
+<td>等待事件</td>
+<td><code>sys.dm_os_wait_stats</code></td>
+<td>累计等待事件统计（最重要的调优入口）</td>
+</tr>
+<tr>
+<td>等待事件</td>
+<td><code>sys.dm_os_waiting_tasks</code></td>
+<td>当前正在等待的任务</td>
+</tr>
+<tr>
+<td>锁与阻塞</td>
+<td><code>sys.dm_tran_locks</code></td>
+<td>当前持有的所有锁</td>
+</tr>
+<tr>
+<td>锁与阻塞</td>
+<td><code>sys.dm_exec_requests</code> 中的 blocking_session_id</td>
+<td>阻塞链路追踪</td>
+</tr>
+<tr>
+<td>IO</td>
+<td><code>sys.dm_io_virtual_file_stats</code></td>
+<td>数据&#x2F;日志文件 IO 统计</td>
+</tr>
+<tr>
+<td>内存</td>
+<td><code>sys.dm_os_memory_clerks</code></td>
+<td>各内存模块的占用</td>
+</tr>
+<tr>
+<td>缓存</td>
+<td><code>sys.dm_exec_cached_plans</code></td>
+<td>计划缓存</td>
+</tr>
+<tr>
+<td>索引</td>
+<td><code>sys.dm_db_index_usage_stats</code></td>
+<td>索引使用频次（找出未使用索引）</td>
+</tr>
+<tr>
+<td>索引</td>
+<td><code>sys.dm_db_missing_index_*</code></td>
+<td>缺失索引建议</td>
+</tr>
+</tbody></table>
+<h3 id="12-2-排查”现在谁卡住了”"><a href="#12-2-排查”现在谁卡住了”" class="headerlink" title="12.2 排查”现在谁卡住了”"></a>12.2 排查”现在谁卡住了”</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 当前正在跑的请求 + 阻塞关系</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  r.session_id,</span><br><span class="line">  r.blocking_session_id,</span><br><span class="line">  r.status,</span><br><span class="line">  r.wait_type,</span><br><span class="line">  r.wait_time,</span><br><span class="line">  r.cpu_time,</span><br><span class="line">  r.logical_reads,</span><br><span class="line">  <span class="built_in">SUBSTRING</span>(t.text, (r.statement_start_offset<span class="operator">/</span><span class="number">2</span>)<span class="operator">+</span><span class="number">1</span>,</span><br><span class="line">    ((<span class="keyword">CASE</span> r.statement_end_offset</span><br><span class="line">        <span class="keyword">WHEN</span> <span class="number">-1</span> <span class="keyword">THEN</span> DATALENGTH(t.text)</span><br><span class="line">        <span class="keyword">ELSE</span> r.statement_end_offset</span><br><span class="line">      <span class="keyword">END</span> <span class="operator">-</span> r.statement_start_offset)<span class="operator">/</span><span class="number">2</span>)<span class="operator">+</span><span class="number">1</span>) <span class="keyword">AS</span> current_sql</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_requests r</span><br><span class="line"><span class="keyword">CROSS</span> APPLY sys.dm_exec_sql_text(r.sql_handle) t</span><br><span class="line"><span class="keyword">WHERE</span> r.session_id <span class="operator">&lt;&gt;</span> @<span class="variable">@SPID</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> r.cpu_time <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="12-3-常见等待事件解读"><a href="#12-3-常见等待事件解读" class="headerlink" title="12.3 常见等待事件解读"></a>12.3 常见等待事件解读</h3><table>
+<thead>
+<tr>
+<th>等待类型</th>
+<th>含义</th>
+<th>PG 类比</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PAGEIOLATCH_*</code></td>
+<td>等待数据页从磁盘读入内存（IO 瓶颈）</td>
+<td>IO Wait</td>
+</tr>
+<tr>
+<td><code>PAGELATCH_*</code></td>
+<td>等待内存页面 latch（常见于 tempdb 争用）</td>
+<td>LWLock</td>
+</tr>
+<tr>
+<td><code>LCK_M_*</code></td>
+<td>等待行&#x2F;页&#x2F;表锁</td>
+<td>Lock</td>
+</tr>
+<tr>
+<td><code>CXPACKET</code> &#x2F; <code>CXCONSUMER</code></td>
+<td>并行查询线程间同步</td>
+<td>无对应</td>
+</tr>
+<tr>
+<td><code>ASYNC_NETWORK_IO</code></td>
+<td>客户端没及时收数据</td>
+<td>ClientRead</td>
+</tr>
+<tr>
+<td><code>WRITELOG</code></td>
+<td>等待日志刷盘</td>
+<td>WALWrite</td>
+</tr>
+<tr>
+<td><code>RESOURCE_SEMAPHORE</code></td>
+<td>等待内存授予（大查询排队）</td>
+<td>类似 work_mem 不足</td>
+</tr>
+</tbody></table>
+<h3 id="12-4-找出-TOP-慢查询（Plan-Cache-视角）"><a href="#12-4-找出-TOP-慢查询（Plan-Cache-视角）" class="headerlink" title="12.4 找出 TOP 慢查询（Plan Cache 视角）"></a>12.4 找出 TOP 慢查询（Plan Cache 视角）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> TOP <span class="number">20</span></span><br><span class="line">  qs.execution_count,</span><br><span class="line">  qs.total_logical_reads <span class="operator">/</span> qs.execution_count <span class="keyword">AS</span> avg_logical_reads,</span><br><span class="line">  qs.total_elapsed_time  <span class="operator">/</span> qs.execution_count <span class="operator">/</span> <span class="number">1000</span> <span class="keyword">AS</span> avg_ms,</span><br><span class="line">  qs.last_execution_time,</span><br><span class="line">  <span class="built_in">SUBSTRING</span>(qt.text, (qs.statement_start_offset<span class="operator">/</span><span class="number">2</span>)<span class="operator">+</span><span class="number">1</span>,</span><br><span class="line">    ((<span class="keyword">CASE</span> qs.statement_end_offset</span><br><span class="line">        <span class="keyword">WHEN</span> <span class="number">-1</span> <span class="keyword">THEN</span> DATALENGTH(qt.text)</span><br><span class="line">        <span class="keyword">ELSE</span> qs.statement_end_offset</span><br><span class="line">      <span class="keyword">END</span> <span class="operator">-</span> qs.statement_start_offset)<span class="operator">/</span><span class="number">2</span>)<span class="operator">+</span><span class="number">1</span>) <span class="keyword">AS</span> query_text</span><br><span class="line"><span class="keyword">FROM</span> sys.dm_exec_query_stats qs</span><br><span class="line"><span class="keyword">CROSS</span> APPLY sys.dm_exec_sql_text(qs.sql_handle) qt</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> avg_ms <span class="keyword">DESC</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>💡 与 PG <code>pg_stat_statements</code> 对比：DMV 的 <code>dm_exec_query_stats</code> 只保留 Plan Cache 中的查询，重启或计划过期就会丢失统计。<strong>真正用来做长期分析，应该开 Query Store</strong>（见第 8 章）。</p>
+</blockquote>
+<hr>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>从 PG 切到 SQL Server，最大的”思维切换”集中在四件事上：</p>
+<ol>
+<li><strong>聚集索引 &#x3D; 表本身</strong>：表的物理结构由聚集索引决定，这跟 PG 的堆表模型完全不同。设计表的第一刻就要想清楚聚集键怎么选。</li>
+<li><strong>tempdb 是命门</strong>：不像 PG 把临时数据散到各处，SQL Server 把版本存储、临时表、排序溢出全塞进 tempdb，这里被搞挂，整个实例都受影响。</li>
+<li><strong>Login 与 User 分层</strong>：习惯了 PG 的 role-everywhere 之后，会在权限模型上反复踩坑。</li>
+<li><strong>Query Store 真香</strong>：这是 SQL Server 给 DBA 的最大礼物——开启就有，且性价比极高，PG 只能羡慕。</li>
+</ol>
+<p>如果你正打算做反向迁移（PG → SQL Server）或多引擎共存的工作，建议把第 4、5、7、12 章作为高频回顾区。其他章节作为查询手册即可。</p>
+
+                    
+                </div>
+
+                
+                        
+<div class="post-copyright-info-container border-box">
+    <div class="copyright-info-content border-box">
+        <div class="copyright-info-top border-box">
+            <div class="copyright-post-title border-box text-ellipsis">
+                SQL Server 详细学习指南（PG 专家视角）
+            </div>
+
+            <div class="copyright-post-link border-box text-ellipsis">
+                2026/05/12/SQL Server学习指南-PG专家视角/
+            </div>
+        </div>
+
+        <div class="copyright-info-bottom border-box">
+            <div class="copyright-post-author bottom-item">
+                <div class="type">
+                    作者
+                </div>
+                <div class="content">梧杵</div>
+            </div>
+
+            <div class="post-time bottom-item">
+                <div class="type">
+                    发布于
+                </div>
+                <div class="content">2026-05-12 15:00</div>
+            </div>
+
+
+            <div class="post-license bottom-item">
+                <div class="type">
+                    许可
+                </div>
+                <div class="content tooltip" data-tooltip-content="CC BY-NC-SA 4.0">
+                    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank">
+                        
+                            <i class="fa-brands fa-creative-commons"></i>
+                            <i class="fa-brands fa-creative-commons-by"></i>
+                            <i class="fa-brands fa-creative-commons-nc"></i>
+                            <i class="fa-brands fa-creative-commons-sa"></i>
+                        
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <i class="copyright-bg fa-solid fa-copyright"></i>
+    </div>
+    <div class="copy-copyright-info flex-center tooltip" data-tooltip-content="复制版权信息" data-tooltip-offset-y="-2px">
+        <i class="fa-solid fa-copy"></i>
+    </div>
+</div>
+
+                
+
+                <div class="post-bottom-tags-and-share border-box">
+                    <div>
+                        
+                            <ul class="post-tags-box border-box">
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/SQL-Server/">SQL Server</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/T-SQL/">T-SQL</a>
+                                    </li>
+                                
+                                    <li class="tag-item border-box">
+                                        <i class="icon fas fa-hashtag"></i>&nbsp;<a href="/tags/%E8%BF%81%E7%A7%BB/">迁移</a>
+                                    </li>
+                                
+                            </ul>
+                        
+                    </div>
+                    <div>
+                        
+                            <div class="post-share-container border-box">
+    <ul class="share-list-wrap border-box">
+        <li class="qq share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到 QQ"
+        >
+            <i class="fa-brands fa-qq"></i>
+        </li>
+        <li class="wechat share-item border-box flex-center tooltip tooltip-img"
+            data-tooltip-content="分享到微信"
+            data-tooltip-img-tip="微信扫一扫"
+            data-tooltip-img-style="background-color: #fff; top: -10px; padding: 0.6rem 0.6rem 0.1rem 0.6rem;"
+        >
+            <i class="fa-brands fa-weixin"></i>
+        </li>
+        <li class="weibo share-item border-box flex-center tooltip"
+            data-tooltip-content="分享到微博"
+        >
+            <i class="fa-brands fa-weibo"></i>
+        </li>
+    </ul>
+</div>
+
+                        
+                    </div>
+                </div>
+
+                
+                    
+
+<div class="reward-author-container border-box flex-center">
+    <div class="reward-btn border-box flex-center tooltip tooltip-img"
+            data-tooltip-img-url="/images/pay.jpg"
+            data-tooltip-img-trigger="click"
+            data-tooltip-img-style="top: -6px;"
+    >
+        <i class="fa-solid fa-gift"></i>&nbsp;您的支持将鼓励我继续创作！
+    </div>
+</div>
+
+                
+
+                
+                    <div class="post-nav border-box">
+                        
+                        
+                            <div class="next-post">
+                                <a class="next"
+                                   rel="next"
+                                   href="/2026/04/23/%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%98%AF%E6%80%8E%E4%B9%88%E7%82%BC%E6%88%90%E7%9A%84-%E4%BB%8Epg_stat_statements%E8%AF%B4%E8%B5%B7/"
+                                   title="慢查询是怎么炼成的：从pg_stat_statements说起"
+                                >
+                                    <span class="title flex-center">
+                                        <span class="post-nav-title-item text-ellipsis">慢查询是怎么炼成的：从pg_stat_statements说起</span>
+                                        <span class="post-nav-item">下一篇</span>
+                                    </span>
+                                    <span class="right arrow-icon flex-center">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        
+                    </div>
+                
+
+                
+                    
+
+
+    <div class="comments-container border-box">
+        <div id="comments-anchor" class="comment-area-title border-box">
+            <i class="fas fa-comments"></i>&nbsp;评论
+        </div>
+        <div class="comment-plugin-fail border-box">
+    <span class="fail-tip">评论插件加载失败</span>
+    <button class="reload keep-button">点击重新加载</button>
+</div>
+<div class="comment-plugin-loading flex-center border-box">
+    <i class="loading-icon fa-solid fa-spinner fa-spin"></i>
+    <span class="load-tip">正在加载评论插件</span>
+</div>
+<script data-pjax>
+  window.KeepCommentPlugin = {}
+  window.KeepCommentPlugin.hideLoading = () => {
+    const cplDom = document.querySelector('.comments-container .comment-plugin-loading')
+    cplDom.style.display = 'none'
+  }
+  window.KeepCommentPlugin.loadFailHandle = () => {
+    window.KeepCommentPlugin.hideLoading()
+    const cpfDom = document.querySelector('.comments-container .comment-plugin-fail')
+    cpfDom.style.display = 'flex'
+    cpfDom.querySelector('.reload').addEventListener('click', () => {
+      window.location.reload()
+    })
+  }
+</script>
+
+        
+            
+
+    <div class="twikoo-container">
+        <div id="twikoo-comment"></div>
+        <script data-pjax
+                src="//cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.all.min.js"
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        ></script>
+        <script data-pjax
+                async
+                onerror="window.KeepCommentPlugin.loadFailHandle()"
+        >
+          window.KeepCommentPlugin.initTwikoo = () => {
+            if (window?.twikoo) {
+              twikoo.init({
+                el: '#twikoo-comment',
+                envId: 'https://68807776fb8f84125cd185ff--courageous-mermaid-c68995.netlify.app/.netlify/functions/twikoo',
+                region: '',
+                lang: 'zh-CN' || 'zh-CN'
+              })
+              window.KeepCommentPlugin.hideLoading()
+            } else {
+              setTimeout(() => {
+                window.KeepCommentPlugin.initTwikoo()
+              }, 1000)
+            }
+          }
+
+          if ('true' === 'true') {
+            setTimeout(() => {
+              window.KeepCommentPlugin.initTwikoo()
+            }, 1200)
+          } else {
+            window.addEventListener('DOMContentLoaded', window.KeepCommentPlugin.initTwikoo)
+          }
+        </script>
+    </div>
+
+
+        
+    </div>
+
+
+
+
+
+                
+            </div>
+        </div>
+
+        
+            <div class="pc-post-toc right-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A6%82%E8%A7%88%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-text">1. 概览与定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-SQL-Server-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">1.1 SQL Server 是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E4%B8%8E-PostgreSQL-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%AE%9A%E4%BD%8D%E5%B7%AE%E5%BC%82"><span class="nav-text">1.2 与 PostgreSQL 的核心定位差异</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E7%89%88%E6%9C%AC%E4%B8%8E-Edition"><span class="nav-text">1.3 版本与 Edition</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-text">2. 安装与工具链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%AE%89%E8%A3%85-SQL-Server"><span class="nav-text">2.1 安装 SQL Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E4%B8%BB%E8%A6%81%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-text">2.2 主要工具链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-sqlcmd-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">2.3 sqlcmd 常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9E%B6%E6%9E%84%E8%AF%A6%E8%A7%A3"><span class="nav-text">3. 架构详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B-vs-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-text">3.1 进程模型 vs 线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-SQLOS-%E2%80%94-SQL-Server-%E7%9A%84%E2%80%9D%E7%94%A8%E6%88%B7%E6%80%81%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E2%80%9D"><span class="nav-text">3.2 SQLOS — SQL Server 的”用户态操作系统”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%85%B3%E7%B3%BB%E5%BC%95%E6%93%8E%EF%BC%88Relational-Engine%EF%BC%89"><span class="nav-text">3.3 关系引擎（Relational Engine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.4 存储引擎</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-T-SQL-%E5%AE%8C%E5%85%A8%E6%8C%87%E5%8D%97"><span class="nav-text">4. T-SQL 完全指南</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E7%85%A7"><span class="nav-text">4.1 数据类型对照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-DDL-%E8%AF%AD%E6%B3%95%E5%AF%B9%E7%85%A7"><span class="nav-text">4.2 DDL 语法对照</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%BA%E8%A1%A8%E5%AF%B9%E6%AF%94"><span class="nav-text">建表对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E8%A1%A8"><span class="nav-text">修改表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E6%9F%A5%E8%AF%A2%E8%AF%AD%E6%B3%95%E5%AF%B9%E7%85%A7"><span class="nav-text">4.3 查询语法对照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-T-SQL-%E7%8B%AC%E6%9C%89%E7%89%B9%E6%80%A7"><span class="nav-text">4.4 T-SQL 独有特性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MERGE-%E8%AF%AD%E5%8F%A5%EF%BC%88PG-%E4%B9%9F%E6%9C%89%E4%BD%86%E5%8A%9F%E8%83%BD%E5%BC%B1%E4%BA%8E-SQL-Server%EF%BC%89"><span class="nav-text">MERGE 语句（PG 也有但功能弱于 SQL Server）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OUTPUT-%E5%AD%90%E5%8F%A5"><span class="nav-text">OUTPUT 子句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PIVOT-UNPIVOT"><span class="nav-text">PIVOT &#x2F; UNPIVOT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CROSS-APPLY-OUTER-APPLY"><span class="nav-text">CROSS APPLY &#x2F; OUTER APPLY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TRY%E2%80%A6CATCH-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-text">TRY…CATCH 异常处理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0"><span class="nav-text">4.5 存储过程与函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B"><span class="nav-text">存储过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E9%87%8F%E5%87%BD%E6%95%B0"><span class="nav-text">标量函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A8%E5%80%BC%E5%87%BD%E6%95%B0%EF%BC%88%E6%8E%A8%E8%8D%90%E5%86%99%E6%B3%95%EF%BC%89"><span class="nav-text">表值函数（推荐写法）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%B4%A2%E5%BC%95%E4%B8%8E%E5%AD%98%E5%82%A8"><span class="nav-text">5. 索引与存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E7%B4%A2%E5%BC%95%E7%B1%BB%E5%9E%8B%E5%85%A8%E6%99%AF"><span class="nav-text">5.1 索引类型全景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95%EF%BC%88CLUSTERED%EF%BC%89%E7%9A%84%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5"><span class="nav-text">5.2 聚集索引（CLUSTERED）的关键概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95%EF%BC%9AINCLUDE-%E5%AD%90%E5%8F%A5"><span class="nav-text">5.3 覆盖索引：INCLUDE 子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E7%B4%A2%E5%BC%95%E7%BB%B4%E6%8A%A4"><span class="nav-text">5.4 索引维护</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-%E6%96%87%E4%BB%B6%E7%BB%84%E4%B8%8E%E5%88%86%E5%8C%BA"><span class="nav-text">5.5 文件组与分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E4%BA%8B%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91"><span class="nav-text">6. 事务与并发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-text">6.1 隔离级别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-SQL-Server-%E7%9A%84%E5%8F%8C-MVCC-%E5%AE%9E%E7%8E%B0"><span class="nav-text">6.2 SQL Server 的双 MVCC 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F-1%EF%BC%9AREAD-COMMITTED-SNAPSHOT-RCSI"><span class="nav-text">方式 1：READ COMMITTED SNAPSHOT (RCSI)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F-2%EF%BC%9ASnapshot-Isolation"><span class="nav-text">方式 2：Snapshot Isolation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-text">6.3 锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E6%AD%BB%E9%94%81%E5%A4%84%E7%90%86"><span class="nav-text">6.4 死锁处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E4%B8%8E%E8%B0%83%E4%BC%98"><span class="nav-text">7. 执行计划与调优</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="nav-text">7.1 查看执行计划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E4%B8%BB%E8%A6%81%E6%89%A7%E8%A1%8C%E7%AE%97%E5%AD%90"><span class="nav-text">7.2 主要执行算子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E5%B8%B8%E8%A7%81%E6%A8%A1%E5%BC%8F"><span class="nav-text">7.3 性能调优常见模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-1%EF%BC%9AKey-Lookup-%E5%A4%AA%E5%A4%9A-%E2%86%92-%E5%8A%A0-INCLUDE-%E5%88%97"><span class="nav-text">问题 1：Key Lookup 太多 → 加 INCLUDE 列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-2%EF%BC%9A%E5%8F%82%E6%95%B0%E5%97%85%E6%8E%A2%EF%BC%88Parameter-Sniffing%EF%BC%89"><span class="nav-text">问题 2：参数嗅探（Parameter Sniffing）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-3%EF%BC%9A%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF%E9%99%88%E6%97%A7"><span class="nav-text">问题 3：统计信息陈旧</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-4%EF%BC%9Atempdb-%E4%BA%89%E7%94%A8"><span class="nav-text">问题 4：tempdb 争用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-4-%E6%9F%A5%E8%AF%A2%E6%8F%90%E7%A4%BA%EF%BC%88Hint%EF%BC%89"><span class="nav-text">7.4 查询提示（Hint）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Query-Store"><span class="nav-text">8. Query Store</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-%E5%BC%80%E5%90%AF-Query-Store"><span class="nav-text">8.1 开启 Query Store</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-%E5%B8%B8%E7%94%A8%E6%9F%A5%E8%AF%A2"><span class="nav-text">8.2 常用查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-%E5%9C%A8-SSMS-%E5%9B%BE%E5%BD%A2%E5%8C%96%E5%88%86%E6%9E%90"><span class="nav-text">8.3 在 SSMS 图形化分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%AE%89%E5%85%A8%E4%B8%8E%E6%9D%83%E9%99%90"><span class="nav-text">9. 安全与权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-%E8%AE%A4%E8%AF%81%E6%A8%A1%E5%9E%8B"><span class="nav-text">9.1 认证模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-%E5%88%9B%E5%BB%BA%E8%B4%A6%E6%88%B7%E4%B8%8E%E6%8E%88%E6%9D%83"><span class="nav-text">9.2 创建账户与授权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3-%E5%86%85%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%92%E8%89%B2"><span class="nav-text">9.3 内置数据库角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-4-%E8%A1%8C%E7%BA%A7%E5%AE%89%E5%85%A8%EF%BC%88Row-Level-Security%EF%BC%89"><span class="nav-text">9.4 行级安全（Row-Level Security）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-5-%E9%80%8F%E6%98%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%EF%BC%88TDE%EF%BC%89%E5%92%8C-Always-Encrypted"><span class="nav-text">9.5 透明数据加密（TDE）和 Always Encrypted</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="nav-text">10. 备份与恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-%E6%81%A2%E5%A4%8D%E6%A8%A1%E5%BC%8F"><span class="nav-text">10.1 恢复模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-%E5%A4%87%E4%BB%BD%E7%B1%BB%E5%9E%8B"><span class="nav-text">10.2 备份类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-3-%E8%BF%98%E5%8E%9F%EF%BC%88%E5%90%AB-Point-In-Time%EF%BC%89"><span class="nav-text">10.3 还原（含 Point-In-Time）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-4-%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5%E7%A4%BA%E4%BE%8B"><span class="nav-text">10.4 备份策略示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-%E9%AB%98%E5%8F%AF%E7%94%A8%EF%BC%9AAlways-On-%E5%8F%AF%E7%94%A8%E6%80%A7%E7%BB%84"><span class="nav-text">11. 高可用：Always On 可用性组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-Always-On-%E6%A6%82%E5%BF%B5"><span class="nav-text">11.1 Always On 概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-%E5%88%9B%E5%BB%BA-Always-On-%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-text">11.2 创建 Always On 的步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-3-%E7%9B%91%E6%8E%A7%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81"><span class="nav-text">11.3 监控同步状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-4-%E6%89%8B%E5%8A%A8%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="nav-text">11.4 手动故障转移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E7%9B%91%E6%8E%A7%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5"><span class="nav-text">12. 监控与故障排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#12-1-%E5%8A%A8%E6%80%81%E7%AE%A1%E7%90%86%E8%A7%86%E5%9B%BE%EF%BC%88DMV%EF%BC%89%E9%80%9F%E6%9F%A5"><span class="nav-text">12.1 动态管理视图（DMV）速查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-2-%E6%8E%92%E6%9F%A5%E2%80%9D%E7%8E%B0%E5%9C%A8%E8%B0%81%E5%8D%A1%E4%BD%8F%E4%BA%86%E2%80%9D"><span class="nav-text">12.2 排查”现在谁卡住了”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-3-%E5%B8%B8%E8%A7%81%E7%AD%89%E5%BE%85%E4%BA%8B%E4%BB%B6%E8%A7%A3%E8%AF%BB"><span class="nav-text">12.3 常见等待事件解读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-4-%E6%89%BE%E5%87%BA-TOP-%E6%85%A2%E6%9F%A5%E8%AF%A2%EF%BC%88Plan-Cache-%E8%A7%86%E8%A7%92%EF%BC%89"><span class="nav-text">12.4 找出 TOP 慢查询（Plan Cache 视角）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-text">写在最后</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+        </div>
+
+        <div class="page-main-content-bottom border-box">
+            
+<footer class="footer border-box">
+    <div class="copyright-info info-item">
+    &copy;&nbsp;2026
+    
+            &nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;&nbsp;<a href="/">梧杵</a>
+        
+    </div>
+
+    
+        
+        <div class="deploy-info info-item">
+            
+                <a target="_blank" rel="nofollow" href="https://github.com/wuchuuuuu">
+            
+            本站由 <span class="tooltip" data-tooltip-content="GitHub Pages"><img src="/images/brands/github.png"></span> 提供部署服务
+            
+                </a>
+            
+        </div>
+    
+
+    
+
+    
+        <div class="record-info info-item">
+            
+                
+                    <div class="record-item border-box">
+                        <a class=""
+                           target="_blank"
+                           href="https://beian.miit.gov.cn/"
+                        >
+                            蜀ICP备2025119146号
+                        </a>
+                    </div>
+                
+            
+        </div>
+    
+</footer>
+
+        </div>
+    </div>
+
+    <!-- post tools -->
+    
+        <div class="post-tools right-toc">
+            <div class="post-tools-container border-box">
+    <ul class="post-tools-list border-box">
+        <!-- PC encrypt again -->
+        
+
+        <!-- PC TOC show toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- PC go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+
+        <!-- PC full screen -->
+        <li class="tools-item flex-center full-screen">
+            <i class="fa-solid fa-expand"></i>
+        </li>
+    </ul>
+</div>
+
+        </div>
+    
+
+    <!-- side tools -->
+    <div class="side-tools">
+        <div class="side-tools-container border-box ">
+    <ul class="side-tools-list side-tools-show-handle border-box">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <!-- toggle mode -->
+        
+            <li class="tools-item tool-toggle-theme-mode flex-center">
+                <i class="fas fa-moon"></i>
+            </li>
+        
+
+        <!-- rss -->
+        
+            <li class="tools-item rss flex-center">
+                <a class="flex-center"
+                   href="/atom.xml"
+                   target="_blank"
+                >
+                    <i class="fas fa-rss"></i>
+                </a>
+            </li>
+        
+
+        <!-- to bottom -->
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list border-box">
+        
+            <li class="tools-item toggle-show-toc-tablet flex-center">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        
+            <li class="tools-item go-to-comments-tablet flex-center">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-top flex-center show-arrow">
+            <i class="arrow fas fa-arrow-up"></i>
+            <span class="percent"></span>
+        </li>
+    </ul>
+</div>
+
+    </div>
+
+    <!-- image mask -->
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    <!-- local search -->
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    <!-- tablet toc -->
+    
+        <div class="tablet-post-toc-mask">
+            <div class="tablet-post-toc">
+                <div class="post-toc-wrap border-box">
+    <div class="post-toc border-box">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A6%82%E8%A7%88%E4%B8%8E%E5%AE%9A%E4%BD%8D"><span class="nav-text">1. 概览与定位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-SQL-Server-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">1.1 SQL Server 是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E4%B8%8E-PostgreSQL-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%AE%9A%E4%BD%8D%E5%B7%AE%E5%BC%82"><span class="nav-text">1.2 与 PostgreSQL 的核心定位差异</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E7%89%88%E6%9C%AC%E4%B8%8E-Edition"><span class="nav-text">1.3 版本与 Edition</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-text">2. 安装与工具链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E5%AE%89%E8%A3%85-SQL-Server"><span class="nav-text">2.1 安装 SQL Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E4%B8%BB%E8%A6%81%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-text">2.2 主要工具链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-sqlcmd-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">2.3 sqlcmd 常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E6%9E%B6%E6%9E%84%E8%AF%A6%E8%A7%A3"><span class="nav-text">3. 架构详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B-vs-%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-text">3.1 进程模型 vs 线程模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-SQLOS-%E2%80%94-SQL-Server-%E7%9A%84%E2%80%9D%E7%94%A8%E6%88%B7%E6%80%81%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E2%80%9D"><span class="nav-text">3.2 SQLOS — SQL Server 的”用户态操作系统”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E5%85%B3%E7%B3%BB%E5%BC%95%E6%93%8E%EF%BC%88Relational-Engine%EF%BC%89"><span class="nav-text">3.3 关系引擎（Relational Engine）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.4 存储引擎</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-T-SQL-%E5%AE%8C%E5%85%A8%E6%8C%87%E5%8D%97"><span class="nav-text">4. T-SQL 完全指南</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E7%85%A7"><span class="nav-text">4.1 数据类型对照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-DDL-%E8%AF%AD%E6%B3%95%E5%AF%B9%E7%85%A7"><span class="nav-text">4.2 DDL 语法对照</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%BA%E8%A1%A8%E5%AF%B9%E6%AF%94"><span class="nav-text">建表对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E8%A1%A8"><span class="nav-text">修改表</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E6%9F%A5%E8%AF%A2%E8%AF%AD%E6%B3%95%E5%AF%B9%E7%85%A7"><span class="nav-text">4.3 查询语法对照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-T-SQL-%E7%8B%AC%E6%9C%89%E7%89%B9%E6%80%A7"><span class="nav-text">4.4 T-SQL 独有特性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MERGE-%E8%AF%AD%E5%8F%A5%EF%BC%88PG-%E4%B9%9F%E6%9C%89%E4%BD%86%E5%8A%9F%E8%83%BD%E5%BC%B1%E4%BA%8E-SQL-Server%EF%BC%89"><span class="nav-text">MERGE 语句（PG 也有但功能弱于 SQL Server）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OUTPUT-%E5%AD%90%E5%8F%A5"><span class="nav-text">OUTPUT 子句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PIVOT-UNPIVOT"><span class="nav-text">PIVOT &#x2F; UNPIVOT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CROSS-APPLY-OUTER-APPLY"><span class="nav-text">CROSS APPLY &#x2F; OUTER APPLY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TRY%E2%80%A6CATCH-%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-text">TRY…CATCH 异常处理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B%E4%B8%8E%E5%87%BD%E6%95%B0"><span class="nav-text">4.5 存储过程与函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B"><span class="nav-text">存储过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E9%87%8F%E5%87%BD%E6%95%B0"><span class="nav-text">标量函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A8%E5%80%BC%E5%87%BD%E6%95%B0%EF%BC%88%E6%8E%A8%E8%8D%90%E5%86%99%E6%B3%95%EF%BC%89"><span class="nav-text">表值函数（推荐写法）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E7%B4%A2%E5%BC%95%E4%B8%8E%E5%AD%98%E5%82%A8"><span class="nav-text">5. 索引与存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E7%B4%A2%E5%BC%95%E7%B1%BB%E5%9E%8B%E5%85%A8%E6%99%AF"><span class="nav-text">5.1 索引类型全景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95%EF%BC%88CLUSTERED%EF%BC%89%E7%9A%84%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5"><span class="nav-text">5.2 聚集索引（CLUSTERED）的关键概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95%EF%BC%9AINCLUDE-%E5%AD%90%E5%8F%A5"><span class="nav-text">5.3 覆盖索引：INCLUDE 子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4-%E7%B4%A2%E5%BC%95%E7%BB%B4%E6%8A%A4"><span class="nav-text">5.4 索引维护</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5-%E6%96%87%E4%BB%B6%E7%BB%84%E4%B8%8E%E5%88%86%E5%8C%BA"><span class="nav-text">5.5 文件组与分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E4%BA%8B%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91"><span class="nav-text">6. 事务与并发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-text">6.1 隔离级别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-SQL-Server-%E7%9A%84%E5%8F%8C-MVCC-%E5%AE%9E%E7%8E%B0"><span class="nav-text">6.2 SQL Server 的双 MVCC 实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F-1%EF%BC%9AREAD-COMMITTED-SNAPSHOT-RCSI"><span class="nav-text">方式 1：READ COMMITTED SNAPSHOT (RCSI)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F-2%EF%BC%9ASnapshot-Isolation"><span class="nav-text">方式 2：Snapshot Isolation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-text">6.3 锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E6%AD%BB%E9%94%81%E5%A4%84%E7%90%86"><span class="nav-text">6.4 死锁处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92%E4%B8%8E%E8%B0%83%E4%BC%98"><span class="nav-text">7. 执行计划与调优</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E6%9F%A5%E7%9C%8B%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="nav-text">7.1 查看执行计划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E4%B8%BB%E8%A6%81%E6%89%A7%E8%A1%8C%E7%AE%97%E5%AD%90"><span class="nav-text">7.2 主要执行算子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-3-%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E5%B8%B8%E8%A7%81%E6%A8%A1%E5%BC%8F"><span class="nav-text">7.3 性能调优常见模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-1%EF%BC%9AKey-Lookup-%E5%A4%AA%E5%A4%9A-%E2%86%92-%E5%8A%A0-INCLUDE-%E5%88%97"><span class="nav-text">问题 1：Key Lookup 太多 → 加 INCLUDE 列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-2%EF%BC%9A%E5%8F%82%E6%95%B0%E5%97%85%E6%8E%A2%EF%BC%88Parameter-Sniffing%EF%BC%89"><span class="nav-text">问题 2：参数嗅探（Parameter Sniffing）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-3%EF%BC%9A%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF%E9%99%88%E6%97%A7"><span class="nav-text">问题 3：统计信息陈旧</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98-4%EF%BC%9Atempdb-%E4%BA%89%E7%94%A8"><span class="nav-text">问题 4：tempdb 争用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-4-%E6%9F%A5%E8%AF%A2%E6%8F%90%E7%A4%BA%EF%BC%88Hint%EF%BC%89"><span class="nav-text">7.4 查询提示（Hint）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Query-Store"><span class="nav-text">8. Query Store</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-%E5%BC%80%E5%90%AF-Query-Store"><span class="nav-text">8.1 开启 Query Store</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-%E5%B8%B8%E7%94%A8%E6%9F%A5%E8%AF%A2"><span class="nav-text">8.2 常用查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-%E5%9C%A8-SSMS-%E5%9B%BE%E5%BD%A2%E5%8C%96%E5%88%86%E6%9E%90"><span class="nav-text">8.3 在 SSMS 图形化分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%AE%89%E5%85%A8%E4%B8%8E%E6%9D%83%E9%99%90"><span class="nav-text">9. 安全与权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-%E8%AE%A4%E8%AF%81%E6%A8%A1%E5%9E%8B"><span class="nav-text">9.1 认证模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-%E5%88%9B%E5%BB%BA%E8%B4%A6%E6%88%B7%E4%B8%8E%E6%8E%88%E6%9D%83"><span class="nav-text">9.2 创建账户与授权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-3-%E5%86%85%E7%BD%AE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%92%E8%89%B2"><span class="nav-text">9.3 内置数据库角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-4-%E8%A1%8C%E7%BA%A7%E5%AE%89%E5%85%A8%EF%BC%88Row-Level-Security%EF%BC%89"><span class="nav-text">9.4 行级安全（Row-Level Security）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-5-%E9%80%8F%E6%98%8E%E6%95%B0%E6%8D%AE%E5%8A%A0%E5%AF%86%EF%BC%88TDE%EF%BC%89%E5%92%8C-Always-Encrypted"><span class="nav-text">9.5 透明数据加密（TDE）和 Always Encrypted</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="nav-text">10. 备份与恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-%E6%81%A2%E5%A4%8D%E6%A8%A1%E5%BC%8F"><span class="nav-text">10.1 恢复模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-%E5%A4%87%E4%BB%BD%E7%B1%BB%E5%9E%8B"><span class="nav-text">10.2 备份类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-3-%E8%BF%98%E5%8E%9F%EF%BC%88%E5%90%AB-Point-In-Time%EF%BC%89"><span class="nav-text">10.3 还原（含 Point-In-Time）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-4-%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5%E7%A4%BA%E4%BE%8B"><span class="nav-text">10.4 备份策略示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-%E9%AB%98%E5%8F%AF%E7%94%A8%EF%BC%9AAlways-On-%E5%8F%AF%E7%94%A8%E6%80%A7%E7%BB%84"><span class="nav-text">11. 高可用：Always On 可用性组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-Always-On-%E6%A6%82%E5%BF%B5"><span class="nav-text">11.1 Always On 概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-%E5%88%9B%E5%BB%BA-Always-On-%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-text">11.2 创建 Always On 的步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-3-%E7%9B%91%E6%8E%A7%E5%90%8C%E6%AD%A5%E7%8A%B6%E6%80%81"><span class="nav-text">11.3 监控同步状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-4-%E6%89%8B%E5%8A%A8%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="nav-text">11.4 手动故障转移</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E7%9B%91%E6%8E%A7%E4%B8%8E%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5"><span class="nav-text">12. 监控与故障排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#12-1-%E5%8A%A8%E6%80%81%E7%AE%A1%E7%90%86%E8%A7%86%E5%9B%BE%EF%BC%88DMV%EF%BC%89%E9%80%9F%E6%9F%A5"><span class="nav-text">12.1 动态管理视图（DMV）速查</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-2-%E6%8E%92%E6%9F%A5%E2%80%9D%E7%8E%B0%E5%9C%A8%E8%B0%81%E5%8D%A1%E4%BD%8F%E4%BA%86%E2%80%9D"><span class="nav-text">12.2 排查”现在谁卡住了”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-3-%E5%B8%B8%E8%A7%81%E7%AD%89%E5%BE%85%E4%BA%8B%E4%BB%B6%E8%A7%A3%E8%AF%BB"><span class="nav-text">12.3 常见等待事件解读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-4-%E6%89%BE%E5%87%BA-TOP-%E6%85%A2%E6%9F%A5%E8%AF%A2%EF%BC%88Plan-Cache-%E8%A7%86%E8%A7%92%EF%BC%89"><span class="nav-text">12.4 找出 TOP 慢查询（Plan Cache 视角）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-text">写在最后</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        </div>
+    
+</main>
+
+
+
+
+
+<!-- common js -->
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/toggle-theme.js"></script>
+
+<script src="/js/code-block.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+
+<!-- local search -->
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+<!-- lazyload -->
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="pjax">
+    <!-- home page -->
+    
+
+    <!-- post page -->
+    
+        <!-- post-helper -->
+        
+<script src="/js/post/post-helper.js"></script>
+
+
+        <!-- toc -->
+        
+            
+<script src="/js/post/toc.js"></script>
+
+        
+
+        <!-- copyright-info -->
+        
+            
+<script src="/js/post/copyright-info.js"></script>
+
+        
+
+        <!-- share -->
+        
+            
+<script src="/js/post/share.js"></script>
+
+        
+    
+
+    <!-- categories page -->
+    
+
+    <!-- links page -->
+    
+
+    <!-- photos page -->
+    
+
+    <!-- tools page -->
+    
+</div>
+
+<!-- mermaid -->
+
+
+<!-- pjax -->
+
+    
+<script src="/js/libs/pjax.min.js"></script>
+
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart()
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd()
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'))
+            KEEP.initExecute()
+        });
+    });
+</script>
+
+
+
+
+    
+        
+            
+<script class="custom-inject-js" src="/js/custom.js" data-pjax></script>
+
+        
+    
+
+</body>
+</html>
